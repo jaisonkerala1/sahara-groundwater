@@ -36,9 +36,29 @@ This platform transforms uploaded survey reports and geological data into compre
 - npm or yarn
 - OpenRouter API key
 
-### 1. Clone and Install Dependencies
+### Method 1: Automated Setup (Recommended)
+
+```powershell
+# Clone the repository
+git clone https://github.com/jaisonkerala1/sahara-groundwater.git
+cd sahara-groundwater
+
+# Run automated setup
+.\quick-setup.ps1
+
+# Start the application
+.\start.bat
+```
+
+### Method 2: Manual Setup
+
+#### 1. Clone and Install Dependencies
 
 ```bash
+# Clone from GitHub
+git clone https://github.com/jaisonkerala1/sahara-groundwater.git
+cd sahara-groundwater
+
 # Install backend dependencies
 npm install
 
@@ -73,13 +93,16 @@ NODE_ENV=development
 3. Get your API key from the dashboard
 4. Add it to your `.env` file
 
-### 4. Run the Application
+#### 4. Run the Application
 
 ```bash
-# Development mode (runs both frontend and backend)
-npm run dev
+# Option A: Automated start (Windows) - RECOMMENDED
+.\start.bat
 
-# Or run separately:
+# Option B: PowerShell script
+.\start.ps1
+
+# Option C: Manual (two terminals)
 # Terminal 1 - Backend
 npm start
 
