@@ -55,13 +55,6 @@ function Footer() {
         </div>
       </div>
     </footer>
-            <a href="#" className="text-white text-opacity-60 hover:text-secondary-yellow text-sm transition-colors">Privacy Policy</a>
-            <a href="#" className="text-white text-opacity-60 hover:text-secondary-yellow text-sm transition-colors">Terms of Service</a>
-            <a href="#" className="text-white text-opacity-60 hover:text-secondary-yellow text-sm transition-colors">Disclaimer</a>
-          </div>
-        </div>
-      </div>
-    </footer>
   );
 }
 
