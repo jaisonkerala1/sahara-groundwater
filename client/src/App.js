@@ -99,7 +99,7 @@ function App() {
           <div className="text-center space-y-6">
             <div className="flex items-center justify-center space-x-4">
               <img 
-                src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
+                src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" 
                 alt="Sahara Groundwater Kerala Logo" 
                 className="h-16 w-auto"
                 onError={(e) => {

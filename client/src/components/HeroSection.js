@@ -75,12 +75,11 @@ function HeroSection() {
                     <p className="text-white text-opacity-80">Professional groundwater detection technology</p>
                   </div>
                   
-                  {/* If you have an actual image, use this instead: */}
-                  {/* <img 
-                    src="/path-to-groundwater-machine-image.jpg" 
-                    alt="Groundwater Detection Machine" 
+                  <img 
+                    src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" 
+                    alt="Sahara Groundwater Kerala - Professional Equipment" 
                     className="w-full h-full object-cover rounded-2xl"
-                  /> */}
+                  />
                 </div>
               </div>
             </div>
