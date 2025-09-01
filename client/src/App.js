@@ -143,10 +143,10 @@ function App() {
           <div className="text-center">
             <button
               onClick={() => setShowDashboard(!showDashboard)}
-              className="bg-white border-2 border-primary-purple text-primary-purple hover:bg-primary-purple hover:text-white font-semibold py-3 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 mx-auto"
+              className="text-primary-purple hover:text-primary-purpleDark font-medium text-sm flex items-center space-x-1 mx-auto"
             >
-              <BarChart3 className="w-5 h-5" />
-              <span>{showDashboard ? 'Hide Dashboard' : 'Show Survey Dashboard'}</span>
+              <BarChart3 className="w-4 h-4" />
+              <span>{showDashboard ? 'Hide' : 'Dashboard'}</span>
             </button>
           </div>
 
