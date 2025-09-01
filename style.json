@@ -1,0 +1,327 @@
+{
+  "designSystem": {
+    "name": "Modern Health & Fitness App Design System",
+    "version": "1.0",
+    "description": "A comprehensive design system for health and wellness applications with focus on data visualization and user engagement"
+  },
+  
+  "colorPalette": {
+    "primary": {
+      "brand": "#7ED321",
+      "brandLight": "#A4E157",
+      "brandDark": "#5BA519"
+    },
+    "secondary": {
+      "accent": "#FF6B35",
+      "accentLight": "#FF8A65",
+      "warning": "#FFC107"
+    },
+    "neutral": {
+      "white": "#FFFFFF",
+      "gray50": "#FAFAFA",
+      "gray100": "#F5F5F5",
+      "gray200": "#EEEEEE",
+      "gray300": "#E0E0E0",
+      "gray400": "#BDBDBD",
+      "gray500": "#9E9E9E",
+      "gray700": "#616161",
+      "gray900": "#212121",
+      "black": "#000000"
+    },
+    "status": {
+      "success": "#4CAF50",
+      "error": "#F44336",
+      "info": "#2196F3",
+      "heart": "#E91E63"
+    },
+    "dataVisualization": {
+      "chartGreen": "#7ED321",
+      "chartBlue": "#2196F3",
+      "chartOrange": "#FF9800",
+      "chartRed": "#F44336",
+      "chartTeal": "#009688"
+    }
+  },
+
+  "typography": {
+    "fontFamily": {
+      "primary": "SF Pro Display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "secondary": "SF Pro Text, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    },
+    "scale": {
+      "h1": {
+        "fontSize": "32px",
+        "fontWeight": "700",
+        "lineHeight": "1.2",
+        "letterSpacing": "-0.02em"
+      },
+      "h2": {
+        "fontSize": "28px",
+        "fontWeight": "600",
+        "lineHeight": "1.25",
+        "letterSpacing": "-0.01em"
+      },
+      "h3": {
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "1.3"
+      },
+      "body1": {
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "1.5"
+      },
+      "body2": {
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "1.4"
+      },
+      "caption": {
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "1.3",
+        "color": "gray500"
+      },
+      "number": {
+        "fontSize": "48px",
+        "fontWeight": "700",
+        "lineHeight": "1.1"
+      },
+      "metric": {
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "1.2"
+      }
+    }
+  },
+
+  "spacing": {
+    "scale": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "2xl": "48px",
+      "3xl": "64px"
+    },
+    "containerPadding": "20px",
+    "sectionGap": "24px",
+    "cardPadding": "16px",
+    "iconSpacing": "8px"
+  },
+
+  "borderRadius": {
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "20px",
+    "full": "50%",
+    "card": "16px",
+    "button": "12px"
+  },
+
+  "shadows": {
+    "subtle": "0 1px 3px rgba(0, 0, 0, 0.1)",
+    "card": "0 4px 12px rgba(0, 0, 0, 0.1)",
+    "floating": "0 8px 24px rgba(0, 0, 0, 0.12)",
+    "none": "none"
+  },
+
+  "components": {
+    "cards": {
+      "primary": {
+        "background": "white",
+        "borderRadius": "card",
+        "padding": "cardPadding",
+        "shadow": "card",
+        "border": "none"
+      },
+      "metric": {
+        "background": "white",
+        "borderRadius": "lg",
+        "padding": "lg",
+        "minHeight": "120px",
+        "textAlign": "left"
+      },
+      "progress": {
+        "background": "linear-gradient(135deg, #7ED321 0%, #A4E157 100%)",
+        "borderRadius": "xl",
+        "padding": "lg",
+        "color": "white"
+      }
+    },
+    
+    "buttons": {
+      "primary": {
+        "background": "primary.brand",
+        "color": "white",
+        "borderRadius": "button",
+        "padding": "12px 24px",
+        "fontWeight": "600",
+        "border": "none",
+        "minHeight": "48px"
+      },
+      "secondary": {
+        "background": "gray100",
+        "color": "gray900",
+        "borderRadius": "button",
+        "padding": "12px 24px",
+        "fontWeight": "500",
+        "border": "none"
+      },
+      "icon": {
+        "background": "primary.brand",
+        "color": "white",
+        "borderRadius": "full",
+        "size": "48px",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center"
+      }
+    },
+
+    "progressIndicators": {
+      "circular": {
+        "strokeWidth": "8px",
+        "size": "64px",
+        "backgroundColor": "gray200",
+        "progressColor": "primary.brand"
+      },
+      "bar": {
+        "height": "8px",
+        "backgroundColor": "gray200",
+        "progressColor": "primary.brand",
+        "borderRadius": "full"
+      }
+    },
+
+    "charts": {
+      "barChart": {
+        "barRadius": "sm",
+        "barSpacing": "md",
+        "gridColor": "gray200",
+        "labelColor": "gray500"
+      },
+      "lineChart": {
+        "strokeWidth": "2px",
+        "pointRadius": "4px",
+        "gridColor": "gray200"
+      }
+    },
+
+    "navigation": {
+      "tabBar": {
+        "background": "white",
+        "height": "80px",
+        "padding": "sm lg",
+        "borderTop": "1px solid gray200",
+        "activeColor": "primary.brand",
+        "inactiveColor": "gray400"
+      }
+    }
+  },
+
+  "layoutPatterns": {
+    "dashboard": {
+      "structure": "header + metrics_grid + content_sections",
+      "header": {
+        "padding": "lg",
+        "background": "white",
+        "elements": ["greeting", "profile_avatar", "notifications"]
+      },
+      "metricsGrid": {
+        "display": "grid",
+        "columns": "2",
+        "gap": "md",
+        "padding": "0 lg"
+      }
+    },
+
+    "onboarding": {
+      "structure": "hero_image + title + subtitle + cta",
+      "heroRatio": "60% of screen height",
+      "contentPadding": "xl",
+      "ctaPosition": "bottom with safe area"
+    },
+
+    "statistics": {
+      "structure": "header + main_metric + charts_grid + additional_metrics",
+      "mainMetric": {
+        "position": "top center",
+        "emphasis": "large typography + prominent positioning"
+      }
+    }
+  },
+
+  "interactionPatterns": {
+    "cardTap": {
+      "feedback": "scale(0.98) + subtle shadow increase",
+      "duration": "150ms"
+    },
+    "buttonPress": {
+      "feedback": "scale(0.96) + opacity(0.8)",
+      "duration": "100ms"
+    },
+    "progressAnimation": {
+      "type": "smooth interpolation",
+      "duration": "800ms",
+      "easing": "ease-out"
+    }
+  },
+
+  "dataVisualization": {
+    "principles": {
+      "colorCoding": "Consistent colors across related metrics",
+      "hierarchy": "Size and position indicate importance",
+      "clarity": "Clear labels and units for all data points"
+    },
+    "chartTypes": {
+      "barChart": {
+        "use": "Weekly/daily comparisons",
+        "style": "Rounded bars with consistent spacing"
+      },
+      "lineChart": {
+        "use": "Trends over time",
+        "style": "Smooth curves with point indicators"
+      },
+      "circularProgress": {
+        "use": "Goal completion status",
+        "style": "Thick stroke with center text"
+      }
+    }
+  },
+
+  "contentStrategy": {
+    "messaging": {
+      "tone": "Encouraging and supportive",
+      "personalisation": "Use user's name and personal metrics",
+      "motivation": "Progress-focused language"
+    },
+    "dataPresentation": {
+      "hierarchy": "Primary metric > secondary metrics > detailed charts",
+      "units": "Always visible and consistent",
+      "context": "Comparisons to goals/previous periods"
+    }
+  },
+
+  "accessibility": {
+    "colorContrast": "Minimum 4.5:1 for text",
+    "touchTargets": "Minimum 44px for interactive elements",
+    "textScaling": "Supports dynamic type sizing",
+    "semanticLabels": "All interactive elements properly labeled"
+  },
+
+  "responsiveness": {
+    "breakpoints": {
+      "mobile": "320px - 767px",
+      "tablet": "768px - 1023px",
+      "desktop": "1024px+"
+    },
+    "adaptations": {
+      "mobile": "Single column layouts, full-width cards",
+      "tablet": "2-3 column grids, larger charts",
+      "desktop": "Multi-column dashboards, sidebar navigation"
+    }
+  }
+}
