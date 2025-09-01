@@ -9,7 +9,7 @@ function Header() {
           {/* Logo and Company Name */}
           <div className="flex items-center space-x-4">
             <img 
-              src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" 
+              src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
               alt="Sahara Groundwater Kerala Logo" 
               className="h-12 w-auto"
               onError={(e) => {

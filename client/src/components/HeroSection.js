@@ -76,7 +76,7 @@ function HeroSection() {
                   </div>
                   
                   <img 
-                    src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" 
+                    src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
                     alt="Sahara Groundwater Kerala - Professional Equipment" 
                     className="w-full h-full object-cover rounded-2xl"
                   />

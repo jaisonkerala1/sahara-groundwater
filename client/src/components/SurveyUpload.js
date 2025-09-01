@@ -95,7 +95,7 @@ function SurveyUpload({ onSurveyFileSelect }) {
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
           <img 
-            src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png"
+            src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png"
             alt="Sahara Groundwater Kerala"
             className="w-16 h-16 object-contain rounded-2xl"
           />
