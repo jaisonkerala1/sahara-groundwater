@@ -82,8 +82,8 @@ function App() {
     }).length;
     
     const avgWaterProbability = totalSurveys > 0 
-      ? Math.round(surveyHistory.reduce((sum, item) => sum + (parseInt(item.percentageChance || item.probabilityOfWater) || 70), 0) / totalSurveys)
-      : 75; // Default to 75% for good results
+      ? Math.round(surveyHistory.reduce((sum, item) => sum + (parseInt(item.percentageChance || item.probabilityOfWater) || 0), 0) / totalSurveys)
+      : 0; // Default to 0% when no surveys exist
 
     return { totalSurveys, todaySurveys, avgWaterProbability };
   };
