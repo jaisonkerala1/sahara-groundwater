@@ -94,9 +94,11 @@ function SurveyUpload({ onSurveyFileSelect }) {
     <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-purple to-primary-purpleDark rounded-2xl flex items-center justify-center">
-            <Zap className="w-8 h-8 text-secondary-yellow" />
-          </div>
+          <img 
+            src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png"
+            alt="Sahara Groundwater Kerala"
+            className="w-16 h-16 object-contain rounded-2xl"
+          />
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Upload Survey Report</h2>
         <p className="text-gray-600">Upload PDF reports, images, or field data for AI analysis</p>
