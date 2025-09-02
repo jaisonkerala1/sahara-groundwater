@@ -256,7 +256,7 @@ function App() {
                       {isDragOver ? 'Drop your file here' : 'Choose a file or drag it here'}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Supports PDF, PNG, JPG up to 25MB
+                      Supports PNG, JPG images up to 25MB (PDF coming soon - please upload screenshots)
                     </p>
                     </div>
                     </div>
