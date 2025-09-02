@@ -197,7 +197,7 @@ function App() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 sm:h-20">
-            <div className="flex items-center space-x-2">
+            <a href="https://saharagroundwater.com/" className="flex items-center space-x-2">
               <img 
                 src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
                 alt="Sahara Groundwater Logo"
@@ -206,7 +206,7 @@ function App() {
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Sahara Groundwater
               </span>
-            </div>
+            </a>
 
             <div className="hidden md:flex items-center space-x-8">
               <a href="https://saharagroundwater.com/" className="text-gray-700 hover:text-blue-600 transition-colors">
@@ -841,7 +841,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
+              <a href="https://saharagroundwater.com/" className="flex items-center space-x-2 mb-4">
                 <img
                   src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png"
                   alt="Sahara Groundwater Logo"
@@ -850,7 +850,7 @@ function App() {
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Sahara Groundwater
                 </span>
-              </div>
+              </a>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Professional groundwater survey analysis powered by advanced AI technology.
               </p>
