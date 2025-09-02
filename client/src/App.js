@@ -391,9 +391,9 @@ function App() {
                 <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-2xl">
                   <CheckCircle className="w-10 h-10 text-white animate-bounce" />
                 </div>
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <img src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" alt="Celebration icon" className="w-9 h-9 object-contain" />
-                  <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4">
+                  <img src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" alt="Celebration icon" className="w-8 h-8 sm:w-9 sm:h-9 object-contain" />
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent text-center">
                     Analysis Complete!
                   </h2>
                 </div>
@@ -738,7 +738,7 @@ function App() {
                     <Download className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <div className="text-lg font-bold">Download Full Report</div>
+                    <div className="text-lg font-bold">Download Another Report</div>
                     <div className="text-sm text-white/80">Open Report Hub</div>
                   </div>
                 </a>
