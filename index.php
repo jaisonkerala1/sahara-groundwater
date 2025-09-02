@@ -101,6 +101,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                     error_log('⚠️ Very little text extracted, might be image-based PDF');
                     $pdfText = 'PDF contains very little extractable text (possibly image-based). Please analyze as typical Sahara Groundwater report and generate realistic Kerala data.';
                 }
+                
+                // Basic brand validation: allow only Sahara Groundwater reports
+                $brandIndicators = [
+                    'sahara groundwater',
+                    'groundwater survey report',
+                    'geophysical survey result',
+                    'booking id',
+                    'survey date',
+                ];
+                $isSaharaPdf = false;
+                $lowerPdfText = strtolower($pdfText);
+                foreach ($brandIndicators as $indicator) {
+                    if (strpos($lowerPdfText, $indicator) !== false) {
+                        $isSaharaPdf = true;
+                        break;
+                    }
+                }
+                if (!$isSaharaPdf) {
+                    http_response_code(400);
+                    echo json_encode(['error' => 'Only Sahara Groundwater reports are supported. Please upload a Sahara Groundwater report PDF or screenshot.']);
+                    exit();
+                }
             } else {
                 error_log('❌ pdftotext not available or failed, falling back to instruction-based analysis');
                 $pdfText = 'PDF text extraction not available on server. Please analyze as typical Sahara Groundwater report and generate realistic Kerala data.';
@@ -165,6 +187,7 @@ Return ONLY valid JSON with REAL VALUES, no placeholder text!'
             // Convert image to base64
             $imageData = base64_encode(file_get_contents($file['tmp_name']));
             
+            // Instruct the model to reject non-Sahara images by returning a flag
             $openRouterRequest = [
                 'model' => $_ENV['OPENROUTER_MODEL'] ?? 'openai/gpt-4o-mini',
                 'messages' => [
@@ -173,7 +196,7 @@ Return ONLY valid JSON with REAL VALUES, no placeholder text!'
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'You are analyzing a Sahara Groundwater Kerala survey report image. This is a professional groundwater survey company report format. Please CAREFULLY EXTRACT the ACTUAL data visible in this image. Look for:
+                                'text' => 'You are analyzing an uploaded image. First, verify STRICTLY if this is a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo (look for Sahara logo/text and sections like CUSTOMER DETAILS, GEOPHYSICAL SURVEY RESULT). If it is NOT a Sahara Groundwater report, respond ONLY with this JSON: {"notSaharaReport": true}. If it IS a Sahara Groundwater report, extract data. Look for:
 
 SPECIFIC SECTIONS TO FIND:
 1. "CUSTOMER DETAILS" section with Customer Name, Booking ID, dates, phone, district
@@ -281,6 +304,14 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
         
         // Try to parse
         $parsedAnalysis = json_decode($jsonText, true);
+        // If the model indicated it is not a Sahara report, reject
+        if (is_array($parsedAnalysis) && isset($parsedAnalysis['notSaharaReport']) && $parsedAnalysis['notSaharaReport'] === true) {
+            http_response_code(400);
+            echo json_encode([
+                'error' => 'Only Sahara Groundwater reports are supported. Please upload a Sahara Groundwater report PDF or screenshot.'
+            ]);
+            exit();
+        }
         
         if (json_last_error() !== JSON_ERROR_NONE) {
             error_log('Failed to parse AI response: ' . json_last_error_msg());
