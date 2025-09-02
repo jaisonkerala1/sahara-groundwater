@@ -28,6 +28,22 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Ripple effect utility
+  const createRipple = useCallback((event) => {
+    const button = event.currentTarget;
+    const ripple = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+
+    ripple.style.width = ripple.style.height = `${diameter}px`;
+    ripple.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+    ripple.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+    ripple.classList.add('ripple');
+
+    button.appendChild(ripple);
+    window.setTimeout(() => ripple.remove(), 600);
+  }, []);
+
   const handleFileSelect = useCallback((file) => {
     if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
       setSelectedFile(file);
@@ -215,6 +231,14 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        {/* Scroll observer script for animate-on-scroll */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            const options={threshold:0.1, rootMargin:'0px 0px -50px 0px'};
+            const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('animate-in');}})}, options);
+            document.querySelectorAll('.animate-on-scroll').forEach(el=>obs.observe(el));
+          })();
+        `}} />
         {!analysisResult ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Upload Section */}
@@ -337,8 +361,9 @@ function App() {
                     
                   <button
                       onClick={handleAnalyze}
+                    onMouseDown={createRipple}
                     disabled={!selectedFile || isUploading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                    className="btn w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2 touchable"
                   >
                     {isUploading ? (
                       <>
@@ -687,7 +712,8 @@ function App() {
               <div className="flex flex-col lg:flex-row gap-6 justify-center max-w-4xl mx-auto">
                 <button
                   onClick={handleStartOver}
-                  className="group bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-3 min-w-64"
+                  onMouseDown={createRipple}
+                  className="btn group bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-3 min-w-64 touchable"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Upload className="w-6 h-6 text-white" />
@@ -698,7 +724,7 @@ function App() {
                   </div>
                 </button>
                 
-                <button className="group bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 hover:from-emerald-700 hover:via-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-3 min-w-64">
+                <button onMouseDown={createRipple} className="btn group bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 hover:from-emerald-700 hover:via-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-3 min-w-64 touchable">
                   <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
                     <Download className="w-6 h-6 text-white" />
                   </div>
@@ -716,7 +742,8 @@ function App() {
                 </p>
                 <a 
                   href="tel:+917012051937"
-                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                  onMouseDown={createRipple}
+                  className="btn inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 touchable"
                 >
                   <span>Talk to an Expert</span>
                   <span className="text-lg">📞</span>
