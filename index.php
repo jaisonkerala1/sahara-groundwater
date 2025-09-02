@@ -90,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                 // fallback: copy
                 copy($file['tmp_name'], $destPath);
             }
+            $uploadedPath = $destPath; // remember for cleanup
 
             // Build public URL
             $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -135,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
             }
 
             if ($httpCode !== 200) {
+                if (isset($uploadedPath) && file_exists($uploadedPath)) { @unlink($uploadedPath); }
                 http_response_code(500);
                 echo json_encode([
                     'error' => 'Failed to analyze PDF via OpenRouter',
@@ -149,12 +151,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
             $analysisText = $aiResponse['choices'][0]['message']['content'] ?? '';
 
             if (empty($analysisText)) {
+                if (isset($uploadedPath) && file_exists($uploadedPath)) { @unlink($uploadedPath); }
                 http_response_code(500);
                 echo json_encode(['error' => 'Empty analysis from OpenRouter']);
                 exit();
             }
 
             // Use common JSON parsing flow below
+            // Cleanup uploaded file now that analysis is complete
+            if (isset($uploadedPath) && file_exists($uploadedPath)) { @unlink($uploadedPath); }
+
             $response = json_encode(['choices' => [['message' => ['content' => $analysisText]]]]);
             $httpCode = 200;
             $openRouterRequest = null;
