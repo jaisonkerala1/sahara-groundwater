@@ -79,53 +79,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
         if ($file['type'] === 'application/pdf') {
             error_log('📄 Processing PDF via OpenRouter PDF engines (multipart upload)');
 
-            // Build a multipart request to OpenRouter with pdf_engine preference
+            // Build a multipart request to OpenRouter with pdf_engine preference (using CURLFile)
             $makePdfCall = function(string $engine) use ($file) {
-                $boundary = '----ORForm' . md5((string)microtime(true));
-                $eol = "\r\n";
+                $endpoint = 'https://openrouter.ai/api/v1/chat/completions';
                 $model = 'anthropic/claude-3-haiku';
 
-                // Compose multipart body
-                $body  = "--{$boundary}{$eol}";
-                $body .= "Content-Disposition: form-data; name=\"model\"{$eol}{$eol}{$model}{$eol}";
-                $body .= "--{$boundary}{$eol}";
-                $body .= "Content-Disposition: form-data; name=\"pdf_engine\"{$eol}{$eol}{$engine}{$eol}";
-                $body .= "--{$boundary}{$eol}";
-                $body .= "Content-Disposition: form-data; name=\"messages\"{$eol}{$eol}";
-                $body .= json_encode([
-                    [
-                        'role' => 'user',
-                        'content' => 'You are analyzing a Sahara Groundwater Kerala SURVEY REPORT PDF. STRICT RULES: Extract ONLY values present in the document. Do NOT guess. For missing fields, return "Not specified". Return ONLY clean JSON with keys: customerName, bookingId, bookingDate, surveyDate, phoneNumber, district, location, pointNumber, rockDepth, maximumDepth, percentageChance, chanceLevel, suggestedSourceType, latitude, longitude, geologicalAnalysis, recommendations.'
-                    ]
-                ]) . $eol;
-                $body .= "--{$boundary}{$eol}";
-                $body .= "Content-Disposition: form-data; name=\"file\"; filename=\"" . addslashes($file['name']) . "\"{$eol}";
-                $body .= "Content-Type: application/pdf{$eol}{$eol}";
-                $body .= file_get_contents($file['tmp_name']) . $eol;
-                $body .= "--{$boundary}--{$eol}";
+                $postFields = [
+                    'model' => $model,
+                    'pdf_engine' => $engine,
+                    // JSON string for messages
+                    'messages' => json_encode([
+                        [
+                            'role' => 'user',
+                            'content' => 'You are analyzing a Sahara Groundwater Kerala SURVEY REPORT PDF. STRICT RULES: Extract ONLY values present in the document. Do NOT guess. For missing fields, return "Not specified". Return ONLY clean JSON with keys: customerName, bookingId, bookingDate, surveyDate, phoneNumber, district, location, pointNumber, rockDepth, maximumDepth, percentageChance, chanceLevel, suggestedSourceType, latitude, longitude, geologicalAnalysis, recommendations.'
+                        ]
+                    ]),
+                    'file' => new CURLFile($file['tmp_name'], 'application/pdf', $file['name'])
+                ];
 
-                $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
+                $ch = curl_init($endpoint);
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, [
                     'Authorization: Bearer ' . $_ENV['OPENROUTER_API_KEY'],
-                    'Content-Type: multipart/form-data; boundary=' . $boundary,
                     'HTTP-Referer: https://report.saharagroundwater.com',
                     'X-Title: Sahara Groundwater Kerala Survey App'
                 ]);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 90);
                 $resp = curl_exec($ch);
                 $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                if ($resp === false) {
+                    $err = curl_error($ch);
+                }
                 curl_close($ch);
-                return [$code, $resp];
+                return [$code, $resp ?? '', $err ?? null];
             };
 
             // Try free structured engine first, then OCR if needed
-            [$httpCode, $response] = $makePdfCall('pdf-text');
+            [$httpCode, $response, $curlErr] = $makePdfCall('pdf-text');
             if ($httpCode !== 200 || !$response) {
-                error_log('pdf-text engine failed (status ' . $httpCode . '), retrying with mistral-ocr');
-                [$httpCode, $response] = $makePdfCall('mistral-ocr');
+                error_log('pdf-text engine failed (status ' . $httpCode . '; curlErr=' . ($curlErr ?? 'none') . '), retrying with mistral-ocr');
+                [$httpCode, $response, $curlErr] = $makePdfCall('mistral-ocr');
             }
 
             if ($httpCode !== 200) {
@@ -133,7 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                 echo json_encode([
                     'error' => 'Failed to analyze PDF via OpenRouter',
                     'status' => $httpCode,
-                    'details' => $response
+                    'details' => $response,
+                    'curlError' => $curlErr
                 ]);
                 exit();
             }
