@@ -286,13 +286,13 @@ function App() {
                 </div>
               </div>
               {/* Download report link for users without a report - placed outside clickable input area */}
-              <div className="mt-4 text-center">
-                <span className="text-gray-600 dark:text-gray-300">Don't have a report? </span>
+              <div className="mt-3 text-center">
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Don't have a report? </span>
                 <a
                   href="https://saharagroundwater.com/groundwater-survey-report/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-blue-600 hover:text-blue-700 underline underline-offset-2"
+                  className="font-semibold text-xs sm:text-sm text-blue-600 hover:text-blue-700 underline underline-offset-2"
                 >
                   Download your report here
                 </a>
