@@ -265,13 +265,14 @@ function App() {
           <div className="mb-8">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-gradient">
-                Professional Groundwater Survey Analysis
+                AI-Powered Groundwater
               </span>
               <br />
-              <span className="text-gray-900 dark:text-white">AI-Powered Kerala Water Source Detection</span>
+              <span className="text-gray-900 dark:text-white">Survey Analysis</span>
               </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed" itemProp="description">
-              Expert groundwater survey analysis in Kerala using advanced AI technology. Transform your borewell drilling reports into actionable insights with instant professional assessments for water source detection and drilling recommendations.
+              Transform your groundwater survey reports into actionable insights with advanced AI analysis. 
+              Get instant, professional assessments in seconds.
             </p>
             </div>
               
@@ -309,10 +310,10 @@ function App() {
             <div className="space-y-6">
           <div className="text-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Upload Your Groundwater Survey Report
+                  Upload Survey Report
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Upload PDF or image files for AI-powered groundwater analysis in Kerala
+                  Drag and drop your file or click to browse
                 </p>
           </div>
 
@@ -398,7 +399,7 @@ function App() {
             <div className="space-y-6">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  AI-Powered Groundwater Analysis
+                  Ready for Analysis
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   Our AI will extract and analyze your survey data
