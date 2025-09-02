@@ -76,6 +76,43 @@ function App() {
     handleFileSelect(file);
   }, [handleFileSelect]);
 
+  // Dynamically load pdf.js (CDN) when needed
+  const loadPdfJs = async () => {
+    if (window.pdfjsLib) return window.pdfjsLib;
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.body.appendChild(s);
+    });
+    // Worker (required by pdf.js)
+    if (!window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    return window.pdfjsLib;
+  };
+
+  // Extract selectable text from a text-based PDF
+  const extractTextFromPdf = async (file) => {
+    try {
+      const pdfjsLib = await loadPdfJs();
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i += 1) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map((it) => (typeof it.str === 'string' ? it.str : ''));
+        fullText += strings.join(' ') + '\n';
+      }
+      return fullText.trim();
+    } catch (err) {
+      console.error('PDF text extraction failed', err);
+      return '';
+    }
+  };
+
   const handleAnalyze = async () => {
     if (!selectedFile || isUploading) return;
 
@@ -84,6 +121,16 @@ function App() {
 
     const formData = new FormData();
     formData.append('surveyFile', selectedFile);
+
+    // If it's a PDF, extract text client-side (only for text-based PDFs)
+    if (selectedFile.type === 'application/pdf') {
+      try {
+        const text = await extractTextFromPdf(selectedFile);
+        if (text && text.length > 50) {
+          formData.append('extractedText', text);
+        }
+      } catch {}
+    }
 
     // Add a hard timeout so the UI doesn't hang forever
     const controller = new AbortController();

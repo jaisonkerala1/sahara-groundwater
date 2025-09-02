@@ -76,7 +76,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
         // Prepare OpenRouter request
         $openRouterRequest = [];
         
-        if ($file['type'] === 'application/pdf') {
+        // If client provided extracted text (from pdf.js), analyze text directly
+        $clientExtractedText = isset($_POST['extractedText']) ? trim($_POST['extractedText']) : '';
+        if ($file['type'] === 'application/pdf' && strlen($clientExtractedText) > 50) {
+            error_log('📝 Received extractedText from client; analyzing text directly.');
+            $openRouterRequest = [
+                'model' => 'anthropic/claude-3-haiku',
+                'messages' => [[
+                    'role' => 'user',
+                    'content' => 'You are given raw text from a Sahara Groundwater Kerala SURVEY REPORT PDF. Extract ONLY values explicitly present. If a field is missing, return "Not specified". Return ONLY JSON with keys: customerName, bookingId, bookingDate, surveyDate, phoneNumber, district, location, pointNumber, rockDepth, maximumDepth, percentageChance, chanceLevel, suggestedSourceType, latitude, longitude, geologicalAnalysis, recommendations.\n\nTEXT:\n' . $clientExtractedText
+                ]],
+                'max_tokens' => 1500,
+                'temperature' => 0
+            ];
+        } elseif ($file['type'] === 'application/pdf') {
             error_log('📄 Processing PDF via OpenRouter using pdf_urls (hosted temporary file)');
 
             // Ensure uploads directory
