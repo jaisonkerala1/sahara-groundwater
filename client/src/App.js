@@ -77,30 +77,45 @@ function App() {
   }, [handleFileSelect]);
 
   const handleAnalyze = async () => {
-    if (!selectedFile) return;
-    
+    if (!selectedFile || isUploading) return;
+
     setIsUploading(true);
     setError(null);
-    
-      const formData = new FormData();
+
+    const formData = new FormData();
     formData.append('surveyFile', selectedFile);
+
+    // Add a hard timeout so the UI doesn't hang forever
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s
 
     try {
       const response = await fetch('/api/analyze-survey', {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error('Invalid server response');
+      }
 
-      if (data.success) {
+      if (response.ok && data && data.success) {
         setAnalysisResult(data.surveyAnalysis);
       } else {
-        setError(data.error || 'Analysis failed. Please try again.');
+        setError((data && data.error) || `Analysis failed (status ${response.status}). Please try again.`);
       }
     } catch (err) {
-      setError('Network error. Please check your connection and try again.');
+      if (err.name === 'AbortError') {
+        setError('The analysis is taking longer than expected. Please try again or retry with a smaller/clearer file.');
+      } else {
+        setError(err.message || 'Network error. Please check your connection and try again.');
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsUploading(false);
     }
   };
