@@ -344,7 +344,7 @@ function App() {
                       {isDragOver ? 'Drop your file here' : 'Choose a file or drag it here'}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Supports PDF, PNG, JPG up to 25MB (PDFs use Anthropic Claude AI for better extraction)
+                      Supports PDF, PNG, JPG up to 25MB. Includes PQWT contour map analysis for drilling point detection.
                     </p>
                     </div>
                 </div>
@@ -694,6 +694,59 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {/* PQWT Drilling Points Section - Only show if PQWT map detected */}
+            {analysisResult.isPQWTMap && analysisResult.drillingPoints && analysisResult.drillingPoints.length > 0 && (
+              <div className="rounded-3xl p-8 border border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-2xl"></div>
+                <div className="relative">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mr-4">
+                      <span className="text-2xl">🎯</span>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-[#1A202C]">
+                        PQWT Drilling Points
+                      </h3>
+                      <p className="text-[#64748B] font-medium">AI-Identified Optimal Locations</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {analysisResult.drillingPoints.map((point, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-blue-100">
+                        <div className="flex items-center">
+                          <span className="text-xl mr-3">📍</span>
+                          <div>
+                            <p className="text-sm font-medium text-[#64748B]">Drilling Point {index + 1}</p>
+                            <p className="font-bold text-[#1A202C] text-lg">
+                              X: {point.x}, Depth: {point.y}
+                            </p>
+                            <p className="text-sm text-blue-600 font-medium">
+                              {point.confidence} Confidence - {point.reason}
+                            </p>
+                          </div>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          point.confidence === 'High' ? 'bg-green-100 text-green-800' :
+                          point.confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {point.confidence}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-blue-100 rounded-2xl">
+                    <p className="text-sm text-blue-800 font-medium">
+                      💡 <strong>PQWT Analysis:</strong> Blue zones in the contour map indicate high water potential areas. 
+                      The AI has identified these specific coordinates as optimal drilling locations based on the geophysical survey data.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Geological Story Section */}
             <div className="rounded-3xl p-8 md:p-12 border border-gray-200 bg-white shadow-sm relative overflow-hidden">

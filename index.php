@@ -201,16 +201,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'You are analyzing an uploaded image. First, verify STRICTLY if this is a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo (look for Sahara logo/text and sections like CUSTOMER DETAILS, GEOPHYSICAL SURVEY RESULT). If it is NOT a Sahara Groundwater report, respond ONLY with this JSON: {"notSaharaReport": true}. If it IS a Sahara Groundwater report, extract ONLY the values that are clearly visible in the image. Do NOT invent values. For any field not visible/readable, set "Not specified". Look for:
+                                'text' => 'You are analyzing an uploaded image. First, verify STRICTLY if this is a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo (look for Sahara logo/text and sections like CUSTOMER DETAILS, GEOPHYSICAL SURVEY RESULT) OR a PQWT (Proton Precession Magnetometer) contour map for groundwater detection. If it is NOT a Sahara Groundwater report or PQWT map, respond ONLY with this JSON: {"notSaharaReport": true}. 
 
-SPECIFIC SECTIONS TO FIND:
-1. "CUSTOMER DETAILS" section with Customer Name, Booking ID, dates, phone, district
-2. "GEOPHYSICAL SURVEY RESULT" section with Point number, Rock Depth, Maximum Depth, Percentage of Chance, coordinates
-3. "SUMMARY" section with geological analysis and water findings
+IF THIS IS A PQWT CONTOUR MAP:
+Look for a grid-based map with color gradients (blue to red) showing water potential. Blue areas indicate high water potential. Analyze the map to identify:
+1. Blue zones (areas with lowest values/highest water potential)
+2. X-axis coordinates (horizontal survey points)
+3. Y-axis depth values (negative numbers indicating depth in meters)
+4. Color legend showing value ranges
+5. Any red annotations or highlights on blue areas
 
-Extract this data into JSON format:
+For PQWT maps, return this JSON format:
+{
+  "isPQWTMap": true,
+  "customerName": "Not specified",
+  "bookingId": "Not specified", 
+  "bookingDate": "Not specified",
+  "surveyDate": "Not specified",
+  "phoneNumber": "Not specified",
+  "district": "Kerala",
+  "location": "Survey Location",
+  "pointNumber": "[X-coordinate of best blue zone]",
+  "rockDepth": "[Y-coordinate/depth of best blue zone]",
+  "maximumDepth": "[deepest blue zone depth]",
+  "percentageChance": "[estimate based on blue zone size and intensity]",
+  "chanceLevel": "[High/Medium based on blue zone analysis]",
+  "suggestedSourceType": "Borewell",
+  "latitude": "Not specified",
+  "longitude": "Not specified",
+  "geologicalAnalysis": "PQWT contour analysis shows blue zones indicating high water potential areas. Blue regions represent optimal drilling locations with favorable hydrogeological conditions.",
+  "recommendations": "Recommended drilling points based on blue zone analysis: [list specific X-Y coordinates of blue areas]. Focus on areas with darkest blue colors for highest water potential.",
+  "drillingPoints": [
+    {
+      "x": "[X-coordinate]",
+      "y": "[Y-coordinate/depth]", 
+      "confidence": "[High/Medium/Low]",
+      "reason": "Dark blue zone indicating high water potential"
+    }
+  ]
+}
+
+IF THIS IS A STANDARD REPORT:
+Look for standard sections and extract data as usual:
 
 {
+  "isPQWTMap": false,
   "customerName": "[actual name from Customer Name field]",
   "bookingId": "[actual ID from Booking ID field]", 
   "bookingDate": "[actual date from Booking Date field]",
@@ -227,7 +262,8 @@ Extract this data into JSON format:
   "latitude": "[actual latitude coordinate]",
   "longitude": "[actual longitude coordinate]",
   "geologicalAnalysis": "[extract the geological analysis text from SUMMARY section]",
-  "recommendations": "[extract recommendations or advisory text]"
+  "recommendations": "[extract recommendations or advisory text]",
+  "drillingPoints": []
 }
 
 IMPORTANT: Only extract REAL data visible in the image. If any field is not visible, use "Not specified". Return ONLY valid JSON with no additional text.'
@@ -241,7 +277,7 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
                         ]
                     ]
                 ],
-                'max_tokens' => 1500,
+                'max_tokens' => 2000,
                 'temperature' => 0
             ];
         }
