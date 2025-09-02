@@ -120,8 +120,8 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <img
-                src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png"
+              <img 
+                src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
                 alt="Sahara Groundwater Logo"
                 className="w-8 h-8 rounded-lg object-contain"
               />
@@ -174,7 +174,7 @@ function App() {
                 <span>Toggle Dark Mode</span>
             </button>
           </div>
-          </div>
+              </div>
         )}
       </nav>
 
@@ -188,19 +188,19 @@ function App() {
               </span>
               <br />
               <span className="text-gray-900 dark:text-white">Survey Analysis</span>
-            </h1>
+              </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Transform your groundwater survey reports into actionable insights with advanced AI analysis. 
               Get instant, professional assessments in seconds.
             </p>
-              </div>
+            </div>
               
           {/* Trust Indicators */}
           <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
             <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-4 py-2 rounded-full">
               <Shield className="w-4 h-4" />
               <span className="text-sm font-medium">Secure & Private</span>
-                </div>
+              </div>
             <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-4 py-2 rounded-full">
               <Zap className="w-4 h-4" />
               <span className="text-sm font-medium">Instant Results</span>
@@ -208,9 +208,9 @@ function App() {
             <div className="flex items-center space-x-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 px-4 py-2 rounded-full">
               <Sparkles className="w-4 h-4" />
               <span className="text-sm font-medium">AI-Powered</span>
-                </div>
               </div>
             </div>
+          </div>
       </section>
 
       {/* Main Content */}
@@ -219,15 +219,15 @@ function App() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Upload Section */}
             <div className="space-y-6">
-              <div className="text-center">
+          <div className="text-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   Upload Survey Report
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   Drag and drop your file or click to browse
                 </p>
-              </div>
-              
+          </div>
+
               <div
                 className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
                   isDragOver
@@ -249,8 +249,8 @@ function App() {
                 <div className="space-y-4">
                   <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
                     <Upload className="w-8 h-8 text-white" />
-                    </div>
-                  
+              </div>
+              
                   <div>
                     <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                       {isDragOver ? 'Drop your file here' : 'Choose a file or drag it here'}
@@ -259,8 +259,8 @@ function App() {
                       Supports PDF, PNG, JPG up to 25MB (PDFs use Anthropic Claude AI for better extraction)
                     </p>
                     </div>
-                    </div>
-                  </div>
+                </div>
+              </div>
               
               {selectedFile && (
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
@@ -273,7 +273,7 @@ function App() {
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {formatFileSize(selectedFile.size)}
                       </p>
-                    </div>
+                </div>
                     <button
                       onClick={handleStartOver}
                       className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -289,9 +289,9 @@ function App() {
                   <div className="flex items-center space-x-3">
                     <AlertCircle className="w-5 h-5 text-red-500" />
                     <p className="text-red-700 dark:text-red-400">{error}</p>
-                        </div>
-                      </div>
-                    )}
+              </div>
+            </div>
+          )}
                   </div>
                   
             {/* Analysis Section */}
@@ -306,7 +306,7 @@ function App() {
               </div>
 
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800">
-                <div className="space-y-6">
+            <div className="space-y-6">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <Sparkles className="w-8 h-8 text-white" />
@@ -335,7 +335,7 @@ function App() {
                     </div>
                     </div>
                     
-                    <button
+                  <button
                       onClick={handleAnalyze}
                     disabled={!selectedFile || isUploading}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
@@ -351,14 +351,14 @@ function App() {
                         <span>Analyze Survey Report</span>
                       </>
                     )}
-                    </button>
+                  </button>
                 </div>
                           </div>
                         </div>
                       </div>
                     ) : (
           /* Analysis Results */
-          <div className="space-y-12">
+          <div className="space-y-12 results-container bg-white">
             {/* Hero Success Section */}
             <div className="text-center relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-3xl blur-3xl opacity-50"></div>
@@ -377,16 +377,16 @@ function App() {
             </div>
 
             {/* Main Water Potential Showcase */}
-            <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl p-8 md:p-12 border border-blue-200 dark:border-gray-700 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-emerald-400/20 to-blue-400/20 rounded-full blur-2xl"></div>
+            <div className="analysis-card bg-white rounded-3xl p-8 md:p-12 border border-gray-200 shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-50 to-purple-50 rounded-full blur-2xl"></div>
               
               <div className="relative">
                 <div className="text-center mb-8">
-                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                    💧 Water Potential Analysis
+                  <h3 className="heading-primary text-3xl md:text-4xl font-bold text-[#1A202C] mb-2">
+                    <span className="inline-block mr-2 text-[#2563EB]">💧</span> Water Potential Analysis
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-lg">Your land's groundwater prospects</p>
+                  <p className="text-[#64748B] text-lg">Your land's groundwater prospects</p>
                 </div>
 
                 <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
@@ -401,7 +401,7 @@ function App() {
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="8"
-                          className="text-gray-200 dark:text-gray-700"
+                          className="text-gray-100"
                         />
                         <circle
                           cx="50"
@@ -416,18 +416,17 @@ function App() {
                         />
                         <defs>
                           <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#06B6D4" />
-                            <stop offset="50%" stopColor="#3B82F6" />
+                            <stop offset="0%" stopColor="#3B82F6" />
                             <stop offset="100%" stopColor="#8B5CF6" />
                           </linearGradient>
                         </defs>
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <span className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent">
+                          <span className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             {analysisResult.percentageChance || '80%'}
                           </span>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
+                          <p className="text-sm font-medium text-[#64748B] mt-1">
                             Success Rate
                           </p>
                         </div>
@@ -437,33 +436,41 @@ function App() {
 
                   {/* Water Quality Indicators */}
                   <div className="grid grid-cols-2 gap-6 w-full max-w-md">
-                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
-                      <div className="text-3xl mb-2">🎯</div>
-                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                    <div className="metric-card bg-[#F8FAFC] rounded-2xl p-6 text-center border border-[#E2E8F0]">
+                      <div className="w-10 h-10 mx-auto mb-3 rounded-full flex items-center justify-center" style={{background:'#FEE2E2'}}>
+                        <span className="text-xl" style={{color:'#EF4444'}}>🎯</span>
+                      </div>
+                      <p className="font-semibold text-lg text-gray-900">
                         {analysisResult.chanceLevel || 'High'}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Potential Rating</p>
+                      <p className="text-sm text-[#64748B]">Potential Rating</p>
                     </div>
-                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
-                      <div className="text-3xl mb-2">⚡</div>
-                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                    <div className="metric-card bg-[#F8FAFC] rounded-2xl p-6 text-center border border-[#E2E8F0]">
+                      <div className="w-10 h-10 mx-auto mb-3 rounded-full flex items-center justify-center" style={{background:'#FEF3C7'}}>
+                        <span className="text-xl" style={{color:'#F59E0B'}}>⚡</span>
+                      </div>
+                      <p className="font-semibold text-lg text-gray-900">
                         {analysisResult.suggestedSourceType || 'Borewell'}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Recommended Type</p>
+                      <p className="text-sm text-[#64748B]">Recommended Type</p>
                     </div>
-                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
-                      <div className="text-3xl mb-2">📏</div>
-                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                    <div className="metric-card bg-[#F8FAFC] rounded-2xl p-6 text-center border border-[#E2E8F0]">
+                      <div className="w-10 h-10 mx-auto mb-3 rounded-full flex items-center justify-center bg-blue-100">
+                        <span className="text-xl" style={{color:'#3B82F6'}}>📏</span>
+                      </div>
+                      <p className="font-semibold text-lg text-gray-900">
                         {analysisResult.maximumDepth || '40m'}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Max Depth</p>
+                      <p className="text-sm text-[#64748B]">Max Depth</p>
                     </div>
-                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
-                      <div className="text-3xl mb-2">🗺️</div>
-                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                    <div className="metric-card bg-[#F8FAFC] rounded-2xl p-6 text-center border border-[#E2E8F0]">
+                      <div className="w-10 h-10 mx-auto mb-3 rounded-full flex items-center justify-center bg-blue-100">
+                        <span className="text-xl" style={{color:'#3B82F6'}}>🗺️</span>
+                      </div>
+                      <p className="font-semibold text-lg text-gray-900">
                         Point {analysisResult.pointNumber || '5'}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Survey Point</p>
+                      <p className="text-sm text-[#64748B]">Survey Point</p>
                     </div>
                   </div>
                 </div>
@@ -473,7 +480,7 @@ function App() {
             {/* Customer & Location Info */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Customer Profile Card */}
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 border border-indigo-200 dark:border-gray-600 relative overflow-hidden">
+              <div className="rounded-3xl p-8 border border-gray-200 bg-white shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-2xl"></div>
                 <div className="relative">
                   <div className="flex items-center mb-6">
@@ -481,44 +488,44 @@ function App() {
                       <span className="text-2xl">👤</span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <h3 className="text-2xl font-bold text-[#1A202C]">
                         Customer Profile
                       </h3>
-                      <p className="text-indigo-600 dark:text-indigo-400 font-medium">Survey Report Details</p>
+                      <p className="text-[#64748B] font-medium">Survey Report Details</p>
                     </div>
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
                       <div className="flex items-center">
                         <span className="text-xl mr-3">🏷️</span>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Customer Name</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                          <p className="text-sm font-medium text-[#64748B]">Customer Name</p>
+                          <p className="font-bold text-[#1A202C] text-lg">
                             {analysisResult.customerName || 'Not specified'}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
                       <div className="flex items-center">
                         <span className="text-xl mr-3">📍</span>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Location</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                          <p className="text-sm font-medium text-[#64748B]">Location</p>
+                          <p className="font-bold text-[#1A202C] text-lg">
                             {analysisResult.location || 'Not specified'}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
                       <div className="flex items-center">
                         <span className="text-xl mr-3">🗺️</span>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">District</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                          <p className="text-sm font-medium text-[#64748B]">District</p>
+                          <p className="font-bold text-[#1A202C] text-lg">
                             {analysisResult.district || 'Kerala'}
                           </p>
                         </div>
@@ -526,10 +533,10 @@ function App() {
                     </div>
                   </div>
                 </div>
-              </div>
-
+                  </div>
+                  
               {/* Technical Survey Data */}
-              <div className="bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 border border-emerald-200 dark:border-gray-600 relative overflow-hidden">
+              <div className="rounded-3xl p-8 border border-gray-200 bg-white shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-cyan-400/20 rounded-full blur-2xl"></div>
                 <div className="relative">
                   <div className="flex items-center mb-6">
@@ -537,44 +544,44 @@ function App() {
                       <span className="text-2xl">🔬</span>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <h3 className="text-2xl font-bold text-[#1A202C]">
                         Technical Data
                       </h3>
-                      <p className="text-emerald-600 dark:text-emerald-400 font-medium">Survey Measurements</p>
+                      <p className="text-[#64748B] font-medium">Survey Measurements</p>
                     </div>
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
                       <div className="flex items-center">
                         <span className="text-xl mr-3">🎯</span>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Survey Point</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                          <p className="text-sm font-medium text-[#64748B]">Survey Point</p>
+                          <p className="font-bold text-[#1A202C] text-lg">
                             Point {analysisResult.pointNumber || '5'}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
                       <div className="flex items-center">
                         <span className="text-xl mr-3">🪨</span>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Rock Layer Depth</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                          <p className="text-sm font-medium text-[#64748B]">Rock Layer Depth</p>
+                          <p className="font-bold text-[#1A202C] text-lg">
                             {analysisResult.rockDepth || '4 meter'}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
                       <div className="flex items-center">
                         <span className="text-xl mr-3">⬇️</span>
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Maximum Drilling Depth</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                          <p className="text-sm font-medium text-[#64748B]">Maximum Drilling Depth</p>
+                          <p className="font-bold text-[#1A202C] text-lg">
                             {analysisResult.maximumDepth || '40 meter'}
                           </p>
                         </div>
@@ -586,7 +593,7 @@ function App() {
             </div>
 
             {/* Geological Story Section */}
-            <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-3xl p-8 md:p-12 border border-amber-200 dark:border-gray-600 relative overflow-hidden">
+            <div className="rounded-3xl p-8 md:p-12 border border-gray-200 bg-white shadow-sm relative overflow-hidden">
               <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-red-400/20 to-pink-400/20 rounded-full blur-2xl"></div>
               
@@ -596,25 +603,25 @@ function App() {
                     <span className="text-3xl">🌍</span>
                   </div>
                   <div>
-                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-3xl md:text-4xl font-bold text-[#1A202C] mb-2">
                       Geological Story
                     </h3>
-                    <p className="text-amber-600 dark:text-amber-400 text-lg font-medium">What lies beneath your land</p>
+                    <p className="text-[#64748B] text-lg font-medium">What lies beneath your land</p>
                   </div>
-                </div>
-
-                <div className="bg-white/80 dark:bg-gray-700/80 rounded-3xl p-8 backdrop-blur-sm border border-white/50 dark:border-gray-600/50">
+                    </div>
+                    
+                <div className="rounded-3xl p-8 border border-gray-100 bg-white">
                   <div className="prose prose-lg dark:prose-invert max-w-none">
-                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg font-medium">
+                    <p className="text-[#1A202C] leading-relaxed text-lg font-medium">
                       {analysisResult.geologicalAnalysis || 'The geological analysis indicates the presence of a deep aquifer system with favorable hydrogeological conditions. The rock depth is within the recommended range, and the maximum depth suggests a high potential for groundwater extraction.'}
                     </p>
                   </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
             {/* Expert Recommendations */}
-            <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-3xl p-8 md:p-12 border border-emerald-200 dark:border-gray-600 relative overflow-hidden">
+            <div className="rounded-3xl p-8 md:p-12 border border-gray-200 bg-white shadow-sm relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-400/20 to-green-400/20 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-2xl"></div>
               
@@ -624,39 +631,39 @@ function App() {
                     <span className="text-3xl">💡</span>
                   </div>
                   <div>
-                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-3xl md:text-4xl font-bold text-[#1A202C] mb-2">
                       Expert Recommendations
                     </h3>
-                    <p className="text-emerald-600 dark:text-emerald-400 text-lg font-medium">Your next steps to success</p>
+                    <p className="text-[#64748B] text-lg font-medium">Your next steps to success</p>
                   </div>
                 </div>
 
-                <div className="bg-white/80 dark:bg-gray-700/80 rounded-3xl p-8 backdrop-blur-sm border border-white/50 dark:border-gray-600/50">
+                <div className="rounded-3xl p-8 border border-gray-100 bg-white">
                   <div className="prose prose-lg dark:prose-invert max-w-none">
-                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg font-medium mb-6">
+                    <p className="text-[#1A202C] leading-relaxed text-lg font-medium mb-6">
                       {analysisResult.recommendations || 'Based on the survey findings, we recommend proceeding with a borewell at the identified location. The geological conditions are favorable, and the water potential is high. Consider implementing rainwater harvesting systems to enhance groundwater recharge.'}
                     </p>
                     
                     {/* Action Items */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                      <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl p-6 text-center">
+                      <div className="bg-[#ECFDF5] rounded-2xl p-6 text-center border border-[#D1FAE5]">
                         <div className="text-3xl mb-3">🎯</div>
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-2">High Success Rate</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        <h4 className="font-bold text-[#1A202C] mb-2">High Success Rate</h4>
+                        <p className="text-sm text-[#64748B]">
                           {(parseInt(analysisResult.percentageChance) || 80) >= 70 ? 'Excellent prospects' : 'Good prospects'} for finding water
                         </p>
                       </div>
-                      <div className="bg-blue-100 dark:bg-blue-900/30 rounded-2xl p-6 text-center">
+                      <div className="bg-[#DBEAFE] rounded-2xl p-6 text-center border border-[#BFDBFE]">
                         <div className="text-3xl mb-3">⚡</div>
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-2">Optimal Depth</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        <h4 className="font-bold text-[#1A202C] mb-2">Optimal Depth</h4>
+                        <p className="text-sm text-[#64748B]">
                           Target depth: {analysisResult.maximumDepth || '40 meters'}
                         </p>
                       </div>
-                      <div className="bg-purple-100 dark:bg-purple-900/30 rounded-2xl p-6 text-center">
+                      <div className="bg-[#F3E8FF] rounded-2xl p-6 text-center border border-[#E9D5FF]">
                         <div className="text-3xl mb-3">🛠️</div>
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-2">Recommended Method</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                        <h4 className="font-bold text-[#1A202C] mb-2">Recommended Method</h4>
+                        <p className="text-sm text-[#64748B]">
                           {analysisResult.suggestedSourceType || 'Borewell'} installation
                         </p>
                       </div>
@@ -674,8 +681,8 @@ function App() {
                 </h3>
                 <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                   Your groundwater analysis is complete! Choose your next action to move forward with confidence.
-                </p>
-              </div>
+                  </p>
+                </div>
 
               <div className="flex flex-col lg:flex-row gap-6 justify-center max-w-4xl mx-auto">
                 <button
