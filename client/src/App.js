@@ -391,9 +391,12 @@ function App() {
                 <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-2xl">
                   <CheckCircle className="w-10 h-10 text-white animate-bounce" />
                 </div>
-                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                  🎉 Analysis Complete!
-                </h2>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <img src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" alt="Celebration icon" className="w-9 h-9 object-contain" />
+                  <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Analysis Complete!
+                  </h2>
+                </div>
                 <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
                   Great news! We've successfully analyzed your groundwater survey. 
                   <span className="font-semibold text-blue-600 dark:text-blue-400"> Here's what we discovered about your land's water potential.</span>
@@ -652,8 +655,8 @@ function App() {
               
               <div className="relative">
                 <div className="flex items-center mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl flex items-center justify-center mr-6 shadow-2xl">
-                    <span className="text-3xl">💡</span>
+                  <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl flex items-center justify-center mr-6 shadow-2xl ring-1 ring-white/40">
+                    <span className="text-2xl md:text-3xl">💡</span>
                   </div>
                   <div>
                     <h3 className="text-3xl md:text-4xl font-bold text-[#1A202C] mb-2">
