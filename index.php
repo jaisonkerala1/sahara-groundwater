@@ -118,7 +118,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                         break;
                     }
                 }
-                if (!$isSaharaPdf) {
+                // Enforce strictly only when SAHARA_STRICT=1 (default relaxed locally)
+                $shouldEnforce = isset($_ENV['SAHARA_STRICT']) ? $_ENV['SAHARA_STRICT'] === '1' : false;
+                if (!$isSaharaPdf && $shouldEnforce) {
                     http_response_code(400);
                     echo json_encode(['error' => 'Only Sahara Groundwater reports are supported. Please upload a Sahara Groundwater report PDF or screenshot.']);
                     exit();
@@ -219,7 +221,7 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
             'X-Title: Sahara Groundwater Kerala Survey App'
         ]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 40);
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
