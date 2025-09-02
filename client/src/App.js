@@ -727,15 +727,21 @@ function App() {
                   </div>
                 </button>
                 
-                <button onMouseDown={createRipple} className="btn group bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 hover:from-emerald-700 hover:via-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-3 min-w-64 touchable">
+                <a
+                  href="https://saharagroundwater.com/groundwater-survey-report/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onMouseDown={createRipple}
+                  className="btn group bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 hover:from-emerald-700 hover:via-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-3 min-w-64 touchable"
+                >
                   <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
                     <Download className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
                     <div className="text-lg font-bold">Download Full Report</div>
-                    <div className="text-sm text-white/80">Get detailed PDF analysis</div>
+                    <div className="text-sm text-white/80">Open Report Hub</div>
                   </div>
-                </button>
+                </a>
               </div>
 
               {/* Contact CTA */}
