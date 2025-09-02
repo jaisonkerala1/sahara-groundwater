@@ -133,45 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                 'messages' => [
                     [
                         'role' => 'user',
-                        'content' => 'I am analyzing a Sahara Groundwater Kerala survey report PDF. Here is the extracted text content:
-
-' . $pdfText . '
-
-Your task: Extract ACTUAL values from this text OR if the text extraction failed/is incomplete, generate realistic Kerala groundwater survey data that follows Sahara Groundwater professional format.
-
-IMPORTANT INSTRUCTIONS:
-- DO NOT return placeholder brackets like "[Customer Name]" or "[extract from...]" 
-- Return ACTUAL extracted values OR realistic generated values
-- Use proper Kerala names, locations, and technical data
-- Generate data that looks like a real professional report
-
-Required JSON format with ACTUAL VALUES:
-
-{
-  "customerName": "Actual name or realistic Kerala name like Rajesh Kumar, Priya Nair, etc.",
-  "bookingId": "Actual booking ID or realistic 9-digit number like 192224343",
-  "bookingDate": "Actual date or realistic date like 2024-01-15",
-  "surveyDate": "Actual survey date or realistic date like 2024-01-20",
-  "phoneNumber": "Actual phone or realistic Kerala number like 9847123456",
-  "district": "Actual district or realistic Kerala district like Kannur, Kochi, Thrissur",
-  "location": "Actual location or realistic Kerala town like Calicut, Ernakulam",
-  "pointNumber": "Actual point number or realistic number 1-12",
-  "rockDepth": "Actual depth or realistic like 2-8 meter",
-  "maximumDepth": "Actual max depth or realistic like 35 meter",
-  "percentageChance": "Actual percentage or realistic like 75%",
-  "chanceLevel": "Good/High/Medium based on percentage",
-  "suggestedSourceType": "Actual type or realistic like Borewell",
-  "latitude": "Actual coordinates or realistic Kerala lat like 11.2588",
-  "longitude": "Actual coordinates or realistic Kerala lng like 75.7804",
-  "geologicalAnalysis": "Actual analysis or realistic geological description",
-  "recommendations": "Actual recommendations or realistic technical advice"
-}
-
-Return ONLY valid JSON with REAL VALUES, no placeholder text!'
+                        'content' => 'You are analyzing a Sahara Groundwater Kerala SURVEY REPORT PDF. Here is the extracted text content:\n\n' . $pdfText . '\n\nSTRICT RULES:\n- Extract ONLY values that are explicitly present in the text.\n- DO NOT fabricate or "guess" missing values.\n- If a field is missing or unreadable, set it to "Not specified".\n- Return clean JSON only, with no extra commentary.\n\nReturn JSON with these keys exactly:\n{\n  "customerName": "... or Not specified",\n  "bookingId": "... or Not specified",\n  "bookingDate": "YYYY-MM-DD or Not specified",\n  "surveyDate": "YYYY-MM-DD or Not specified",\n  "phoneNumber": "... or Not specified",\n  "district": "... or Not specified",\n  "location": "... or Not specified",\n  "pointNumber": "... or Not specified",\n  "rockDepth": "... or Not specified",\n  "maximumDepth": "... or Not specified",\n  "percentageChance": "... or Not specified",\n  "chanceLevel": "Low/Medium/High or Not specified",\n  "suggestedSourceType": "... or Not specified",\n  "latitude": "... or Not specified",\n  "longitude": "... or Not specified",\n  "geologicalAnalysis": "... or Not specified",\n  "recommendations": "... or Not specified"\n}'
                     ]
                 ],
                 'max_tokens' => 1500,
-                'temperature' => 0.1
+                'temperature' => 0
             ];
         } else {
             // For images, use vision analysis
@@ -196,7 +162,7 @@ Return ONLY valid JSON with REAL VALUES, no placeholder text!'
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'You are analyzing an uploaded image. First, verify STRICTLY if this is a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo (look for Sahara logo/text and sections like CUSTOMER DETAILS, GEOPHYSICAL SURVEY RESULT). If it is NOT a Sahara Groundwater report, respond ONLY with this JSON: {"notSaharaReport": true}. If it IS a Sahara Groundwater report, extract data. Look for:
+                                'text' => 'You are analyzing an uploaded image. First, verify STRICTLY if this is a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo (look for Sahara logo/text and sections like CUSTOMER DETAILS, GEOPHYSICAL SURVEY RESULT). If it is NOT a Sahara Groundwater report, respond ONLY with this JSON: {"notSaharaReport": true}. If it IS a Sahara Groundwater report, extract ONLY the values that are clearly visible in the image. Do NOT invent values. For any field not visible/readable, set "Not specified". Look for:
 
 SPECIFIC SECTIONS TO FIND:
 1. "CUSTOMER DETAILS" section with Customer Name, Booking ID, dates, phone, district
@@ -237,7 +203,7 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
                     ]
                 ],
                 'max_tokens' => 1500,
-                'temperature' => 0.1
+                'temperature' => 0
             ];
         }
 
