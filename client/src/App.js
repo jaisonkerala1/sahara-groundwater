@@ -200,8 +200,11 @@ function App() {
             <a href="https://saharagroundwater.com/" className="flex items-center space-x-2">
               <img 
                 src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
-                alt="Sahara Groundwater Logo"
+                alt="Sahara Groundwater Kerala - Professional groundwater survey analysis and borewell drilling services"
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-contain"
+                width="40"
+                height="40"
+                loading="eager"
               />
               <span className="text-xl font-bold text-gray-900">
                 Sahara Groundwater
@@ -257,19 +260,18 @@ function App() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8" itemScope itemType="https://schema.org/Service">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-gradient">
-                AI-Powered Groundwater
+                Professional Groundwater Survey Analysis
               </span>
               <br />
-              <span className="text-gray-900 dark:text-white">Survey Analysis</span>
+              <span className="text-gray-900 dark:text-white">AI-Powered Kerala Water Source Detection</span>
               </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Transform your groundwater survey reports into actionable insights with advanced AI analysis. 
-              Get instant, professional assessments in seconds.
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed" itemProp="description">
+              Expert groundwater survey analysis in Kerala using advanced AI technology. Transform your borewell drilling reports into actionable insights with instant professional assessments for water source detection and drilling recommendations.
             </p>
             </div>
               
@@ -292,7 +294,7 @@ function App() {
       </section>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16" role="main" aria-label="Groundwater Survey Analysis Tool">
         {/* Scroll observer script for animate-on-scroll */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function(){
@@ -307,10 +309,10 @@ function App() {
             <div className="space-y-6">
           <div className="text-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Upload Survey Report
+                  Upload Your Groundwater Survey Report
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Drag and drop your file or click to browse
+                  Upload PDF or image files for AI-powered groundwater analysis in Kerala
                 </p>
           </div>
 
@@ -396,7 +398,7 @@ function App() {
             <div className="space-y-6">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Ready for Analysis
+                  AI-Powered Groundwater Analysis
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   Our AI will extract and analyze your survey data
@@ -895,8 +897,9 @@ function App() {
           </div>
 
           <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              © 2024 Sahara Groundwater Kerala. All rights reserved.
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              © 2025 Sahara Groundwater Kerala. All rights reserved. | 
+              <span className="ml-2">Professional groundwater survey analysis and borewell drilling services in Kerala</span>
             </p>
           </div>
         </div>

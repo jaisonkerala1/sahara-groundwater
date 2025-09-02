@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://report.saharagroundwater.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Allow all search engines to index the main content
+Allow: /api/health
+
+# Block access to sensitive files
+Disallow: /uploads/
+Disallow: /.env
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /package.json
+Disallow: /package-lock.json
+
+# Allow social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
