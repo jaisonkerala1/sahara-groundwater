@@ -674,7 +674,7 @@ function App() {
             </div>
 
             {/* Call-to-Action Section */}
-            <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 md:p-12 border border-gray-200 dark:border-gray-600 text-center">
+            <div className="bg-white rounded-3xl p-8 md:p-12 border border-gray-200 shadow-lg text-center">
               <div className="mb-8">
                 <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                   🚀 Ready for the Next Step?
@@ -710,15 +710,15 @@ function App() {
               </div>
 
               {/* Contact CTA */}
-              <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl border border-blue-200 dark:border-gray-500">
-                <p className="text-gray-700 dark:text-gray-200 font-medium mb-4">
+              <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200">
+                <p className="text-gray-700 font-medium mb-4">
                   💬 Need expert consultation about your results?
                 </p>
                 <a 
-                  href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/"
+                  href="tel:+917012051937"
                   className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <span>Contact Our Experts</span>
+                  <span>Talk to an Expert</span>
                   <span className="text-lg">📞</span>
                 </a>
               </div>
@@ -775,7 +775,7 @@ function App() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-blue-600" />
-                  <span className="text-gray-600 dark:text-gray-300">+91 123 456 7890</span>
+                  <a href="tel:+917012051937" className="text-gray-600 dark:text-gray-300 hover:text-blue-600">+91 70120 51937</a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-blue-600" />
