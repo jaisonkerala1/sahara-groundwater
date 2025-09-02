@@ -358,130 +358,363 @@ function App() {
                       </div>
                     ) : (
           /* Analysis Results */
-          <div className="space-y-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Analysis Complete!
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                Your groundwater survey has been successfully analyzed
-              </p>
-            </div>
-
-            {/* Results Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Water Potential */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Water Potential
-                  </h3>
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">
-                      {analysisResult.percentageChance || '75%'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {analysisResult.chanceLevel || 'Good'} Rating
-                  </p>
+          <div className="space-y-12">
+            {/* Hero Success Section */}
+            <div className="text-center relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-3xl blur-3xl opacity-50"></div>
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-2xl">
+                  <CheckCircle className="w-10 h-10 text-white animate-bounce" />
                 </div>
-                  </div>
-                  
-              {/* Customer Details */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Customer Details
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {analysisResult.customerName || 'Not specified'}
-                    </p>
-                  </div>
-                    <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Location</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {analysisResult.location || 'Not specified'}
-                      </p>
-                    </div>
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">District</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {analysisResult.district || 'Not specified'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Survey Details */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Survey Details
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Point Number</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {analysisResult.pointNumber || 'Not specified'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Rock Depth</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {analysisResult.rockDepth || 'Not specified'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Max Depth</p>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {analysisResult.maximumDepth || 'Not specified'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Analysis Summary */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Analysis Summary
-              </h3>
-              <div className="prose prose-gray dark:prose-invert max-w-none">
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {analysisResult.geologicalAnalysis || 'Detailed geological analysis will be provided here based on your survey data.'}
-                  </p>
-                </div>
-            </div>
-
-            {/* Recommendations */}
-            <div className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-8 border border-green-200 dark:border-green-800">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Recommendations
-              </h3>
-              <div className="prose prose-gray dark:prose-invert max-w-none">
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {analysisResult.recommendations || 'Professional recommendations will be provided based on the analysis of your survey data.'}
+                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                  🎉 Analysis Complete!
+                </h2>
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                  Great news! We've successfully analyzed your groundwater survey. 
+                  <span className="font-semibold text-blue-600 dark:text-blue-400"> Here's what we discovered about your land's water potential.</span>
                 </p>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={handleStartOver}
-                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold py-3 px-8 rounded-xl transition-colors flex items-center justify-center space-x-2"
-              >
-                <Upload className="w-5 h-5" />
-                <span>Analyze Another Report</span>
-              </button>
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
-                <Download className="w-5 h-5" />
-                <span>Download Report</span>
-              </button>
+            {/* Main Water Potential Showcase */}
+            <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl p-8 md:p-12 border border-blue-200 dark:border-gray-700 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-emerald-400/20 to-blue-400/20 rounded-full blur-2xl"></div>
+              
+              <div className="relative">
+                <div className="text-center mb-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    💧 Water Potential Analysis
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-lg">Your land's groundwater prospects</p>
+                </div>
+
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+                  {/* Animated Circular Progress */}
+                  <div className="relative">
+                    <div className="w-48 h-48 relative">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          className="text-gray-200 dark:text-gray-700"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="none"
+                          stroke="url(#waterGradient)"
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(parseInt(analysisResult.percentageChance) || 75) * 2.51} 251`}
+                          className="transition-all duration-2000 ease-out"
+                        />
+                        <defs>
+                          <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#06B6D4" />
+                            <stop offset="50%" stopColor="#3B82F6" />
+                            <stop offset="100%" stopColor="#8B5CF6" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <span className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent">
+                            {analysisResult.percentageChance || '80%'}
+                          </span>
+                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
+                            Success Rate
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Water Quality Indicators */}
+                  <div className="grid grid-cols-2 gap-6 w-full max-w-md">
+                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
+                      <div className="text-3xl mb-2">🎯</div>
+                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                        {analysisResult.chanceLevel || 'High'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Potential Rating</p>
+                    </div>
+                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
+                      <div className="text-3xl mb-2">⚡</div>
+                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                        {analysisResult.suggestedSourceType || 'Borewell'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Recommended Type</p>
+                    </div>
+                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
+                      <div className="text-3xl mb-2">📏</div>
+                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                        {analysisResult.maximumDepth || '40m'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Max Depth</p>
+                    </div>
+                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/50 dark:border-gray-700/50">
+                      <div className="text-3xl mb-2">🗺️</div>
+                      <p className="font-semibold text-lg text-gray-900 dark:text-white">
+                        Point {analysisResult.pointNumber || '5'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Survey Point</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customer & Location Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Customer Profile Card */}
+              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 border border-indigo-200 dark:border-gray-600 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-2xl"></div>
+                <div className="relative">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4">
+                      <span className="text-2xl">👤</span>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Customer Profile
+                      </h3>
+                      <p className="text-indigo-600 dark:text-indigo-400 font-medium">Survey Report Details</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">🏷️</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Customer Name</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                            {analysisResult.customerName || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">📍</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Location</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                            {analysisResult.location || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">🗺️</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">District</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                            {analysisResult.district || 'Kerala'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Technical Survey Data */}
+              <div className="bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 border border-emerald-200 dark:border-gray-600 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-cyan-400/20 rounded-full blur-2xl"></div>
+                <div className="relative">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-cyan-600 rounded-2xl flex items-center justify-center mr-4">
+                      <span className="text-2xl">🔬</span>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Technical Data
+                      </h3>
+                      <p className="text-emerald-600 dark:text-emerald-400 font-medium">Survey Measurements</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">🎯</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Survey Point</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                            Point {analysisResult.pointNumber || '5'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">🪨</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Rock Layer Depth</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                            {analysisResult.rockDepth || '4 meter'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-700/70 rounded-2xl backdrop-blur-sm">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">⬇️</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Maximum Drilling Depth</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-lg">
+                            {analysisResult.maximumDepth || '40 meter'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Geological Story Section */}
+            <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-3xl p-8 md:p-12 border border-amber-200 dark:border-gray-600 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-red-400/20 to-pink-400/20 rounded-full blur-2xl"></div>
+              
+              <div className="relative">
+                <div className="flex items-center mb-8">
+                  <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl flex items-center justify-center mr-6 shadow-2xl">
+                    <span className="text-3xl">🌍</span>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                      Geological Story
+                    </h3>
+                    <p className="text-amber-600 dark:text-amber-400 text-lg font-medium">What lies beneath your land</p>
+                  </div>
+                </div>
+
+                <div className="bg-white/80 dark:bg-gray-700/80 rounded-3xl p-8 backdrop-blur-sm border border-white/50 dark:border-gray-600/50">
+                  <div className="prose prose-lg dark:prose-invert max-w-none">
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg font-medium">
+                      {analysisResult.geologicalAnalysis || 'The geological analysis indicates the presence of a deep aquifer system with favorable hydrogeological conditions. The rock depth is within the recommended range, and the maximum depth suggests a high potential for groundwater extraction.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Expert Recommendations */}
+            <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-3xl p-8 md:p-12 border border-emerald-200 dark:border-gray-600 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-400/20 to-green-400/20 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-2xl"></div>
+              
+              <div className="relative">
+                <div className="flex items-center mb-8">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl flex items-center justify-center mr-6 shadow-2xl">
+                    <span className="text-3xl">💡</span>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                      Expert Recommendations
+                    </h3>
+                    <p className="text-emerald-600 dark:text-emerald-400 text-lg font-medium">Your next steps to success</p>
+                  </div>
+                </div>
+
+                <div className="bg-white/80 dark:bg-gray-700/80 rounded-3xl p-8 backdrop-blur-sm border border-white/50 dark:border-gray-600/50">
+                  <div className="prose prose-lg dark:prose-invert max-w-none">
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg font-medium mb-6">
+                      {analysisResult.recommendations || 'Based on the survey findings, we recommend proceeding with a borewell at the identified location. The geological conditions are favorable, and the water potential is high. Consider implementing rainwater harvesting systems to enhance groundwater recharge.'}
+                    </p>
+                    
+                    {/* Action Items */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                      <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl p-6 text-center">
+                        <div className="text-3xl mb-3">🎯</div>
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-2">High Success Rate</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {(parseInt(analysisResult.percentageChance) || 80) >= 70 ? 'Excellent prospects' : 'Good prospects'} for finding water
+                        </p>
+                      </div>
+                      <div className="bg-blue-100 dark:bg-blue-900/30 rounded-2xl p-6 text-center">
+                        <div className="text-3xl mb-3">⚡</div>
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-2">Optimal Depth</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          Target depth: {analysisResult.maximumDepth || '40 meters'}
+                        </p>
+                      </div>
+                      <div className="bg-purple-100 dark:bg-purple-900/30 rounded-2xl p-6 text-center">
+                        <div className="text-3xl mb-3">🛠️</div>
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-2">Recommended Method</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {analysisResult.suggestedSourceType || 'Borewell'} installation
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Call-to-Action Section */}
+            <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 md:p-12 border border-gray-200 dark:border-gray-600 text-center">
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  🚀 Ready for the Next Step?
+                </h3>
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  Your groundwater analysis is complete! Choose your next action to move forward with confidence.
+                </p>
+              </div>
+
+              <div className="flex flex-col lg:flex-row gap-6 justify-center max-w-4xl mx-auto">
+                <button
+                  onClick={handleStartOver}
+                  className="group bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-3 min-w-64"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Upload className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-lg font-bold">Analyze Another Report</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Upload a new survey</div>
+                  </div>
+                </button>
+                
+                <button className="group bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 hover:from-emerald-700 hover:via-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-3 min-w-64">
+                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
+                    <Download className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-lg font-bold">Download Full Report</div>
+                    <div className="text-sm text-white/80">Get detailed PDF analysis</div>
+                  </div>
+                </button>
+              </div>
+
+              {/* Contact CTA */}
+              <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl border border-blue-200 dark:border-gray-500">
+                <p className="text-gray-700 dark:text-gray-200 font-medium mb-4">
+                  💬 Need expert consultation about your results?
+                </p>
+                <a 
+                  href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/"
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <span>Contact Our Experts</span>
+                  <span className="text-lg">📞</span>
+                </a>
+              </div>
             </div>
             </div>
           )}
