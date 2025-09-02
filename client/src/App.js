@@ -115,10 +115,10 @@ function App() {
 
   const handleAnalyze = async () => {
     if (!selectedFile || isUploading) return;
-
+    
     setIsUploading(true);
     setError(null);
-
+    
     const formData = new FormData();
     formData.append('surveyFile', selectedFile);
 
@@ -203,7 +203,7 @@ function App() {
                 alt="Sahara Groundwater Logo"
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-contain"
               />
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-gray-900">
                 Sahara Groundwater
               </span>
             </a>
@@ -346,7 +346,7 @@ function App() {
                     </p>
                     </div>
                 </div>
-              </div>
+                </div>
               {/* Download report link for users without a report - placed outside clickable input area */}
               <div className="mt-3 text-center">
                 <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Don't have a report? </span>
@@ -847,7 +847,7 @@ function App() {
                   alt="Sahara Groundwater Logo"
                   className="w-8 h-8 rounded-lg object-contain"
                 />
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-xl font-bold text-gray-900">
                   Sahara Groundwater
                 </span>
               </a>
