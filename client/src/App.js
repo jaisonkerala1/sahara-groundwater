@@ -1,306 +1,566 @@
-import React, { useState } from 'react';
-import SurveyUpload from './components/SurveyUpload';
-import GroundwaterAnalysis from './components/GroundwaterAnalysis';
-import LoadingSpinner from './components/LoadingSpinner';
-import ErrorMessage from './components/ErrorMessage';
-import Footer from './components/Footer';
-import { BarChart3, Clock, Target, TrendingUp, Award, Users, Zap } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { 
+  Upload, 
+  FileText, 
+  Image, 
+  CheckCircle, 
+  AlertCircle, 
+  Loader2,
+  MapPin,
+  Phone,
+  Mail,
+  Menu,
+  X,
+  Sparkles,
+  Droplets,
+  Zap,
+  Shield,
+  Download
+} from 'lucide-react';
+import './App.css';
 
 function App() {
-  const [selectedSurveyFile, setSelectedSurveyFile] = useState(null);
-  const [surveyAnalysis, setSurveyAnalysis] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState(null);
   const [error, setError] = useState(null);
-  const [surveyHistory, setSurveyHistory] = useState([]);
-  const [showDashboard, setShowDashboard] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const handleSurveyFileSelect = (file) => {
-    setSelectedSurveyFile(file);
-    setSurveyAnalysis(null);
+  const handleFileSelect = useCallback((file) => {
+    if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+      setSelectedFile(file);
     setError(null);
-  };
+      setAnalysisResult(null);
+    } else {
+      setError('Please select a valid image or PDF file.');
+    }
+  }, []);
 
-  const handleAnalysisComplete = (result) => {
-    setSurveyAnalysis(result);
-    setIsLoading(false);
-    setError(null);
-    
-    // Add to history
-    const newSurveyAnalysis = {
-      ...result,
-      id: Date.now(),
-      timestamp: new Date().toISOString(),
-      surveyFile: selectedSurveyFile
-    };
-    setSurveyHistory(prev => [newSurveyAnalysis, ...prev.slice(0, 9)]); // Keep last 10
-  };
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
 
-  const handleError = (errorMessage) => {
-    setError(errorMessage);
-    setIsLoading(false);
-  };
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    handleFileSelect(file);
+  }, [handleFileSelect]);
+
+  const handleFileInputChange = useCallback((e) => {
+    const file = e.target.files[0];
+    handleFileSelect(file);
+  }, [handleFileSelect]);
 
   const handleAnalyze = async () => {
-    if (!selectedSurveyFile) return;
+    if (!selectedFile) return;
     
-    setIsLoading(true);
+    setIsUploading(true);
     setError(null);
+
+    const formData = new FormData();
+    formData.append('surveyFile', selectedFile);
     
     try {
-      const formData = new FormData();
-      formData.append('surveyFile', selectedSurveyFile);
-
       const response = await fetch('/api/analyze-survey', {
         method: 'POST',
         body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to analyze survey report');
-      }
+      const data = await response.json();
 
-      const result = await response.json();
-      handleAnalysisComplete(result.surveyAnalysis);
+      if (data.success) {
+        setAnalysisResult(data.surveyAnalysis);
+      } else {
+        setError(data.error || 'Analysis failed. Please try again.');
+      }
     } catch (err) {
-      handleError(err.message || 'Could not analyze this survey report');
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const resetApp = () => {
-    setSelectedSurveyFile(null);
-    setSurveyAnalysis(null);
+  const handleStartOver = () => {
+    setSelectedFile(null);
+    setAnalysisResult(null);
     setError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  const getDashboardStats = () => {
-    const totalSurveys = surveyHistory.length;
-    const todaySurveys = surveyHistory.filter(item => {
-      const today = new Date().toDateString();
-      const itemDate = new Date(item.timestamp).toDateString();
-      return today === itemDate;
-    }).length;
-    
-    const avgWaterProbability = totalSurveys > 0 
-      ? Math.round(surveyHistory.reduce((sum, item) => sum + (parseInt(item.percentageChance || item.probabilityOfWater) || 0), 0) / totalSurveys)
-      : 0; // Default to 0% when no surveys exist
-
-    return { totalSurveys, todaySurveys, avgWaterProbability };
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const stats = getDashboardStats();
+  const getFileIcon = (file) => {
+    if (file.type === 'application/pdf') {
+      return <FileText className="w-8 h-8 text-red-500" />;
+    }
+    return <Image className="w-8 h-8 text-blue-500" />;
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="py-8">
-        <div className="container mx-auto px-6 max-w-6xl space-y-8">
-          
-          {/* Simple Header like Food App */}
-          <div className="text-center space-y-6">
-            <div className="flex items-center justify-center space-x-4">
-              <img 
-                src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" 
-                alt="Sahara Groundwater Kerala Logo" 
-                className="h-16 w-auto"
-                onError={(e) => {
-                  // Fallback to icon if logo fails to load
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              {/* Fallback icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-primary-purple to-primary-purpleDark rounded-full items-center justify-center hidden">
-                <Zap className="w-8 h-8 text-secondary-yellow" />
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Droplets className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-5xl font-bold text-gray-900">
-                Sahara Groundwater Kerala
-              </h1>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Sahara Groundwater
+              </span>
             </div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Professional groundwater survey and borewell analysis services. 
-              Get expert insights on water availability, drilling recommendations, and geological 
-              conditions with AI-powered survey report analysis.
-            </p>
-            
-            {/* Professional Badges */}
-            <div className="flex justify-center items-center space-x-4 mt-6">
-              <div className="flex items-center space-x-2 px-4 py-2 bg-primary-purple bg-opacity-10 rounded-full">
-                <Award className="w-5 h-5 text-primary-purple" />
-                <span className="text-sm font-medium text-primary-purple">Kerala Certified</span>
-              </div>
-              <div className="flex items-center space-x-2 px-4 py-2 bg-secondary-red bg-opacity-10 rounded-full">
-                <Users className="w-5 h-5 text-secondary-red" />
-                <span className="text-sm font-medium text-secondary-red">15+ Years Experience</span>
-              </div>
-              <div className="flex items-center space-x-2 px-4 py-2 bg-secondary-yellow bg-opacity-20 rounded-full">
-                <TrendingUp className="w-5 h-5 text-secondary-yellowDark" />
-                <span className="text-sm font-medium text-secondary-yellowDark">AI-Enhanced</span>
-              </div>
-            </div>
+
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Features
+              </a>
+              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                How it Works
+              </a>
+              <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Contact
+              </a>
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? '☀️' : '🌙'}
+              </button>
           </div>
 
-          {/* Dashboard Toggle */}
-          <div className="text-center">
             <button
-              onClick={() => setShowDashboard(!showDashboard)}
-              className="text-primary-purple hover:text-primary-purpleDark font-medium text-sm flex items-center space-x-1 mx-auto"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+              aria-label="Toggle menu"
             >
-              <BarChart3 className="w-4 h-4" />
-              <span>{showDashboard ? 'Hide' : 'Dashboard'}</span>
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+        </div>
 
-          {/* Professional Dashboard */}
-          {showDashboard && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-3xl shadow-xl p-6 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary-purple to-primary-purpleDark rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{stats.totalSurveys}</div>
-                <div className="text-gray-600">Total Surveys</div>
-              </div>
-              
-              <div className="bg-white rounded-3xl shadow-xl p-6 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-secondary-red to-secondary-redDark rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Clock className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{stats.todaySurveys}</div>
-                <div className="text-gray-600">Today's Surveys</div>
-              </div>
-              
-              <div className="bg-white rounded-3xl shadow-xl p-6 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-secondary-yellow to-secondary-yellowDark rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{stats.avgWaterProbability}%</div>
-                <div className="text-gray-600">Avg Water Probability</div>
-              </div>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="px-4 py-4 space-y-4">
+              <a href="#features" className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Features
+              </a>
+              <a href="#how-it-works" className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                How it Works
+              </a>
+              <a href="#contact" className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Contact
+              </a>
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <span>{isDarkMode ? '☀️' : '🌙'}</span>
+                <span>Toggle Dark Mode</span>
+              </button>
             </div>
-          )}
+          </div>
+        )}
+      </nav>
 
-          {/* Survey History */}
-          {showDashboard && surveyHistory.length > 0 && (
-            <div className="card-primary">
-              <h3 className="text-h3 text-neutral-gray900 mb-4">Recent Surveys</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {surveyHistory.slice(0, 6).map((item) => (
-                  <div key={item.id} className="p-3 bg-neutral-gray50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-body2 font-medium text-neutral-gray900 truncate">
-                        {item.surveyLocation || 'Survey Location'}
-                      </span>
-                      <span className="text-caption text-neutral-gray500">
-                        {new Date(item.timestamp).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="text-body2 text-neutral-gray700">
-                      {item.probabilityOfWater || 'N/A'}% Water Probability
-                    </div>
-                    <div className="text-caption text-neutral-gray500">
-                      {item.recommendedWellType || 'Well type not specified'}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      {/* Hero Section */}
+      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-gradient">
+                AI-Powered Groundwater
+              </span>
+              <br />
+              <span className="text-gray-900 dark:text-white">Survey Analysis</span>
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
+              Transform your groundwater survey reports into actionable insights with advanced AI analysis. 
+              Get instant, professional assessments in seconds.
+            </p>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
+            <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-4 py-2 rounded-full">
+              <Shield className="w-4 h-4" />
+              <span className="text-sm font-medium">Secure & Private</span>
             </div>
-          )}
+            <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-4 py-2 rounded-full">
+              <Zap className="w-4 h-4" />
+              <span className="text-sm font-medium">Instant Results</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 px-4 py-2 rounded-full">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">AI-Powered</span>
+            </div>
+          </div>
+                </div>
+      </section>
 
-          {/* Survey File Upload Section */}
-          {!selectedSurveyFile && (
-            <SurveyUpload onSurveyFileSelect={handleSurveyFileSelect} />
-          )}
-
-          {/* Survey File Preview and Analysis */}
-          {selectedSurveyFile && (
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        {!analysisResult ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Upload Section */}
             <div className="space-y-6">
-              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Selected Survey File</h2>
-                  <button
-                    onClick={resetApp}
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-xl transition-all duration-200"
-                  >
-                    Choose Different File
-                  </button>
-                </div>
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Upload Survey Report
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Drag and drop your file or click to browse
+                </p>
+              </div>
+              
+              <div
+                className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
+                  isDragOver
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-105'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={handleFileInputChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
                 
-                <div className="flex flex-col md:flex-row gap-6">
-                  <div className="flex-1">
-                    {selectedSurveyFile.type === 'application/pdf' ? (
-                      <div className="w-full h-64 bg-gray-100 rounded-2xl flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <div className="text-2xl">📄</div>
-                          </div>
-                          <div className="text-lg font-medium text-gray-900">PDF Survey Report</div>
-                          <div className="text-sm text-gray-500 mt-1">{selectedSurveyFile.name}</div>
-                        </div>
-                      </div>
-                    ) : (
-                      <img
-                        src={URL.createObjectURL(selectedSurveyFile)}
-                        alt="Survey report or groundwater reading"
-                        className="w-full h-64 object-cover rounded-2xl"
-                      />
-                    )}
+                <div className="space-y-4">
+                  <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                    <Upload className="w-8 h-8 text-white" />
                   </div>
                   
-                  <div className="flex-1 space-y-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">
-                        Ready for Groundwater Analysis
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        Our AI-powered system will analyze your survey report to provide 
-                        water probability assessment, drilling recommendations, and geological insights.
+                  <div>
+                    <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      {isDragOver ? 'Drop your file here' : 'Choose a file or drag it here'}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Supports PDF, PNG, JPG up to 25MB
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {selectedFile && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center space-x-4">
+                    {getFileIcon(selectedFile)}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {formatFileSize(selectedFile.size)}
                       </p>
                     </div>
-                    
                     <button
-                      onClick={handleAnalyze}
-                      disabled={isLoading}
-                      className="w-full bg-primary-purple hover:bg-primary-purpleDark disabled:bg-gray-300 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                      onClick={handleStartOver}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     >
-                      <Zap className="w-5 h-5" />
-                      <span>{isLoading ? 'Analyzing Survey...' : 'Analyze Survey Report'}</span>
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-              </div>
-
-              {/* Loading State */}
-              {isLoading && (
-                <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-gray-100">
-                  <LoadingSpinner />
-                  <p className="text-lg text-gray-700 mt-6 font-medium">
-                    Analyzing groundwater survey report...
-                  </p>
-                  <p className="text-gray-500 mt-2">
-                    Processing geological data and water probability assessment
-                  </p>
-                </div>
               )}
 
-              {/* Error State */}
               {error && (
-                <ErrorMessage 
-                  message={error} 
-                  onRetry={handleAnalyze}
-                  onReset={resetApp}
-                />
-              )}
-
-              {/* Survey Analysis Results */}
-              {surveyAnalysis && (
-                <GroundwaterAnalysis analysis={surveyAnalysis} />
-              )}
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                  <div className="flex items-center space-x-3">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <p className="text-red-700 dark:text-red-400">{error}</p>
+              </div>
             </div>
           )}
-        </div>
+            </div>
+
+            {/* Analysis Section */}
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Ready for Analysis
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Our AI will extract and analyze your survey data
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800">
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Sparkles className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                      AI Analysis Features
+                    </h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-700 dark:text-gray-300">Extract customer details</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-700 dark:text-gray-300">Analyze survey coordinates</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-700 dark:text-gray-300">Calculate water probability</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-700 dark:text-gray-300">Generate recommendations</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={!selectedFile || isUploading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-5 h-5" />
+                        <span>Analyze Survey Report</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+          /* Analysis Results */
+          <div className="space-y-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Analysis Complete!
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Your groundwater survey has been successfully analyzed
+              </p>
+            </div>
+
+            {/* Results Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Water Potential */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Water Potential
+                  </h3>
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-white">
+                      {analysisResult.percentageChance || '75%'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {analysisResult.chanceLevel || 'Good'} Rating
+                  </p>
+                </div>
+                  </div>
+                  
+              {/* Customer Details */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Customer Details
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {analysisResult.customerName || 'Not specified'}
+                    </p>
+                  </div>
+                    <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Location</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {analysisResult.location || 'Not specified'}
+                      </p>
+                    </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">District</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {analysisResult.district || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Survey Details */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Survey Details
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Point Number</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {analysisResult.pointNumber || 'Not specified'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Rock Depth</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {analysisResult.rockDepth || 'Not specified'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Max Depth</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {analysisResult.maximumDepth || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Analysis Summary */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                Analysis Summary
+              </h3>
+              <div className="prose prose-gray dark:prose-invert max-w-none">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {analysisResult.geologicalAnalysis || 'Detailed geological analysis will be provided here based on your survey data.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            <div className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-8 border border-green-200 dark:border-green-800">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                Recommendations
+              </h3>
+              <div className="prose prose-gray dark:prose-invert max-w-none">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {analysisResult.recommendations || 'Professional recommendations will be provided based on the analysis of your survey data.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={handleStartOver}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold py-3 px-8 rounded-xl transition-colors flex items-center justify-center space-x-2"
+              >
+                <Upload className="w-5 h-5" />
+                <span>Analyze Another Report</span>
+              </button>
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
+                <Download className="w-5 h-5" />
+                <span>Download Report</span>
+              </button>
+            </div>
+            </div>
+          )}
       </main>
       
-      <Footer />
+      {/* Footer */}
+      <footer id="contact" className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Droplets className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Sahara Groundwater
+                </span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Professional groundwater survey analysis powered by advanced AI technology.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Quick Links
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    How it Works
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Contact Info
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-600 dark:text-gray-300">Kerala, India</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-600 dark:text-gray-300">+91 123 456 7890</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-600 dark:text-gray-300">info@saharagroundwater.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center">
+            <p className="text-gray-500 dark:text-gray-400">
+              © 2024 Sahara Groundwater Kerala. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
