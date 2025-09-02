@@ -50,5 +50,5 @@ Write-Host "   Backend:  http://localhost:5000" -ForegroundColor White
 Write-Host ""
 Write-Host "📋 Don't forget to:" -ForegroundColor Yellow
 Write-Host "   1. Add your OPENROUTER_API_KEY to .env file" -ForegroundColor White
-Write-Host "   2. Get API key from: https://openrouter.ai/" -ForegroundColor White
+Write-Host "   2. Get API key from: https://openrouter.ai/" -ForegroundColor White logo
 Write-Host ""
