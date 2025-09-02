@@ -263,12 +263,11 @@ function App() {
       <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8" itemScope itemType="https://schema.org/Service">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-gradient">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-gradient block mb-2">
                 AI-Powered Groundwater
               </span>
-              <br />
-              <span className="text-gray-900 dark:text-white">Survey Analysis</span>
+              <span className="text-gray-900 dark:text-white block">Survey Analysis</span>
               </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed" itemProp="description">
               Transform your groundwater survey reports into actionable insights with advanced AI analysis. 
