@@ -12,7 +12,6 @@ import {
   Menu,
   X,
   Sparkles,
-  Droplets,
   Zap,
   Shield,
   Download
@@ -66,10 +65,10 @@ function App() {
     
     setIsUploading(true);
     setError(null);
-
-    const formData = new FormData();
-    formData.append('surveyFile', selectedFile);
     
+      const formData = new FormData();
+    formData.append('surveyFile', selectedFile);
+
     try {
       const response = await fetch('/api/analyze-survey', {
         method: 'POST',
@@ -117,26 +116,28 @@ function App() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Droplets className="w-5 h-5 text-white" />
-              </div>
+              <img
+                src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png"
+                alt="Sahara Groundwater Logo"
+                className="w-8 h-8 rounded-lg object-contain"
+              />
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Sahara Groundwater
               </span>
             </div>
 
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Features
+              <a href="https://saharagroundwater.com/" className="text-gray-700 hover:text-blue-600 transition-colors">
+                Home
               </a>
-              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                How it Works
+              <a href="https://saharagroundwater.com/booking/" className="text-gray-700 hover:text-blue-600 transition-colors">
+                Book Now
               </a>
-              <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <a href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Contact
               </a>
               <button
@@ -146,39 +147,33 @@ function App() {
               >
                 {isDarkMode ? '☀️' : '🌙'}
               </button>
-          </div>
+              </div>
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+              className="md:hidden p-2 rounded-lg bg-gray-100"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+            </div>
           </div>
-        </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+          <div className="md:hidden bg-white border-t border-gray-200">
             <div className="px-4 py-4 space-y-4">
-              <a href="#features" className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Features
-              </a>
-              <a href="#how-it-works" className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                How it Works
-              </a>
-              <a href="#contact" className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Contact
-              </a>
-              <button
+              <a href="https://saharagroundwater.com/" className="block text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+              <a href="https://saharagroundwater.com/booking/" className="block text-gray-700 hover:text-blue-600 transition-colors">Book Now</a>
+              <a href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/" className="block text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+            <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
+                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
+            >
                 <span>{isDarkMode ? '☀️' : '🌙'}</span>
                 <span>Toggle Dark Mode</span>
-              </button>
-            </div>
+            </button>
+          </div>
           </div>
         )}
       </nav>
@@ -198,24 +193,24 @@ function App() {
               Transform your groundwater survey reports into actionable insights with advanced AI analysis. 
               Get instant, professional assessments in seconds.
             </p>
-          </div>
-
+              </div>
+              
           {/* Trust Indicators */}
           <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
             <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-4 py-2 rounded-full">
               <Shield className="w-4 h-4" />
               <span className="text-sm font-medium">Secure & Private</span>
-            </div>
+                </div>
             <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-4 py-2 rounded-full">
               <Zap className="w-4 h-4" />
               <span className="text-sm font-medium">Instant Results</span>
-            </div>
+              </div>
             <div className="flex items-center space-x-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 px-4 py-2 rounded-full">
               <Sparkles className="w-4 h-4" />
               <span className="text-sm font-medium">AI-Powered</span>
-            </div>
-          </div>
                 </div>
+              </div>
+            </div>
       </section>
 
       {/* Main Content */}
@@ -254,7 +249,7 @@ function App() {
                 <div className="space-y-4">
                   <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
                     <Upload className="w-8 h-8 text-white" />
-                  </div>
+                    </div>
                   
                   <div>
                     <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -263,9 +258,9 @@ function App() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Supports PDF, PNG, JPG up to 25MB
                     </p>
+                    </div>
+                    </div>
                   </div>
-                </div>
-              </div>
               
               {selectedFile && (
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
@@ -285,20 +280,20 @@ function App() {
                     >
                       <X className="w-5 h-5" />
                     </button>
-                  </div>
-                </div>
-              )}
+              </div>
+            </div>
+          )}
 
               {error && (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                   <div className="flex items-center space-x-3">
                     <AlertCircle className="w-5 h-5 text-red-500" />
                     <p className="text-red-700 dark:text-red-400">{error}</p>
-              </div>
-            </div>
-          )}
-            </div>
-
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
             {/* Analysis Section */}
             <div className="space-y-6">
               <div className="text-center">
@@ -338,10 +333,10 @@ function App() {
                       <CheckCircle className="w-5 h-5 text-green-500" />
                       <span className="text-gray-700 dark:text-gray-300">Generate recommendations</span>
                     </div>
-                  </div>
-
-                  <button
-                    onClick={handleAnalyze}
+                    </div>
+                    
+                    <button
+                      onClick={handleAnalyze}
                     disabled={!selectedFile || isUploading}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
@@ -352,11 +347,11 @@ function App() {
                       </>
                     ) : (
                       <>
-                        <Zap className="w-5 h-5" />
+                      <Zap className="w-5 h-5" />
                         <span>Analyze Survey Report</span>
                       </>
                     )}
-                  </button>
+                    </button>
                 </div>
                           </div>
                         </div>
@@ -458,8 +453,8 @@ function App() {
               <div className="prose prose-gray dark:prose-invert max-w-none">
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {analysisResult.geologicalAnalysis || 'Detailed geological analysis will be provided here based on your survey data.'}
-                </p>
-              </div>
+                  </p>
+                </div>
             </div>
 
             {/* Recommendations */}
@@ -498,9 +493,11 @@ function App() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Droplets className="w-5 h-5 text-white" />
-                </div>
+                <img
+                  src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png"
+                  alt="Sahara Groundwater Logo"
+                  className="w-8 h-8 rounded-lg object-contain"
+                />
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Sahara Groundwater
                 </span>
@@ -516,19 +513,13 @@ function App() {
               </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    Features
-                  </a>
+                  <a href="https://saharagroundwater.com/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
                 </li>
                 <li>
-                  <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    How it Works
-                  </a>
+                  <a href="https://saharagroundwater.com/booking/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Book Now</a>
                 </li>
                 <li>
-                  <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    Contact
-                  </a>
+                  <a href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</a>
                 </li>
               </ul>
             </div>
