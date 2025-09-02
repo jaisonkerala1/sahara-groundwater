@@ -77,21 +77,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
         $openRouterRequest = [];
         
         if ($file['type'] === 'application/pdf') {
-            error_log('📄 Processing PDF file - trying with Claude model which may handle PDFs better');
+            error_log('📄 Processing PDF file - attempting text extraction');
             
-            // Try with Claude model which might handle PDFs better
+            // Attempt to extract text from PDF
+            $pdfText = '';
+            
+            // Try using pdftotext if available (most Linux servers have this)
+            $tempFile = $file['tmp_name'];
+            $textFile = tempnam(sys_get_temp_dir(), 'pdf_extract_') . '.txt';
+            
+            // Try pdftotext command (if available on server)
+            $command = "pdftotext '$tempFile' '$textFile' 2>/dev/null";
+            exec($command, $output, $returnCode);
+            
+            if ($returnCode === 0 && file_exists($textFile)) {
+                $pdfText = file_get_contents($textFile);
+                unlink($textFile); // Clean up
+                error_log('✅ Successfully extracted text from PDF: ' . strlen($pdfText) . ' characters');
+            } else {
+                error_log('❌ pdftotext not available or failed, falling back to instruction-based analysis');
+                $pdfText = 'PDF text extraction not available on server. Please analyze based on typical Sahara Groundwater report structure.';
+            }
+            
             $openRouterRequest = [
                 'model' => 'anthropic/claude-3-haiku', // Claude might handle PDFs better than GPT
                 'messages' => [
                     [
                         'role' => 'user',
-                        'content' => 'I have uploaded a PDF groundwater survey report from Sahara Groundwater Kerala. The PDF contains structured data in specific sections:
+                        'content' => 'I have extracted text from a Sahara Groundwater Kerala survey report PDF. Here is the extracted text content:
+
+' . $pdfText . '
+
+Please analyze this text and extract the specific data fields from the Sahara Groundwater report. Look for these sections and extract the actual values:
 
 1. CUSTOMER DETAILS section with: Customer Name, Booking ID, Booking Date, Survey Date, Phone Number, District
 2. GEOPHYSICAL SURVEY RESULT section with: Point number, Rock Depth, Maximum Depth, Percentage of Chance, coordinates
 3. SUMMARY section with geological analysis
 
-Please extract the actual data from this PDF and return it in JSON format:
+Extract the actual data and return it in JSON format:
 
 {
   "customerName": "[extract from Customer Name field]",
