@@ -203,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                                 'type' => 'text',
                                 'text' => 'You are analyzing an uploaded image. This could be either a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo OR a PQWT (Proton Precession Magnetometer) contour map for groundwater detection from any provider. 
 
-IMPORTANT: Be VERY LENIENT with PQWT map detection. If you see ANY scientific/geological map with colors, coordinates, or contour lines, treat it as a PQWT map. Only reject if it\'s clearly not a survey report or geological map.
+IMPORTANT: Be VERY LENIENT with PQWT map detection. If you see ANY scientific/geological map with colors, coordinates, or contour lines, treat it as a PQWT map. Only reject if it is clearly not a survey report or geological map.
 
 If it is neither a survey report nor a PQWT map, respond ONLY with this JSON: {"notSaharaReport": true}. 
 
@@ -218,7 +218,7 @@ Look for ANY of these characteristics:
 - Survey point coordinates (1, 2, 3, 4, etc.)
 - Any geophysical survey data visualization
 
-Even if it doesn't have all these features, if it looks like a scientific/geological map with colors and coordinates, treat it as a PQWT map. Analyze the map to identify:
+Even if it does not have all these features, if it looks like a scientific/geological map with colors and coordinates, treat it as a PQWT map. Analyze the map to identify:
 1. Blue zones (areas with lowest values/highest water potential)
 2. X-axis coordinates (horizontal survey points)
 3. Y-axis depth values (negative numbers indicating depth in meters)
