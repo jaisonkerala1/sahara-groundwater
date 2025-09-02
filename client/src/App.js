@@ -391,9 +391,8 @@ function App() {
                 <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-2xl">
                   <CheckCircle className="w-10 h-10 text-white animate-bounce" />
                 </div>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4">
-                  <img src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" alt="Celebration icon" className="w-8 h-8 sm:w-9 sm:h-9 object-contain" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent text-center">
+                <div className="text-center mb-4">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Analysis Complete!
                   </h2>
                 </div>
@@ -747,7 +746,7 @@ function App() {
               {/* Contact CTA */}
               <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200">
                 <p className="text-gray-700 font-medium mb-4">
-                  💬 Need expert consultation about your results?
+                  Need expert consultation about your results?
                 </p>
                 <a 
                   href="tel:+917012051937"
