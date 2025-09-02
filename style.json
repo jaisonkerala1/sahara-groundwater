@@ -1,327 +1,253 @@
 {
   "designSystem": {
-    "name": "Modern Health & Fitness App Design System",
-    "version": "1.0",
-    "description": "A comprehensive design system for health and wellness applications with focus on data visualization and user engagement"
-  },
-  
-  "colorPalette": {
-    "primary": {
-      "brand": "#7ED321",
-      "brandLight": "#A4E157",
-      "brandDark": "#5BA519"
-    },
-    "secondary": {
-      "accent": "#FF6B35",
-      "accentLight": "#FF8A65",
-      "warning": "#FFC107"
-    },
-    "neutral": {
-      "white": "#FFFFFF",
-      "gray50": "#FAFAFA",
-      "gray100": "#F5F5F5",
-      "gray200": "#EEEEEE",
-      "gray300": "#E0E0E0",
-      "gray400": "#BDBDBD",
-      "gray500": "#9E9E9E",
-      "gray700": "#616161",
-      "gray900": "#212121",
-      "black": "#000000"
-    },
-    "status": {
-      "success": "#4CAF50",
-      "error": "#F44336",
-      "info": "#2196F3",
-      "heart": "#E91E63"
-    },
-    "dataVisualization": {
-      "chartGreen": "#7ED321",
-      "chartBlue": "#2196F3",
-      "chartOrange": "#FF9800",
-      "chartRed": "#F44336",
-      "chartTeal": "#009688"
-    }
-  },
-
-  "typography": {
-    "fontFamily": {
-      "primary": "SF Pro Display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      "secondary": "SF Pro Text, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-    },
-    "scale": {
-      "h1": {
-        "fontSize": "32px",
-        "fontWeight": "700",
-        "lineHeight": "1.2",
-        "letterSpacing": "-0.02em"
-      },
-      "h2": {
-        "fontSize": "28px",
-        "fontWeight": "600",
-        "lineHeight": "1.25",
-        "letterSpacing": "-0.01em"
-      },
-      "h3": {
-        "fontSize": "24px",
-        "fontWeight": "600",
-        "lineHeight": "1.3"
-      },
-      "body1": {
-        "fontSize": "16px",
-        "fontWeight": "400",
-        "lineHeight": "1.5"
-      },
-      "body2": {
-        "fontSize": "14px",
-        "fontWeight": "400",
-        "lineHeight": "1.4"
-      },
-      "caption": {
-        "fontSize": "12px",
-        "fontWeight": "400",
-        "lineHeight": "1.3",
-        "color": "gray500"
-      },
-      "number": {
-        "fontSize": "48px",
-        "fontWeight": "700",
-        "lineHeight": "1.1"
-      },
-      "metric": {
-        "fontSize": "20px",
-        "fontWeight": "600",
-        "lineHeight": "1.2"
-      }
-    }
-  },
-
-  "spacing": {
-    "scale": {
-      "xs": "4px",
-      "sm": "8px",
-      "md": "16px",
-      "lg": "24px",
-      "xl": "32px",
-      "2xl": "48px",
-      "3xl": "64px"
-    },
-    "containerPadding": "20px",
-    "sectionGap": "24px",
-    "cardPadding": "16px",
-    "iconSpacing": "8px"
-  },
-
-  "borderRadius": {
-    "sm": "8px",
-    "md": "12px",
-    "lg": "16px",
-    "xl": "20px",
-    "full": "50%",
-    "card": "16px",
-    "button": "12px"
-  },
-
-  "shadows": {
-    "subtle": "0 1px 3px rgba(0, 0, 0, 0.1)",
-    "card": "0 4px 12px rgba(0, 0, 0, 0.1)",
-    "floating": "0 8px 24px rgba(0, 0, 0, 0.12)",
-    "none": "none"
-  },
-
-  "components": {
-    "cards": {
-      "primary": {
-        "background": "white",
-        "borderRadius": "card",
-        "padding": "cardPadding",
-        "shadow": "card",
-        "border": "none"
-      },
-      "metric": {
-        "background": "white",
-        "borderRadius": "lg",
-        "padding": "lg",
-        "minHeight": "120px",
-        "textAlign": "left"
-      },
-      "progress": {
-        "background": "linear-gradient(135deg, #7ED321 0%, #A4E157 100%)",
-        "borderRadius": "xl",
-        "padding": "lg",
-        "color": "white"
+    "name": "Modern Mobile Profile Navigation",
+    "style": "Minimalist Dark with Accent Colors",
+    "designPhilosophy": "Clean, hierarchical, gesture-friendly mobile interface with focus on content clarity and intuitive navigation",
+    
+    "layout": {
+      "type": "Vertical Stack",
+      "structure": {
+        "container": {
+          "type": "Full-screen modal/drawer",
+          "background": "Dark gradient or solid dark",
+          "borderRadius": "16-24px for modal, 0 for full-screen",
+          "padding": "20-24px horizontal, 32px top"
+        },
+        "sections": [
+          {
+            "name": "Profile Header",
+            "layout": "Horizontal flex",
+            "alignment": "Center-left",
+            "spacing": "12-16px",
+            "components": ["Avatar", "User Info", "Status Indicator"]
+          },
+          {
+            "name": "Navigation Menu",
+            "layout": "Vertical stack",
+            "spacing": "4-8px between items",
+            "marginTop": "24-32px"
+          },
+          {
+            "name": "Action Card",
+            "position": "Bottom section or floating",
+            "marginTop": "auto or 32px"
+          }
+        ]
       }
     },
     
-    "buttons": {
+    "colorPalette": {
       "primary": {
-        "background": "primary.brand",
-        "color": "white",
-        "borderRadius": "button",
-        "padding": "12px 24px",
-        "fontWeight": "600",
-        "border": "none",
-        "minHeight": "48px"
+        "background": "#1a1f2e to #0f1419",
+        "surface": "#242938",
+        "surfaceHover": "#2a3142"
       },
-      "secondary": {
-        "background": "gray100",
-        "color": "gray900",
-        "borderRadius": "button",
-        "padding": "12px 24px",
-        "fontWeight": "500",
-        "border": "none"
+      "accent": {
+        "blue": "#4A9EFF",
+        "blueGradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        "purple": "#7C3AED",
+        "pink": "#EC4899"
       },
-      "icon": {
-        "background": "primary.brand",
-        "color": "white",
-        "borderRadius": "full",
-        "size": "48px",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center"
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "#94A3B8",
+        "tertiary": "#64748B",
+        "muted": "#475569"
+      },
+      "semantic": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "info": "#3B82F6"
       }
     },
-
-    "progressIndicators": {
-      "circular": {
-        "strokeWidth": "8px",
-        "size": "64px",
-        "backgroundColor": "gray200",
-        "progressColor": "primary.brand"
+    
+    "typography": {
+      "fontFamily": {
+        "primary": "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif",
+        "mono": "'SF Mono', 'Fira Code', monospace"
       },
-      "bar": {
-        "height": "8px",
-        "backgroundColor": "gray200",
-        "progressColor": "primary.brand",
-        "borderRadius": "full"
+      "scale": {
+        "username": {
+          "fontSize": "18-20px",
+          "fontWeight": "600-700",
+          "lineHeight": "1.2"
+        },
+        "subtitle": {
+          "fontSize": "13-14px",
+          "fontWeight": "400",
+          "color": "text.secondary"
+        },
+        "menuItem": {
+          "fontSize": "15-16px",
+          "fontWeight": "500",
+          "lineHeight": "1.5"
+        },
+        "label": {
+          "fontSize": "12-13px",
+          "fontWeight": "500",
+          "textTransform": "none",
+          "letterSpacing": "0.02em"
+        }
       }
     },
-
-    "charts": {
-      "barChart": {
-        "barRadius": "sm",
-        "barSpacing": "md",
-        "gridColor": "gray200",
-        "labelColor": "gray500"
+    
+    "components": {
+      "avatar": {
+        "size": "48-56px",
+        "borderRadius": "50%",
+        "border": "2px solid rgba(255,255,255,0.1)",
+        "shadow": "0 4px 12px rgba(0,0,0,0.2)"
       },
-      "lineChart": {
-        "strokeWidth": "2px",
-        "pointRadius": "4px",
-        "gridColor": "gray200"
-      }
-    },
-
-    "navigation": {
-      "tabBar": {
-        "background": "white",
-        "height": "80px",
-        "padding": "sm lg",
-        "borderTop": "1px solid gray200",
-        "activeColor": "primary.brand",
-        "inactiveColor": "gray400"
-      }
-    }
-  },
-
-  "layoutPatterns": {
-    "dashboard": {
-      "structure": "header + metrics_grid + content_sections",
-      "header": {
-        "padding": "lg",
-        "background": "white",
-        "elements": ["greeting", "profile_avatar", "notifications"]
+      
+      "menuItem": {
+        "height": "48-56px",
+        "padding": "12px 16px",
+        "borderRadius": "8-12px",
+        "background": "transparent",
+        "hoverBackground": "rgba(255,255,255,0.05)",
+        "activeBackground": "rgba(255,255,255,0.08)",
+        "transition": "all 0.2s ease",
+        "layout": {
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between"
+        },
+        "icon": {
+          "size": "20-24px",
+          "marginRight": "12-16px",
+          "color": "text.secondary"
+        },
+        "chevron": {
+          "size": "16-20px",
+          "color": "text.tertiary",
+          "marginLeft": "auto"
+        },
+        "toggle": {
+          "width": "44-48px",
+          "height": "24-28px",
+          "borderRadius": "full",
+          "background": "rgba(255,255,255,0.1)",
+          "activeBackground": "accent.blue"
+        }
       },
-      "metricsGrid": {
-        "display": "grid",
-        "columns": "2",
-        "gap": "md",
-        "padding": "0 lg"
+      
+      "actionCard": {
+        "background": "linear-gradient(135deg, accent colors)",
+        "borderRadius": "12-16px",
+        "padding": "16-20px",
+        "minHeight": "80-100px",
+        "shadow": "0 8px 24px rgba(0,0,0,0.3)",
+        "content": {
+          "title": {
+            "fontSize": "14-16px",
+            "fontWeight": "600",
+            "color": "white",
+            "marginBottom": "4px"
+          },
+          "description": {
+            "fontSize": "12-13px",
+            "fontWeight": "400",
+            "color": "rgba(255,255,255,0.8)",
+            "lineHeight": "1.4"
+          }
+        },
+        "animation": "subtle float or pulse"
       }
     },
-
-    "onboarding": {
-      "structure": "hero_image + title + subtitle + cta",
-      "heroRatio": "60% of screen height",
-      "contentPadding": "xl",
-      "ctaPosition": "bottom with safe area"
-    },
-
-    "statistics": {
-      "structure": "header + main_metric + charts_grid + additional_metrics",
-      "mainMetric": {
-        "position": "top center",
-        "emphasis": "large typography + prominent positioning"
-      }
-    }
-  },
-
-  "interactionPatterns": {
-    "cardTap": {
-      "feedback": "scale(0.98) + subtle shadow increase",
-      "duration": "150ms"
-    },
-    "buttonPress": {
-      "feedback": "scale(0.96) + opacity(0.8)",
-      "duration": "100ms"
-    },
-    "progressAnimation": {
-      "type": "smooth interpolation",
-      "duration": "800ms",
-      "easing": "ease-out"
-    }
-  },
-
-  "dataVisualization": {
-    "principles": {
-      "colorCoding": "Consistent colors across related metrics",
-      "hierarchy": "Size and position indicate importance",
-      "clarity": "Clear labels and units for all data points"
-    },
-    "chartTypes": {
-      "barChart": {
-        "use": "Weekly/daily comparisons",
-        "style": "Rounded bars with consistent spacing"
+    
+    "spacing": {
+      "unit": 4,
+      "scale": {
+        "xs": "4px",
+        "sm": "8px",
+        "md": "16px",
+        "lg": "24px",
+        "xl": "32px",
+        "2xl": "48px"
       },
-      "lineChart": {
-        "use": "Trends over time",
-        "style": "Smooth curves with point indicators"
-      },
-      "circularProgress": {
-        "use": "Goal completion status",
-        "style": "Thick stroke with center text"
+      "containerPadding": {
+        "mobile": "20px",
+        "tablet": "24px"
       }
-    }
-  },
-
-  "contentStrategy": {
-    "messaging": {
-      "tone": "Encouraging and supportive",
-      "personalisation": "Use user's name and personal metrics",
-      "motivation": "Progress-focused language"
     },
-    "dataPresentation": {
-      "hierarchy": "Primary metric > secondary metrics > detailed charts",
-      "units": "Always visible and consistent",
-      "context": "Comparisons to goals/previous periods"
-    }
-  },
-
-  "accessibility": {
-    "colorContrast": "Minimum 4.5:1 for text",
-    "touchTargets": "Minimum 44px for interactive elements",
-    "textScaling": "Supports dynamic type sizing",
-    "semanticLabels": "All interactive elements properly labeled"
-  },
-
-  "responsiveness": {
-    "breakpoints": {
-      "mobile": "320px - 767px",
-      "tablet": "768px - 1023px",
-      "desktop": "1024px+"
+    
+    "animations": {
+      "transition": {
+        "default": "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        "slow": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "spring": "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)"
+      },
+      "hover": {
+        "scale": "scale(1.02)",
+        "brightness": "brightness(1.1)",
+        "shadow": "0 6px 20px rgba(0,0,0,0.15)"
+      },
+      "entrance": {
+        "slideUp": "translateY(20px) to translateY(0)",
+        "fadeIn": "opacity 0 to 1",
+        "duration": "0.3s"
+      }
     },
-    "adaptations": {
-      "mobile": "Single column layouts, full-width cards",
-      "tablet": "2-3 column grids, larger charts",
-      "desktop": "Multi-column dashboards, sidebar navigation"
+    
+    "interactionPatterns": {
+      "navigation": {
+        "type": "Tap to navigate",
+        "feedback": "Ripple effect or background change",
+        "transition": "Smooth slide or fade"
+      },
+      "toggles": {
+        "type": "Slide toggle",
+        "feedback": "Smooth animation with color change"
+      },
+      "cards": {
+        "type": "Tap to action",
+        "feedback": "Scale and shadow on press"
+      }
+    },
+    
+    "accessibility": {
+      "touchTargets": {
+        "minSize": "44x44px",
+        "spacing": "8px minimum between targets"
+      },
+      "contrast": {
+        "textOnDark": "AAA compliant",
+        "minRatio": "7:1 for normal text"
+      },
+      "focus": {
+        "outline": "2px solid accent.blue",
+        "outlineOffset": "2px"
+      }
+    },
+    
+    "responsive": {
+      "breakpoints": {
+        "mobile": "320-767px",
+        "tablet": "768-1023px"
+      },
+      "behavior": {
+        "mobile": "Full-screen drawer from left/right or bottom sheet",
+        "tablet": "Side panel with overlay"
+      }
+    },
+    
+    "effects": {
+      "backdrop": {
+        "blur": "8-12px",
+        "overlay": "rgba(0,0,0,0.5)"
+      },
+      "glassmorphism": {
+        "background": "rgba(255,255,255,0.05)",
+        "backdropFilter": "blur(10px)",
+        "border": "1px solid rgba(255,255,255,0.1)"
+      },
+      "shadows": {
+        "sm": "0 2px 4px rgba(0,0,0,0.1)",
+        "md": "0 4px 12px rgba(0,0,0,0.15)",
+        "lg": "0 8px 24px rgba(0,0,0,0.2)",
+        "xl": "0 16px 48px rgba(0,0,0,0.25)"
+      }
     }
   }
-}
+ }
