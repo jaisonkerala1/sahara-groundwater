@@ -77,29 +77,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
         $openRouterRequest = [];
         
         if ($file['type'] === 'application/pdf') {
-            error_log('📄 Processing PDF via OpenRouter PDF engines (base64 JSON fallback)');
+            error_log('📄 Processing PDF via OpenRouter using pdf_urls (hosted temporary file)');
 
-            // Encode the PDF as base64 data URI
-            $pdfBase64 = base64_encode(file_get_contents($file['tmp_name']));
-            $dataUri = 'data:application/pdf;base64,' . $pdfBase64;
+            // Ensure uploads directory
+            $uploadsDir = __DIR__ . '/uploads';
+            if (!is_dir($uploadsDir)) {
+                @mkdir($uploadsDir, 0755, true);
+            }
+            $safeName = 'report_' . uniqid() . '.pdf';
+            $destPath = $uploadsDir . '/' . $safeName;
+            if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+                // fallback: copy
+                copy($file['tmp_name'], $destPath);
+            }
 
-            $makeJsonCall = function(string $engine) use ($dataUri) {
+            // Build public URL
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $publicUrl = $scheme . '://' . $host . '/uploads/' . $safeName;
+            error_log('🔗 Uploaded PDF available at: ' . $publicUrl);
+
+            $callWithEngine = function(string $engine) use ($publicUrl) {
                 $payload = [
                     'model' => 'anthropic/claude-3-haiku',
-                    'pdf_engine' => $engine, // pdf-text (free) or mistral-ocr (paid OCR)
+                    'pdf_engine' => $engine,
+                    'pdf_urls' => [$publicUrl],
                     'messages' => [[
                         'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'text',
-                                'text' => 'You are analyzing a Sahara Groundwater Kerala SURVEY REPORT PDF. STRICT RULES: Extract ONLY values present in the document. Do NOT guess. For missing fields, return "Not specified". Return ONLY clean JSON with keys: customerName, bookingId, bookingDate, surveyDate, phoneNumber, district, location, pointNumber, rockDepth, maximumDepth, percentageChance, chanceLevel, suggestedSourceType, latitude, longitude, geologicalAnalysis, recommendations.'
-                            ],
-                            [
-                                'type' => 'input_file',
-                                'mime_type' => 'application/pdf',
-                                'data' => $dataUri
-                            ]
-                        ]
+                        'content' => 'Analyze the attached Sahara Groundwater Kerala SURVEY REPORT PDF (see pdf_urls). Extract ONLY visible values. Missing fields => "Not specified". Return ONLY JSON with keys: customerName, bookingId, bookingDate, surveyDate, phoneNumber, district, location, pointNumber, rockDepth, maximumDepth, percentageChance, chanceLevel, suggestedSourceType, latitude, longitude, geologicalAnalysis, recommendations.'
                     ]],
                     'max_tokens' => 1500,
                     'temperature' => 0
@@ -118,18 +123,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                 curl_setopt($ch, CURLOPT_TIMEOUT, 90);
                 $resp = curl_exec($ch);
                 $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                if ($resp === false) {
-                    $err = curl_error($ch);
-                }
+                if ($resp === false) { $err = curl_error($ch); }
                 curl_close($ch);
                 return [$code, $resp ?? '', $err ?? null];
             };
 
-            // Try structured engine first, then OCR engine
-            [$httpCode, $response, $curlErr] = $makeJsonCall('pdf-text');
+            [$httpCode, $response, $curlErr] = $callWithEngine('pdf-text');
             if ($httpCode !== 200 || !$response) {
-                error_log('pdf-text engine (base64) failed (status ' . $httpCode . '; curlErr=' . ($curlErr ?? 'none') . '), retrying with mistral-ocr');
-                [$httpCode, $response, $curlErr] = $makeJsonCall('mistral-ocr');
+                error_log('pdf-text via url failed (status ' . $httpCode . '; err=' . ($curlErr ?? 'none') . '), trying mistral-ocr');
+                [$httpCode, $response, $curlErr] = $callWithEngine('mistral-ocr');
             }
 
             if ($httpCode !== 200) {
