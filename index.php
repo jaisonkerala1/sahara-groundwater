@@ -77,16 +77,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
         $openRouterRequest = [];
         
         if ($file['type'] === 'application/pdf') {
-            error_log('📄 Processing PDF file - Note: AI cannot read PDF directly');
+            error_log('📄 Processing PDF file - trying with Claude model which may handle PDFs better');
             
-            // Return error message asking for image upload instead
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'error' => 'PDF analysis is not supported yet. Please convert your PDF to images (PNG/JPG) and upload the image instead. You can take a screenshot of your PDF or convert it to images.',
-                'suggestion' => 'Upload screenshots or images of your survey report for AI analysis'
-            ]);
-            exit();
+            // Try with Claude model which might handle PDFs better
+            $openRouterRequest = [
+                'model' => 'anthropic/claude-3-haiku', // Claude might handle PDFs better than GPT
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => 'I have uploaded a PDF groundwater survey report from Sahara Groundwater Kerala. The PDF contains structured data in specific sections:
+
+1. CUSTOMER DETAILS section with: Customer Name, Booking ID, Booking Date, Survey Date, Phone Number, District
+2. GEOPHYSICAL SURVEY RESULT section with: Point number, Rock Depth, Maximum Depth, Percentage of Chance, coordinates
+3. SUMMARY section with geological analysis
+
+Please extract the actual data from this PDF and return it in JSON format:
+
+{
+  "customerName": "[extract from Customer Name field]",
+  "bookingId": "[extract from Booking ID field]", 
+  "bookingDate": "[extract from Booking Date field]",
+  "surveyDate": "[extract from Survey Date field]",
+  "phoneNumber": "[extract from Phone Number field]",
+  "district": "[extract from District field]",
+  "location": "[extract from City/Location field]",
+  "pointNumber": "[extract from Point number field]",
+  "rockDepth": "[extract from Rock Depth field]",
+  "maximumDepth": "[extract from Maximum Depth field]",
+  "percentageChance": "[extract from Percentage of Chance field]",
+  "chanceLevel": "[Low/Medium/High based on percentage]",
+  "suggestedSourceType": "[extract from Suggested Type of Source field]",
+  "latitude": "[extract latitude coordinate]",
+  "longitude": "[extract longitude coordinate]",
+  "geologicalAnalysis": "[extract geological analysis from SUMMARY]",
+  "recommendations": "[extract recommendations/advisory text]"
+}
+
+If you cannot read the PDF content, please indicate which fields you cannot extract. Return only valid JSON.'
+                    ]
+                ],
+                'max_tokens' => 1500,
+                'temperature' => 0.1
+            ];
         } else {
             // For images, use vision analysis
             error_log('🖼️ Processing image file - ACTUALLY ANALYZING image content with AI vision');
