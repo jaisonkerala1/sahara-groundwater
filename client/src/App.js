@@ -344,7 +344,7 @@ function App() {
                       {isDragOver ? 'Drop your file here' : 'Choose a file or drag it here'}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Supports PDF, PNG, JPG up to 25MB. Includes PQWT contour map analysis for drilling point detection.
+                      Supports PDF, PNG, JPG up to 25MB. Analyzes survey reports and PQWT contour maps for drilling point detection.
                     </p>
                     </div>
                 </div>

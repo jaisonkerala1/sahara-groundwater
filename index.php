@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'You are analyzing an uploaded image. First, verify STRICTLY if this is a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo (look for Sahara logo/text and sections like CUSTOMER DETAILS, GEOPHYSICAL SURVEY RESULT) OR a PQWT (Proton Precession Magnetometer) contour map for groundwater detection. If it is NOT a Sahara Groundwater report or PQWT map, respond ONLY with this JSON: {"notSaharaReport": true}. 
+                                'text' => 'You are analyzing an uploaded image. This could be either a Sahara Groundwater Kerala SURVEY REPORT screenshot/photo OR a PQWT (Proton Precession Magnetometer) contour map for groundwater detection from any provider. If it is neither a survey report nor a PQWT map, respond ONLY with this JSON: {"notSaharaReport": true}. 
 
 IF THIS IS A PQWT CONTOUR MAP:
 Look for a grid-based map with color gradients (blue to red) showing water potential. Blue areas indicate high water potential. Analyze the map to identify:
@@ -351,7 +351,7 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
         if (is_array($parsedAnalysis) && isset($parsedAnalysis['notSaharaReport']) && $parsedAnalysis['notSaharaReport'] === true) {
             http_response_code(400);
             echo json_encode([
-                'error' => 'Only Sahara Groundwater reports are supported. Please upload a Sahara Groundwater report PDF or screenshot.'
+                'error' => 'Please upload a groundwater survey report (PDF or image) or a PQWT contour map for analysis.'
             ]);
             exit();
         }
