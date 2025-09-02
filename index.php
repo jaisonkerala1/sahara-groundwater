@@ -77,70 +77,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
         $openRouterRequest = [];
         
         if ($file['type'] === 'application/pdf') {
-            error_log('📄 Processing PDF file - attempting text extraction');
-            
-            // Attempt to extract text from PDF
-            $pdfText = '';
-            
-            // Try using pdftotext if available (most Linux servers have this)
-            $tempFile = $file['tmp_name'];
-            $textFile = tempnam(sys_get_temp_dir(), 'pdf_extract_') . '.txt';
-            
-            // Try pdftotext command (if available on server)
-            $command = "pdftotext '$tempFile' '$textFile' 2>/dev/null";
-            exec($command, $output, $returnCode);
-            
-            if ($returnCode === 0 && file_exists($textFile)) {
-                $pdfText = file_get_contents($textFile);
-                unlink($textFile); // Clean up
-                error_log('✅ Successfully extracted text from PDF: ' . strlen($pdfText) . ' characters');
-                error_log('📝 First 200 chars of extracted text: ' . substr($pdfText, 0, 200));
-                
-                // If we got very little text, the extraction might have failed
-                if (strlen(trim($pdfText)) < 50) {
-                    error_log('⚠️ Very little text extracted, might be image-based PDF');
-                    $pdfText = 'PDF contains very little extractable text (possibly image-based). Please analyze as typical Sahara Groundwater report and generate realistic Kerala data.';
-                }
-                
-                // Basic brand validation: allow only Sahara Groundwater reports
-                $brandIndicators = [
-                    'sahara groundwater',
-                    'groundwater survey report',
-                    'geophysical survey result',
-                    'booking id',
-                    'survey date',
-                ];
-                $isSaharaPdf = false;
-                $lowerPdfText = strtolower($pdfText);
-                foreach ($brandIndicators as $indicator) {
-                    if (strpos($lowerPdfText, $indicator) !== false) {
-                        $isSaharaPdf = true;
-                        break;
-                    }
-                }
-                // Enforce strictly only when SAHARA_STRICT=1 (default relaxed locally)
-                $shouldEnforce = isset($_ENV['SAHARA_STRICT']) ? $_ENV['SAHARA_STRICT'] === '1' : false;
-                if (!$isSaharaPdf && $shouldEnforce) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'Only Sahara Groundwater reports are supported. Please upload a Sahara Groundwater report PDF or screenshot.']);
-                    exit();
-                }
-            } else {
-                error_log('❌ pdftotext not available or failed, falling back to instruction-based analysis');
-                $pdfText = 'PDF text extraction not available on server. Please analyze as typical Sahara Groundwater report and generate realistic Kerala data.';
-            }
-            
-            $openRouterRequest = [
-                'model' => 'anthropic/claude-3-haiku', // Claude might handle PDFs better than GPT
-                'messages' => [
+            error_log('📄 Processing PDF via OpenRouter PDF engines (multipart upload)');
+
+            // Build a multipart request to OpenRouter with pdf_engine preference
+            $makePdfCall = function(string $engine) use ($file) {
+                $boundary = '----ORForm' . md5((string)microtime(true));
+                $eol = "\r\n";
+                $model = 'anthropic/claude-3-haiku';
+
+                // Compose multipart body
+                $body  = "--{$boundary}{$eol}";
+                $body .= "Content-Disposition: form-data; name=\"model\"{$eol}{$eol}{$model}{$eol}";
+                $body .= "--{$boundary}{$eol}";
+                $body .= "Content-Disposition: form-data; name=\"pdf_engine\"{$eol}{$eol}{$engine}{$eol}";
+                $body .= "--{$boundary}{$eol}";
+                $body .= "Content-Disposition: form-data; name=\"messages\"{$eol}{$eol}";
+                $body .= json_encode([
                     [
                         'role' => 'user',
-                        'content' => 'You are analyzing a Sahara Groundwater Kerala SURVEY REPORT PDF. Here is the extracted text content:\n\n' . $pdfText . '\n\nSTRICT RULES:\n- Extract ONLY values that are explicitly present in the text.\n- DO NOT fabricate or "guess" missing values.\n- If a field is missing or unreadable, set it to "Not specified".\n- Return clean JSON only, with no extra commentary.\n\nReturn JSON with these keys exactly:\n{\n  "customerName": "... or Not specified",\n  "bookingId": "... or Not specified",\n  "bookingDate": "YYYY-MM-DD or Not specified",\n  "surveyDate": "YYYY-MM-DD or Not specified",\n  "phoneNumber": "... or Not specified",\n  "district": "... or Not specified",\n  "location": "... or Not specified",\n  "pointNumber": "... or Not specified",\n  "rockDepth": "... or Not specified",\n  "maximumDepth": "... or Not specified",\n  "percentageChance": "... or Not specified",\n  "chanceLevel": "Low/Medium/High or Not specified",\n  "suggestedSourceType": "... or Not specified",\n  "latitude": "... or Not specified",\n  "longitude": "... or Not specified",\n  "geologicalAnalysis": "... or Not specified",\n  "recommendations": "... or Not specified"\n}'
+                        'content' => 'You are analyzing a Sahara Groundwater Kerala SURVEY REPORT PDF. STRICT RULES: Extract ONLY values present in the document. Do NOT guess. For missing fields, return "Not specified". Return ONLY clean JSON with keys: customerName, bookingId, bookingDate, surveyDate, phoneNumber, district, location, pointNumber, rockDepth, maximumDepth, percentageChance, chanceLevel, suggestedSourceType, latitude, longitude, geologicalAnalysis, recommendations.'
                     ]
-                ],
-                'max_tokens' => 1500,
-                'temperature' => 0
-            ];
+                ]) . $eol;
+                $body .= "--{$boundary}{$eol}";
+                $body .= "Content-Disposition: form-data; name=\"file\"; filename=\"" . addslashes($file['name']) . "\"{$eol}";
+                $body .= "Content-Type: application/pdf{$eol}{$eol}";
+                $body .= file_get_contents($file['tmp_name']) . $eol;
+                $body .= "--{$boundary}--{$eol}";
+
+                $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Authorization: Bearer ' . $_ENV['OPENROUTER_API_KEY'],
+                    'Content-Type: multipart/form-data; boundary=' . $boundary,
+                    'HTTP-Referer: https://report.saharagroundwater.com',
+                    'X-Title: Sahara Groundwater Kerala Survey App'
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+                $resp = curl_exec($ch);
+                $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                return [$code, $resp];
+            };
+
+            // Try free structured engine first, then OCR if needed
+            [$httpCode, $response] = $makePdfCall('pdf-text');
+            if ($httpCode !== 200 || !$response) {
+                error_log('pdf-text engine failed (status ' . $httpCode . '), retrying with mistral-ocr');
+                [$httpCode, $response] = $makePdfCall('mistral-ocr');
+            }
+
+            if ($httpCode !== 200) {
+                http_response_code(500);
+                echo json_encode([
+                    'error' => 'Failed to analyze PDF via OpenRouter',
+                    'status' => $httpCode,
+                    'details' => $response
+                ]);
+                exit();
+            }
+
+            $aiResponse = json_decode($response, true);
+            $analysisText = $aiResponse['choices'][0]['message']['content'] ?? '';
+
+            if (empty($analysisText)) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Empty analysis from OpenRouter']);
+                exit();
+            }
+
+            // Continue into the common parsing flow below using $analysisText
+            // by setting variables as if we already did the generic request
+            $response = json_encode(['choices' => [['message' => ['content' => $analysisText]]]]);
+            $httpCode = 200;
+            // fall-through to common parsing after request section
+            // (we will skip building $openRouterRequest here)
+            $openRouterRequest = null;
+            $skipDirectCall = true;
         } else {
             // For images, use vision analysis
             error_log('🖼️ Processing image file - ACTUALLY ANALYZING image content with AI vision');
@@ -209,23 +223,25 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
             ];
         }
 
-        // Send request to OpenRouter
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://openrouter.ai/api/v1/chat/completions');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($openRouterRequest));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $_ENV['OPENROUTER_API_KEY'],
-            'Content-Type: application/json',
-            'HTTP-Referer: https://report.saharagroundwater.com',
-            'X-Title: Sahara Groundwater Kerala Survey App'
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 40);
+        if (!isset($skipDirectCall)) {
+            // Send JSON request to OpenRouter (image or text path)
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://openrouter.ai/api/v1/chat/completions');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($openRouterRequest));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $_ENV['OPENROUTER_API_KEY'],
+                'Content-Type: application/json',
+                'HTTP-Referer: https://report.saharagroundwater.com',
+                'X-Title: Sahara Groundwater Kerala Survey App'
+            ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 40);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        }
 
         error_log('OpenRouter response status: ' . $httpCode);
 
