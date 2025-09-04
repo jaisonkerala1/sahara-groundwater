@@ -222,9 +222,11 @@ Even if it does not have all these features, if it looks like a scientific/geolo
 
 SIMPLE ANALYSIS:
 1. Find the LARGEST, DARKEST blue area on the map
-2. Find the center of that blue area horizontally (X-axis position)
-3. Select that X-axis position as the drilling point
-4. Dark blue = best water potential, light blue = good, yellow/red = avoid
+2. Check if this blue area has a clear structure (V-shaped, triangle, or round shape)
+3. If blue color AND clear structure are both present, select the X-axis point at the center of that structure
+4. Find the center of that blue area horizontally (X-axis position)
+5. Select that X-axis position as the drilling point
+6. Dark blue = best water potential, light blue = good, yellow/red = avoid
 
 For PQWT maps, return this JSON format:
 {
