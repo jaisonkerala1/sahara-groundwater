@@ -31,9 +31,73 @@ if (file_exists($envFile)) {
     }
 }
 
+// WordPress integration functions
+function check_wordpress_user_access($user_id) {
+    $wp_api_url = 'https://saharagroundwater.com/wp-json/sahara/v1/check-access/' . $user_id;
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $wp_api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($http_code !== 200) {
+        return false;
+    }
+    
+    $data = json_decode($response, true);
+    return $data;
+}
+
+function track_analysis_usage($user_id) {
+    $wp_api_url = 'https://saharagroundwater.com/wp-json/sahara/v1/track-analysis';
+    
+    $post_data = http_build_query(['user_id' => $user_id]);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $wp_api_url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    return $http_code === 200;
+}
+
 // API endpoint for survey analysis
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
     try {
+        // Check if user is authenticated
+        $user_id = $_POST['user_id'] ?? null;
+        
+        if (!$user_id) {
+            http_response_code(401);
+            echo json_encode(['error' => 'User not authenticated. Please login first.']);
+            exit();
+        }
+        
+        // Check subscription or daily limit
+        $access_data = check_wordpress_user_access($user_id);
+        
+        if (!$access_data || !$access_data['has_access']) {
+            http_response_code(403);
+            echo json_encode([
+                'error' => 'Daily limit reached. Subscribe for unlimited access.',
+                'subscription_required' => true,
+                'price' => $access_data['monthly_price'] ?? 100,
+                'currency' => 'INR',
+                'reason' => $access_data['reason'] ?? 'Access denied'
+            ]);
+            exit();
+        }
+        
         // Check if file was uploaded
         if (!isset($_FILES['surveyFile']) || $_FILES['surveyFile']['error'] !== UPLOAD_ERR_OK) {
             http_response_code(400);
@@ -420,6 +484,9 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
             exit();
         }
 
+        // Track analysis usage
+        track_analysis_usage($user_id);
+        
         echo json_encode([
             'success' => true,
             'surveyAnalysis' => $parsedAnalysis,
