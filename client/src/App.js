@@ -64,17 +64,19 @@ function App() {
   // Check for stored user info from main site
   useEffect(() => {
     const storedUser = localStorage.getItem('sahara_user');
+    console.log('Raw stored user data:', storedUser);
+    
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
-        console.log('Found stored user:', userData);
+        console.log('Parsed user data:', userData);
         setUser(userData);
       } catch (error) {
         console.error('Error parsing stored user data:', error);
         localStorage.removeItem('sahara_user');
       }
     } else {
-      console.log('No stored user found');
+      console.log('No stored user found in localStorage');
     }
   }, []);
 
