@@ -265,6 +265,15 @@ CRITICAL BIAS CORRECTION FOR X-AXIS SELECTION:
 - Higher X-axis numbers are NOT automatically better - the center of the best blue zone is what matters
 - Example: If blue zone is widest and darkest around X=2, select X=2, not X=3 or X=4
 
+MANDATORY STEP-BY-STEP X-AXIS ANALYSIS:
+1. Scan the entire map and identify the SINGLE LARGEST, DARKEST blue zone
+2. Determine the horizontal boundaries of this blue zone (e.g., from X=1 to X=3)
+3. Calculate the geometric center: (left_boundary + right_boundary) / 2
+4. Select the X-axis point closest to this calculated center
+5. If the largest blue zone is centered around X=2, select X=2, NOT X=3
+6. Do NOT select X=3 just because it shows blue - select the CENTER of the best blue zone
+7. The center of the largest blue zone is ALWAYS the optimal drilling point
+
 For PQWT maps, return this JSON format:
 {
   "isPQWTMap": true,
