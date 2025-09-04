@@ -30,7 +30,8 @@ function App() {
   const [subscriptionRequired, setSubscriptionRequired] = useState(false);
   const [subscriptionData, setSubscriptionData] = useState(null);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '' });
   const fileInputRef = useRef(null);
 
   // Ripple effect utility
@@ -60,6 +61,20 @@ function App() {
     };
   }, []);
 
+  // Check for stored user info from main site
+  useEffect(() => {
+    const storedUser = localStorage.getItem('sahara_user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        localStorage.removeItem('sahara_user');
+      }
+    }
+  }, []);
+
   // Check user access
   const checkUserAccess = async (userId) => {
     try {
@@ -76,20 +91,68 @@ function App() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // For now, we'll use a simple user ID system
-      // In production, you'd integrate with WordPress login API
-      const userId = 1; // This should come from actual login
-      const accessData = await checkUserAccess(userId);
-      
-      if (accessData) {
-        setUser({ id: userId, ...accessData });
+      const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: loginForm.email,
+          password: loginForm.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setUser({
+          id: data.user_id,
+          email: data.email,
+          name: data.name,
+          ...data.access
+        });
         setShowLoginForm(false);
         setError(null);
       } else {
-        setError('Login failed. Please try again.');
+        setError(data.message || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
       setError('Login failed. Please try again.');
+    }
+  };
+
+  // Handle registration
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: loginForm.email,
+          password: loginForm.password,
+          name: loginForm.name || loginForm.email.split('@')[0]
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setUser({
+          id: data.user_id,
+          email: data.email,
+          name: data.name,
+          ...data.access
+        });
+        setShowLoginForm(false);
+        setError(null);
+      } else {
+        setError(data.message || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      setError('Registration failed. Please try again.');
     }
   };
 
@@ -123,7 +186,7 @@ function App() {
   // Verify payment
   const verifyPayment = async (paymentResponse) => {
     try {
-      // Send payment verification to your backend
+      // Send payment verification to WordPress
       const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/verify-payment', {
         method: 'POST',
         headers: {
@@ -137,14 +200,17 @@ function App() {
         })
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         // Update user subscription status
         const updatedAccess = await checkUserAccess(user.id);
         setUser({ ...user, ...updatedAccess });
         setSubscriptionRequired(false);
         setError(null);
+        alert('Subscription activated successfully! You now have unlimited access.');
       } else {
-        setError('Payment verification failed. Please contact support.');
+        setError(data.message || 'Payment verification failed. Please contact support.');
       }
     } catch (error) {
       setError('Payment verification failed. Please contact support.');
@@ -326,15 +392,31 @@ function App() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Login Required</h2>
+              <h2 className="text-xl font-bold">{isRegistering ? 'Create Account' : 'Login Required'}</h2>
               <button 
                 className="text-gray-500 hover:text-gray-700"
-                onClick={() => setShowLoginForm(false)}
+                onClick={() => {
+                  setShowLoginForm(false);
+                  setIsRegistering(false);
+                  setLoginForm({ email: '', password: '', name: '' });
+                }}
               >
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-4">
+              {isRegistering && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={loginForm.name}
+                    onChange={(e) => setLoginForm({...loginForm, name: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
@@ -359,10 +441,14 @@ function App() {
                 type="submit" 
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Login
+                {isRegistering ? 'Create Account' : 'Login'}
               </button>
               <p className="text-sm text-gray-600 text-center">
-                Don't have an account? <a href="https://saharagroundwater.com/register" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Register here</a>
+                {isRegistering ? (
+                  <>Already have an account? <button type="button" onClick={() => setIsRegistering(false)} className="text-blue-600 hover:underline">Login here</button></>
+                ) : (
+                  <>Don't have an account? <button type="button" onClick={() => setIsRegistering(true)} className="text-blue-600 hover:underline">Register here</button></>
+                )}
               </p>
             </form>
           </div>
