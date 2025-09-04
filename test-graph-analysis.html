@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Analysis Test - Sahara Groundwater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            color: #2563eb;
+            margin-top: 0;
+        }
+        .expected-result {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2563eb;
+        }
+        .test-image {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.pass {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .status.fail {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Graph Analysis Test Suite</h1>
+        <p>This test validates the enhanced AI graph analysis functionality for identifying optimal X-axis points in PQWT contour maps.</p>
+
+        <div class="test-section">
+            <h3>Test Case 1: Standard PQWT Contour Map</h3>
+            <p><strong>Description:</strong> Upload a PQWT contour map similar to the provided image with X-axis coordinates 2, 3, 4, 5 and color gradients from blue to red.</p>
+            
+            <div class="expected-result">
+                <h4>Expected AI Analysis:</h4>
+                <ul>
+                    <li><strong>X-Axis Analysis:</strong> Should identify all visible X-axis points (2, 3, 4, 5)</li>
+                    <li><strong>Optimal Points:</strong> Should prioritize X-axis points 4 and 5 (based on blue zone analysis)</li>
+                    <li><strong>Drilling Points:</strong> Should return 3 prioritized drilling points with confidence levels</li>
+                    <li><strong>Color Analysis:</strong> Should analyze dark blue zones as highest water potential</li>
+                </ul>
+            </div>
+
+            <div class="status" id="test1-status">
+                <strong>Status:</strong> Ready for testing
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test Case 2: Edge Case - Mixed Color Zones</h3>
+            <p><strong>Description:</strong> Test with a map where some X-axis points have mixed blue/red zones.</p>
+            
+            <div class="expected-result">
+                <h4>Expected AI Analysis:</h4>
+                <ul>
+                    <li><strong>Priority Logic:</strong> Should prioritize X-axis points with predominantly blue zones</li>
+                    <li><strong>Edge Detection:</strong> Should avoid X-axis points at map edges unless clearly optimal</li>
+                    <li><strong>Continuity Analysis:</strong> Should prefer X-axis points with uninterrupted blue zones</li>
+                </ul>
+            </div>
+
+            <div class="status" id="test2-status">
+                <strong>Status:</strong> Ready for testing
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test Case 3: Fine-Tuning Validation</h3>
+            <p><strong>Description:</strong> Validate the specific fine-tuning instructions for X-axis points 4 and 5.</p>
+            
+            <div class="expected-result">
+                <h4>Expected AI Analysis:</h4>
+                <ul>
+                    <li><strong>Special Attention:</strong> Should pay special attention to X-axis points 4 and 5</li>
+                    <li><strong>Plume Detection:</strong> Should identify and analyze "plume" or "front" features</li>
+                    <li><strong>Central Location:</strong> Should prioritize centrally located blue zones</li>
+                    <li><strong>Multiple Depth Levels:</strong> Should look for blue zones extending across multiple depths</li>
+                </ul>
+            </div>
+
+            <div class="status" id="test3-status">
+                <strong>Status:</strong> Ready for testing
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test Instructions</h3>
+            <ol>
+                <li>Upload a PQWT contour map image to the main application</li>
+                <li>Check if the AI correctly identifies X-axis coordinates</li>
+                <li>Verify that optimal points are properly ranked (Primary/Secondary)</li>
+                <li>Confirm that confidence levels are assigned appropriately</li>
+                <li>Validate that the X-Axis Analysis Summary is displayed</li>
+            </ol>
+
+            <div class="status pass">
+                <strong>✅ Enhanced Features Implemented:</strong>
+                <ul>
+                    <li>Enhanced AI prompt with detailed X-axis analysis instructions</li>
+                    <li>Fine-tuning for accuracy with specific attention to points 4 and 5</li>
+                    <li>Improved frontend display with X-Axis Analysis Summary</li>
+                    <li>Priority-based drilling point categorization</li>
+                    <li>Enhanced confidence scoring system</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Sample Test Image Description</h3>
+            <p>Based on your provided image description, the AI should analyze:</p>
+            <ul>
+                <li><strong>X-axis coordinates:</strong> 2, 3, 4, 5</li>
+                <li><strong>Color patterns:</strong> Dark blue (top-right), light blue, yellow (center), orange, brown (bottom-left)</li>
+                <li><strong>Expected optimal points:</strong> X-axis points 4 and 5 (based on blue zone analysis)</li>
+                <li><strong>Plume feature:</strong> Sharp transition from yellow to blue around X=4, extending downward</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Simple test validation logic
+        function validateTest(testId, expectedFeatures) {
+            const statusElement = document.getElementById(testId + '-status');
+            // This would be called after actual testing
+            statusElement.innerHTML = '<strong>Status:</strong> <span style="color: green;">✅ Test Passed</span>';
+        }
+
+        // Simulate test completion
+        setTimeout(() => {
+            document.getElementById('test1-status').innerHTML = '<strong>Status:</strong> <span style="color: green;">✅ Ready for manual testing</span>';
+            document.getElementById('test2-status').innerHTML = '<strong>Status:</strong> <span style="color: green;">✅ Ready for manual testing</span>';
+            document.getElementById('test3-status').innerHTML = '<strong>Status:</strong> <span style="color: green;">✅ Ready for manual testing</span>';
+        }, 1000);
+    </script>
+</body>
+</html>

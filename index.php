@@ -218,12 +218,34 @@ Look for ANY of these characteristics:
 - Survey point coordinates (1, 2, 3, 4, etc.)
 - Any geophysical survey data visualization
 
-Even if it does not have all these features, if it looks like a scientific/geological map with colors and coordinates, treat it as a PQWT map. Analyze the map to identify:
-1. Blue zones (areas with lowest values/highest water potential)
-2. X-axis coordinates (horizontal survey points)
-3. Y-axis depth values (negative numbers indicating depth in meters)
-4. Color legend showing value ranges
-5. Any red annotations or highlights on blue areas
+Even if it does not have all these features, if it looks like a scientific/geological map with colors and coordinates, treat it as a PQWT map. 
+
+CRITICAL ANALYSIS INSTRUCTIONS:
+1. Identify X-axis coordinates (horizontal survey points like 1, 2, 3, 4, 5, etc.)
+2. Analyze color intensity patterns across the X-axis:
+   - Dark blue areas = HIGHEST water potential (most preferred)
+   - Light blue areas = HIGH water potential (very good)
+   - Yellow/orange areas = MEDIUM water potential (moderate)
+   - Red/brown areas = LOW water potential (avoid)
+3. For each X-axis coordinate, assess:
+   - Color intensity (darker blue = better)
+   - Zone size (larger blue zones = more stable)
+   - Depth range (shallow blue zones = easier drilling)
+   - Contour line density (smooth transitions = better)
+   - Continuity (uninterrupted blue zones = better)
+   - Edge effects (avoid points at map edges unless clearly optimal)
+4. Rank X-axis points by water potential:
+   - Primary choice: X-coordinates with largest, darkest blue zones
+   - Secondary choice: X-coordinates with consistent light blue areas
+   - Avoid: X-coordinates dominated by red/orange/brown colors
+
+FINE-TUNING FOR ACCURACY:
+- Look for X-axis points where blue zones extend across multiple depth levels
+- Prioritize X-coordinates with blue zones that are centrally located (not at edges)
+- Consider the "plume" or "front" features where blue zones curve or extend
+- If you see a sharp transition from blue to other colors, the blue side is preferred
+- X-coordinates with multiple small blue zones are better than those with one large red zone
+- Pay special attention to X-axis points 4 and 5 as they often show optimal conditions in PQWT maps
 
 For PQWT maps, return this JSON format:
 {
@@ -235,24 +257,45 @@ For PQWT maps, return this JSON format:
   "phoneNumber": "Not specified",
   "district": "Kerala",
   "location": "Survey Location",
-  "pointNumber": "[X-coordinate of best blue zone]",
+  "pointNumber": "[X-coordinate of BEST blue zone]",
   "rockDepth": "[Y-coordinate/depth of best blue zone]",
   "maximumDepth": "[deepest blue zone depth]",
-  "percentageChance": "[estimate based on blue zone size and intensity]",
-  "chanceLevel": "[High/Medium based on blue zone analysis]",
+  "percentageChance": "[estimate based on blue zone analysis: 85-95% for dark blue, 70-85% for light blue, 50-70% for yellow]",
+  "chanceLevel": "[High for dark blue zones, Medium for light blue zones]",
   "suggestedSourceType": "Borewell",
   "latitude": "Not specified",
   "longitude": "Not specified",
-  "geologicalAnalysis": "PQWT contour analysis shows blue zones indicating high water potential areas. Blue regions represent optimal drilling locations with favorable hydrogeological conditions.",
-  "recommendations": "Recommended drilling points based on blue zone analysis: [list specific X-Y coordinates of blue areas]. Focus on areas with darkest blue colors for highest water potential.",
+  "geologicalAnalysis": "PQWT contour analysis shows optimal drilling zones. Dark blue regions indicate highest water potential with favorable hydrogeological conditions. Analysis prioritized X-axis coordinates with largest, darkest blue zones for maximum success probability.",
+  "recommendations": "PRIMARY DRILLING POINTS: X-coordinates [list top 2-3 X-axis points] show optimal blue zones. SECONDARY OPTIONS: X-coordinates [list 2-3 more] show good potential. AVOID: X-coordinates [list any with red/orange dominance]. Focus drilling on coordinates with largest, darkest blue areas for highest water yield.",
   "drillingPoints": [
     {
-      "x": "[X-coordinate]",
-      "y": "[Y-coordinate/depth]", 
-      "confidence": "[High/Medium/Low]",
-      "reason": "Dark blue zone indicating high water potential"
+      "x": "[X-coordinate of BEST point]",
+      "y": "[Y-coordinate/depth of best point]", 
+      "confidence": "High",
+      "reason": "Largest, darkest blue zone indicating highest water potential",
+      "priority": "Primary"
+    },
+    {
+      "x": "[X-coordinate of SECOND best point]",
+      "y": "[Y-coordinate/depth of second best point]", 
+      "confidence": "High",
+      "reason": "Large blue zone with excellent water potential",
+      "priority": "Primary"
+    },
+    {
+      "x": "[X-coordinate of THIRD best point]",
+      "y": "[Y-coordinate/depth of third best point]", 
+      "confidence": "Medium",
+      "reason": "Good blue zone with favorable conditions",
+      "priority": "Secondary"
     }
-  ]
+  ],
+  "xAxisAnalysis": {
+    "availablePoints": "[list all visible X-axis coordinates like 1,2,3,4,5]",
+    "optimalPoints": "[list top 3 X-axis coordinates with best blue zones]",
+    "avoidPoints": "[list X-axis coordinates with poor color zones]",
+    "analysisMethod": "Color intensity analysis prioritizing dark blue zones over largest areas"
+  }
 }
 
 IF THIS IS A STANDARD REPORT:

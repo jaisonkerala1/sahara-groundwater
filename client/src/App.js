@@ -708,40 +708,88 @@ function App() {
                       <h3 className="text-2xl font-bold text-[#1A202C]">
                         PQWT Drilling Points
                       </h3>
-                      <p className="text-[#64748B] font-medium">AI-Identified Optimal Locations</p>
+                      <p className="text-[#64748B] font-medium">AI-Identified Optimal X-Axis Locations</p>
                     </div>
                   </div>
+
+                  {/* X-Axis Analysis Summary */}
+                  {analysisResult.xAxisAnalysis && (
+                    <div className="mb-6 p-4 bg-white rounded-2xl border border-blue-100">
+                      <h4 className="text-lg font-bold text-[#1A202C] mb-3 flex items-center">
+                        <span className="text-xl mr-2">📊</span>
+                        X-Axis Analysis Summary
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="p-3 bg-green-50 rounded-xl border border-green-200">
+                          <p className="text-sm font-medium text-green-800 mb-1">Optimal Points</p>
+                          <p className="font-bold text-green-900">{analysisResult.xAxisAnalysis.optimalPoints}</p>
+                        </div>
+                        <div className="p-3 bg-blue-50 rounded-xl border border-blue-200">
+                          <p className="text-sm font-medium text-blue-800 mb-1">Available Points</p>
+                          <p className="font-bold text-blue-900">{analysisResult.xAxisAnalysis.availablePoints}</p>
+                        </div>
+                        <div className="p-3 bg-red-50 rounded-xl border border-red-200">
+                          <p className="text-sm font-medium text-red-800 mb-1">Avoid Points</p>
+                          <p className="font-bold text-red-900">{analysisResult.xAxisAnalysis.avoidPoints || 'None'}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3 italic">
+                        Analysis Method: {analysisResult.xAxisAnalysis.analysisMethod}
+                      </p>
+                    </div>
+                  )}
                   
                   <div className="space-y-4">
                     {analysisResult.drillingPoints.map((point, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-blue-100">
-                        <div className="flex items-center">
-                          <span className="text-xl mr-3">📍</span>
-                          <div>
-                            <p className="text-sm font-medium text-[#64748B]">Drilling Point {index + 1}</p>
-                            <p className="font-bold text-[#1A202C] text-lg">
-                              X: {point.x}, Depth: {point.y}
-                            </p>
-                            <p className="text-sm text-blue-600 font-medium">
-                              {point.confidence} Confidence - {point.reason}
-                            </p>
+                      <div key={index} className={`p-4 bg-white rounded-2xl border-2 ${
+                        point.priority === 'Primary' ? 'border-green-300 bg-green-50' : 
+                        point.priority === 'Secondary' ? 'border-yellow-300 bg-yellow-50' : 
+                        'border-gray-200'
+                      }`}>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center">
+                            <span className="text-2xl mr-3">📍</span>
+                            <div>
+                              <p className="text-sm font-medium text-[#64748B]">
+                                {point.priority === 'Primary' ? '⭐ PRIMARY' : 
+                                 point.priority === 'Secondary' ? '🔸 SECONDARY' : 
+                                 '📍 ALTERNATIVE'} Drilling Point {index + 1}
+                              </p>
+                              <p className="font-bold text-[#1A202C] text-xl">
+                                X-Axis: {point.x} | Depth: {point.y}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end space-y-2">
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              point.confidence === 'High' ? 'bg-green-100 text-green-800' :
+                              point.confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {point.confidence} Confidence
+                            </div>
+                            {point.priority && (
+                              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                point.priority === 'Primary' ? 'bg-green-200 text-green-900' :
+                                point.priority === 'Secondary' ? 'bg-yellow-200 text-yellow-900' :
+                                'bg-gray-200 text-gray-700'
+                              }`}>
+                                {point.priority}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          point.confidence === 'High' ? 'bg-green-100 text-green-800' :
-                          point.confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {point.confidence}
-                        </div>
+                        <p className="text-sm text-blue-600 font-medium bg-blue-50 p-2 rounded-lg">
+                          💡 {point.reason}
+                        </p>
                       </div>
                     ))}
                   </div>
                   
                   <div className="mt-6 p-4 bg-blue-100 rounded-2xl">
                     <p className="text-sm text-blue-800 font-medium">
-                      💡 <strong>PQWT Analysis:</strong> Blue zones in the contour map indicate high water potential areas. 
-                      The AI has identified these specific coordinates as optimal drilling locations based on the geophysical survey data.
+                      💡 <strong>Enhanced PQWT Analysis:</strong> The AI has analyzed the contour map's color intensity patterns across all X-axis coordinates. 
+                      Dark blue zones indicate the highest water potential, while the analysis prioritizes X-axis points with the largest, darkest blue areas for maximum drilling success probability.
                     </p>
                   </div>
                 </div>
