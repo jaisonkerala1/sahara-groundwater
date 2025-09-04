@@ -146,7 +146,7 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
         if (response.ok && data.success) {
             // Redirect to analysis tool with user info
             const userInfo = {
-                id: data.user_id,
+                user_id: data.user_id,
                 email: data.email,
                 name: data.name,
                 subscription_status: data.access ? data.access.subscription_status : '',
@@ -158,6 +158,11 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
             
             // Store user info in localStorage for the analysis tool
             localStorage.setItem('sahara_user', JSON.stringify(userInfo));
+            
+            // Verify storage
+            const stored = localStorage.getItem('sahara_user');
+            console.log('Verification - stored data:', stored);
+            console.log('Verification - parsed data:', JSON.parse(stored));
             
             // Redirect to analysis tool
             window.location.href = 'https://report.saharagroundwater.com';
