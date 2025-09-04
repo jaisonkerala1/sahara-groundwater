@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { 
   Upload, 
   FileText, 
@@ -26,6 +26,11 @@ function App() {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [user, setUser] = useState(null);
+  const [subscriptionRequired, setSubscriptionRequired] = useState(false);
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const fileInputRef = useRef(null);
 
   // Ripple effect utility
@@ -43,6 +48,108 @@ function App() {
     button.appendChild(ripple);
     window.setTimeout(() => ripple.remove(), 600);
   }, []);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // Check user access
+  const checkUserAccess = async (userId) => {
+    try {
+      const response = await fetch(`https://saharagroundwater.com/wp-json/sahara/v1/check-access/${userId}`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error checking user access:', error);
+      return null;
+    }
+  };
+
+  // Handle login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      // For now, we'll use a simple user ID system
+      // In production, you'd integrate with WordPress login API
+      const userId = 1; // This should come from actual login
+      const accessData = await checkUserAccess(userId);
+      
+      if (accessData) {
+        setUser({ id: userId, ...accessData });
+        setShowLoginForm(false);
+        setError(null);
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
+    }
+  };
+
+  // Initiate Razorpay payment
+  const initiateRazorpayPayment = () => {
+    const options = {
+      key: 'rzp_test_IuM7Ua6b27o2Vl', // Your Razorpay test key
+      amount: subscriptionData?.price * 100, // Amount in paise
+      currency: subscriptionData?.currency || 'INR',
+      name: 'Sahara Groundwater',
+      description: 'Monthly Subscription - Unlimited Analysis',
+      image: '/logo.png',
+      order_id: '', // This should come from your backend
+      handler: function (response) {
+        verifyPayment(response);
+      },
+      prefill: {
+        name: user?.name || '',
+        email: user?.email || '',
+        contact: user?.phone || ''
+      },
+      theme: {
+        color: '#3B82F6'
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
+  // Verify payment
+  const verifyPayment = async (paymentResponse) => {
+    try {
+      // Send payment verification to your backend
+      const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          payment_id: paymentResponse.razorpay_payment_id,
+          order_id: paymentResponse.razorpay_order_id,
+          signature: paymentResponse.razorpay_signature
+        })
+      });
+
+      if (response.ok) {
+        // Update user subscription status
+        const updatedAccess = await checkUserAccess(user.id);
+        setUser({ ...user, ...updatedAccess });
+        setSubscriptionRequired(false);
+        setError(null);
+      } else {
+        setError('Payment verification failed. Please contact support.');
+      }
+    } catch (error) {
+      setError('Payment verification failed. Please contact support.');
+    }
+  };
 
   const handleFileSelect = useCallback((file) => {
     if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
@@ -116,11 +223,18 @@ function App() {
   const handleAnalyze = async () => {
     if (!selectedFile || isUploading) return;
     
+    // Check if user is logged in
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
+    
     setIsUploading(true);
     setError(null);
     
     const formData = new FormData();
     formData.append('surveyFile', selectedFile);
+    formData.append('user_id', user.id);
 
     // If it's a PDF, extract text client-side (only for text-based PDFs)
     if (selectedFile.type === 'application/pdf') {
@@ -152,8 +266,22 @@ function App() {
 
       if (response.ok && data && data.success) {
         setAnalysisResult(data.surveyAnalysis);
+        // Update user access data after successful analysis
+        const updatedAccess = await checkUserAccess(user.id);
+        if (updatedAccess) {
+          setUser({ ...user, ...updatedAccess });
+        }
       } else {
-        setError((data && data.error) || `Analysis failed (status ${response.status}). Please try again.`);
+        if (data.subscription_required) {
+          setSubscriptionRequired(true);
+          setSubscriptionData({
+            price: data.price,
+            currency: data.currency,
+            reason: data.reason
+          });
+        } else {
+          setError((data && data.error) || `Analysis failed (status ${response.status}). Please try again.`);
+        }
       }
     } catch (err) {
       if (err.name === 'AbortError') {
@@ -193,6 +321,89 @@ function App() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
+      {/* Login Modal */}
+      {showLoginForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Login Required</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowLoginForm(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Login
+              </button>
+              <p className="text-sm text-gray-600 text-center">
+                Don't have an account? <a href="https://saharagroundwater.com/register" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Register here</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Subscription Modal */}
+      {subscriptionRequired && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Subscription Required</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setSubscriptionRequired(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-gray-600">{subscriptionData?.reason}</p>
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-2">Monthly Subscription</h3>
+                <div className="text-2xl font-bold text-blue-600 mb-3">₹{subscriptionData?.price}/month</div>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center"><span className="text-green-500 mr-2">✓</span>Unlimited analysis</li>
+                  <li className="flex items-center"><span className="text-green-500 mr-2">✓</span>Priority support</li>
+                  <li className="flex items-center"><span className="text-green-500 mr-2">✓</span>Advanced features</li>
+                </ul>
+                <button 
+                  className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onClick={initiateRazorpayPayment}
+                >
+                  Subscribe Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -221,6 +432,36 @@ function App() {
               <a href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Contact
               </a>
+              {/* User Status */}
+              {user ? (
+                <div className="flex items-center space-x-2">
+                  <div className="text-sm">
+                    <div className="font-medium text-gray-900">
+                      {user.subscription_status === 'active' ? 'Premium User' : 'Free User'}
+                    </div>
+                    <div className="text-gray-500">
+                      {user.subscription_status === 'active' 
+                        ? 'Unlimited analysis' 
+                        : `${user.analysis_count || 0}/${user.daily_limit || 1} today`
+                      }
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setUser(null)}
+                    className="text-sm text-gray-500 hover:text-gray-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowLoginForm(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Login
+                </button>
+              )}
+
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
