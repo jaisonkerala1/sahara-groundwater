@@ -1,0 +1,10 @@
+[33m54329bc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Add debug test to diagnose server issues
+[33ma00c5e1[m Footer: update email to support@saharagroundwater.com and rebuild
+[33m0d9721e[m Deploy: sync root static assets from client/build (footer address update)
+[33m50bddf4[m Footer: update address to 'Kannur, Kerala' and rebuild client
+[33mab74905[m UI: change heading to 'Analyze survey report' and rebuild client
+[33m50aee33[m chore: enable temporary PHP error display and logging to php-error.log
+[33maffdde6[m Enhance AI graph analysis for optimal X-axis point identification
+[33m1f0c30b[m Fix PHP syntax error: Remove unescaped quotes causing HTTP 500 error
+[33m5e78b2d[m Enhance PQWT detection: More lenient AI prompt for better contour map recognition
+[33m75044ce[m Enable PQWT analysis for any provider: Remove Sahara-only restriction for contour maps
