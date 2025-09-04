@@ -194,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
             
             // Instruct the model to reject non-Sahara images by returning a flag
             $openRouterRequest = [
-                'model' => $_ENV['OPENROUTER_MODEL'] ?? 'openai/gpt-4o-mini',
+                'model' => $_ENV['OPENROUTER_MODEL'] ?? 'openai/gpt-4o',
                 'messages' => [
                     [
                         'role' => 'user',
