@@ -67,11 +67,14 @@ function App() {
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
+        console.log('Found stored user:', userData);
         setUser(userData);
       } catch (error) {
         console.error('Error parsing stored user data:', error);
         localStorage.removeItem('sahara_user');
       }
+    } else {
+      console.log('No stored user found');
     }
   }, []);
 

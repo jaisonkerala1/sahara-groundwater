@@ -149,10 +149,12 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
                 id: data.user_id,
                 email: data.email,
                 name: data.name,
-                subscription: data.access.subscription_status,
-                analysisCount: data.access.analysis_count,
-                dailyLimit: data.access.daily_limit
+                subscription_status: data.access ? data.access.subscription_status : '',
+                analysis_count: data.access ? data.access.analysis_count : 0,
+                daily_limit: data.access ? data.access.daily_limit : 1
             };
+            
+            console.log('Storing user info:', userInfo);
             
             // Store user info in localStorage for the analysis tool
             localStorage.setItem('sahara_user', JSON.stringify(userInfo));
@@ -160,6 +162,7 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
             // Redirect to analysis tool
             window.location.href = 'https://report.saharagroundwater.com';
         } else {
+            console.error('Login error:', data);
             showError(data.message || 'Login failed. Please check your credentials.');
         }
     } catch (error) {
