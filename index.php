@@ -247,6 +247,15 @@ FINE-TUNING FOR ACCURACY:
 - X-coordinates with multiple small blue zones are better than those with one large red zone
 - Pay special attention to X-axis points 4 and 5 as they often show optimal conditions in PQWT maps
 
+ADDITIONAL ANALYSIS GUIDELINES:
+1. Check Depth Scale: Focus on depth range where blue zones appear (e.g., -15, -30, -60m)
+2. Identify Color Zones: Dark Blue/Blue = Strong water-bearing zone, Light Blue/Cyan = Moderate water, Green/Grey = Weak/uncertain, Yellow/Brown/Red = Dry or hard rock
+3. Look for Shape & Continuity: Continuous vertical blue patch = stable aquifer, Wide thick blue = higher yield potential
+4. Cross-Check Horizontal Position: Mark the center of strongest blue zone for drilling
+5. Estimate Drilling Depth: Note upper and lower boundary of blue zone, drill slightly below deepest blue for borewell
+6. Rule Out False Signals: Shallow blue (<15m) = soil moisture, not reliable
+7. Final Decision Guide: Shallow wide blue (<30m) → Openwell, Deep continuous blue (>40m) → Borewell
+
 For PQWT maps, return this JSON format:
 {
   "isPQWTMap": true,
