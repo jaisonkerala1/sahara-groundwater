@@ -256,6 +256,15 @@ ADDITIONAL ANALYSIS GUIDELINES:
 6. Rule Out False Signals: Shallow blue (<15m) = soil moisture, not reliable
 7. Final Decision Guide: Shallow wide blue (<30m) → Openwell, Deep continuous blue (>40m) → Borewell
 
+CRITICAL BIAS CORRECTION FOR X-AXIS SELECTION:
+- Do NOT default to higher X-axis numbers (3, 4, 5) just because they show some blue
+- ALWAYS find the GEOMETRIC CENTER of the LARGEST, DARKEST blue zone
+- If the largest blue zone spans from X=1 to X=3, select X=2 (the center)
+- If the largest blue zone spans from X=2 to X=4, select X=3 (the center)
+- Look for the WIDEST and DEEPEST blue formation, then find its center point
+- Higher X-axis numbers are NOT automatically better - the center of the best blue zone is what matters
+- Example: If blue zone is widest and darkest around X=2, select X=2, not X=3 or X=4
+
 For PQWT maps, return this JSON format:
 {
   "isPQWTMap": true,
