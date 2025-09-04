@@ -220,59 +220,11 @@ Look for ANY of these characteristics:
 
 Even if it does not have all these features, if it looks like a scientific/geological map with colors and coordinates, treat it as a PQWT map. 
 
-CRITICAL ANALYSIS INSTRUCTIONS:
-1. Identify X-axis coordinates (horizontal survey points like 1, 2, 3, 4, 5, etc.)
-2. Analyze color intensity patterns across the X-axis:
-   - Dark blue areas = HIGHEST water potential (most preferred)
-   - Light blue areas = HIGH water potential (very good)
-   - Yellow/orange areas = MEDIUM water potential (moderate)
-   - Red/brown areas = LOW water potential (avoid)
-3. For each X-axis coordinate, assess:
-   - Color intensity (darker blue = better)
-   - Zone size (larger blue zones = more stable)
-   - Depth range (shallow blue zones = easier drilling)
-   - Contour line density (smooth transitions = better)
-   - Continuity (uninterrupted blue zones = better)
-   - Edge effects (avoid points at map edges unless clearly optimal)
-4. Rank X-axis points by water potential:
-   - Primary choice: X-coordinates with largest, darkest blue zones
-   - Secondary choice: X-coordinates with consistent light blue areas
-   - Avoid: X-coordinates dominated by red/orange/brown colors
-
-FINE-TUNING FOR ACCURACY:
-- Look for X-axis points where blue zones extend across multiple depth levels
-- Prioritize X-coordinates with blue zones that are centrally located (not at edges)
-- Consider the "plume" or "front" features where blue zones curve or extend
-- If you see a sharp transition from blue to other colors, the blue side is preferred
-- X-coordinates with multiple small blue zones are better than those with one large red zone
-- Pay special attention to X-axis points 4 and 5 as they often show optimal conditions in PQWT maps
-
-ADDITIONAL ANALYSIS GUIDELINES:
-1. Check Depth Scale: Focus on depth range where blue zones appear (e.g., -15, -30, -60m)
-2. Identify Color Zones: Dark Blue/Blue = Strong water-bearing zone, Light Blue/Cyan = Moderate water, Green/Grey = Weak/uncertain, Yellow/Brown/Red = Dry or hard rock
-3. Look for Shape & Continuity: Continuous vertical blue patch = stable aquifer, Wide thick blue = higher yield potential
-4. Cross-Check Horizontal Position: Mark the center of strongest blue zone for drilling
-5. Estimate Drilling Depth: Note upper and lower boundary of blue zone, drill slightly below deepest blue for borewell
-6. Rule Out False Signals: Shallow blue (<15m) = soil moisture, not reliable
-7. Final Decision Guide: Shallow wide blue (<30m) → Openwell, Deep continuous blue (>40m) → Borewell
-
-CRITICAL BIAS CORRECTION FOR X-AXIS SELECTION:
-- Do NOT default to higher X-axis numbers (3, 4, 5) just because they show some blue
-- ALWAYS find the GEOMETRIC CENTER of the LARGEST, DARKEST blue zone
-- If the largest blue zone spans from X=1 to X=3, select X=2 (the center)
-- If the largest blue zone spans from X=2 to X=4, select X=3 (the center)
-- Look for the WIDEST and DEEPEST blue formation, then find its center point
-- Higher X-axis numbers are NOT automatically better - the center of the best blue zone is what matters
-- Example: If blue zone is widest and darkest around X=2, select X=2, not X=3 or X=4
-
-MANDATORY STEP-BY-STEP X-AXIS ANALYSIS:
-1. Scan the entire map and identify the SINGLE LARGEST, DARKEST blue zone
-2. Determine the horizontal boundaries of this blue zone (e.g., from X=1 to X=3)
-3. Calculate the geometric center: (left_boundary + right_boundary) / 2
-4. Select the X-axis point closest to this calculated center
-5. If the largest blue zone is centered around X=2, select X=2, NOT X=3
-6. Do NOT select X=3 just because it shows blue - select the CENTER of the best blue zone
-7. The center of the largest blue zone is ALWAYS the optimal drilling point
+SIMPLE ANALYSIS:
+1. Find the LARGEST, DARKEST blue area on the map
+2. Find the center of that blue area horizontally (X-axis position)
+3. Select that X-axis position as the drilling point
+4. Dark blue = best water potential, light blue = good, yellow/red = avoid
 
 For PQWT maps, return this JSON format:
 {
