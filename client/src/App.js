@@ -63,6 +63,10 @@ function App() {
 
   // Check for stored user info from main site
   useEffect(() => {
+    console.log('=== DEBUGGING USER DATA ===');
+    console.log('All localStorage keys:', Object.keys(localStorage));
+    console.log('sahara_user value:', localStorage.getItem('sahara_user'));
+    
     const storedUser = localStorage.getItem('sahara_user');
     console.log('Raw stored user data:', storedUser);
     
@@ -70,6 +74,7 @@ function App() {
       try {
         const userData = JSON.parse(storedUser);
         console.log('Parsed user data:', userData);
+        console.log('User ID found:', userData.user_id);
         setUser(userData);
       } catch (error) {
         console.error('Error parsing stored user data:', error);
@@ -78,6 +83,7 @@ function App() {
     } else {
       console.log('No stored user found in localStorage');
     }
+    console.log('=== END DEBUGGING ===');
   }, []);
 
   // Check user access
