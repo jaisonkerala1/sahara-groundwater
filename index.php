@@ -93,7 +93,7 @@ if (file_exists($accessFile)) {
 }
 
 // User registration function
-function register_user($email, $password, $name) {
+function register_user($email, $password, $name, $phone = '') {
     global $users, $userAccess, $usersFile, $accessFile;
     
     // Check if user already exists
@@ -108,6 +108,7 @@ function register_user($email, $password, $name) {
         'id' => count($users) + 1,
         'email' => $email,
         'name' => $name ?: explode('@', $email)[0],
+        'phone' => $phone,
         'password' => password_hash($password, PASSWORD_DEFAULT), // Hash the password
         'createdAt' => date('c')
     ];
@@ -133,10 +134,12 @@ function register_user($email, $password, $name) {
         'id' => $newUser['id'],
         'email' => $newUser['email'],
         'name' => $newUser['name'],
+        'phone' => $newUser['phone'],
         'subscription_status' => '',
         'analysis_count' => 0,
         'daily_limit' => 1,
         'created_at' => $newUser['createdAt'],
+        'last_login' => $newUser['createdAt'],
         'last_analysis_date' => null
     ];
     
@@ -147,6 +150,7 @@ function register_user($email, $password, $name) {
         'user_id' => $newUser['id'],
         'email' => $newUser['email'],
         'name' => $newUser['name'],
+        'phone' => $newUser['phone'],
         'subscription_status' => '',
         'analysis_count' => 0,
         'daily_limit' => 1
@@ -863,6 +867,7 @@ if ($path === '/api/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $input['email'] ?? '';
     $password = $input['password'] ?? '';
     $name = $input['name'] ?? '';
+    $phone = $input['phone'] ?? '';
     
     if (empty($email) || empty($password)) {
         http_response_code(400);
@@ -870,7 +875,7 @@ if ($path === '/api/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    $result = register_user($email, $password, $name);
+    $result = register_user($email, $password, $name, $phone);
     echo json_encode($result);
     exit();
 }
@@ -1081,6 +1086,121 @@ if ($path === '/api/delete-analysis' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode([
         'success' => true,
         'message' => 'Analysis deleted from history'
+    ]);
+    exit();
+}
+
+// Get user profile endpoint
+if ($path === '/api/get-profile' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $userId = $_GET['user_id'] ?? 0;
+
+    if (!$userId) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID is required']);
+        exit();
+    }
+
+    $userFile = "users/{$userId}.json";
+
+    if (!file_exists($userFile)) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'User not found']);
+        exit();
+    }
+
+    $userData = json_decode(file_get_contents($userFile), true) ?: [];
+
+    $profile = [
+        'name' => $userData['name'] ?? '',
+        'email' => $userData['email'] ?? '',
+        'phone' => $userData['phone'] ?? '',
+        'analysis_count' => $userData['analysis_count'] ?? 0,
+        'subscription_status' => $userData['subscription_status'] ?? 'free',
+        'created_at' => $userData['created_at'] ?? '',
+        'last_login' => $userData['last_login'] ?? ''
+    ];
+
+    echo json_encode([
+        'success' => true,
+        'profile' => $profile
+    ]);
+    exit();
+}
+
+// Update user profile endpoint
+if ($path === '/api/update-profile' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $userId = $input['user_id'] ?? 0;
+    $name = $input['name'] ?? '';
+    $phone = $input['phone'] ?? '';
+
+    if (!$userId) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID is required']);
+        exit();
+    }
+
+    $userFile = "users/{$userId}.json";
+
+    if (!file_exists($userFile)) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'User not found']);
+        exit();
+    }
+
+    $userData = json_decode(file_get_contents($userFile), true) ?: [];
+
+    // Update profile data
+    if ($name) $userData['name'] = $name;
+    if ($phone) $userData['phone'] = $phone;
+    $userData['updated_at'] = date('c');
+
+    $result = file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT));
+
+    if ($result === false) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Failed to update profile']);
+        exit();
+    }
+
+    error_log("✅ Profile updated for user {$userId}");
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Profile updated successfully'
+    ]);
+    exit();
+}
+
+// Delete user account endpoint
+if ($path === '/api/delete-account' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $userId = $input['user_id'] ?? 0;
+
+    if (!$userId) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID is required']);
+        exit();
+    }
+
+    $userFile = "users/{$userId}.json";
+    $historyFile = "analysis_history/user_{$userId}.json";
+
+    // Delete user file
+    if (file_exists($userFile)) {
+        unlink($userFile);
+    }
+
+    // Delete analysis history
+    if (file_exists($historyFile)) {
+        unlink($historyFile);
+    }
+
+    error_log("✅ Account deleted for user {$userId}");
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Account deleted successfully'
     ]);
     exit();
 }

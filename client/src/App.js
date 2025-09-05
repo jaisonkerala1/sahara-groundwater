@@ -31,10 +31,23 @@ function App() {
   const [subscriptionData, setSubscriptionData] = useState(null);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '' });
+  const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '', phone: '' });
   const [showHistory, setShowHistory] = useState(false);
   const [analysisHistory, setAnalysisHistory] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    analysis_count: 0,
+    subscription_status: 'free',
+    created_at: '',
+    last_login: ''
+  });
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const fileInputRef = useRef(null);
 
   // Ripple effect utility
@@ -157,6 +170,97 @@ function App() {
     }
   };
 
+  // Load user profile
+  const loadUserProfile = async (userId) => {
+    if (!userId) return;
+    
+    setIsLoadingProfile(true);
+    try {
+      const response = await fetch(`/api/get-profile?user_id=${userId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setProfileData(data.profile);
+      } else {
+        setError('Failed to load profile');
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      setError('Failed to load profile');
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  // Update user profile
+  const updateUserProfile = async (updatedData) => {
+    if (!user?.id) return;
+    
+    setIsUpdatingProfile(true);
+    try {
+      const response = await fetch('/api/update-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          ...updatedData
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setProfileData(prev => ({ ...prev, ...updatedData }));
+        setUser(prev => ({ ...prev, ...updatedData }));
+        // Update localStorage
+        localStorage.setItem('sahara_user', JSON.stringify({ ...user, ...updatedData }));
+        setError(null);
+      } else {
+        setError(data.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError('Failed to update profile');
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  // Delete user account
+  const deleteUserAccount = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Logout user and clear data
+        setUser(null);
+        localStorage.removeItem('sahara_user');
+        setShowProfile(false);
+        setShowDeleteConfirm(false);
+        setError(null);
+      } else {
+        setError(data.message || 'Failed to delete account');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      setError('Failed to delete account');
+    }
+  };
+
   // Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -179,6 +283,7 @@ function App() {
           id: data.user_id,
           email: data.email,
           name: data.name,
+          phone: data.phone || '',
           subscription_status: data.subscription_status || '',
           analysis_count: data.analysis_count || 0,
           daily_limit: data.daily_limit || 1
@@ -207,7 +312,8 @@ function App() {
         body: JSON.stringify({
           email: loginForm.email,
           password: loginForm.password,
-          name: loginForm.name || loginForm.email.split('@')[0]
+          name: loginForm.name || loginForm.email.split('@')[0],
+          phone: loginForm.phone
         })
       });
 
@@ -218,6 +324,7 @@ function App() {
           id: data.user_id,
           email: data.email,
           name: data.name,
+          phone: data.phone || '',
           subscription_status: data.subscription_status || '',
           analysis_count: data.analysis_count || 0,
           daily_limit: data.daily_limit || 1
@@ -781,6 +888,19 @@ function App() {
                   />
                 </div>
               )}
+              
+              {isRegistering && (
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number (Optional)</label>
+                  <input
+                    type="tel"
+                    value={loginForm.phone}
+                    onChange={(e) => setLoginForm({...loginForm, phone: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+              )}
                 
               <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
@@ -937,6 +1057,186 @@ function App() {
         </div>
       )}
 
+      {/* User Profile Modal */}
+      {showProfile && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">User Profile</h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Manage your account settings and information
+                  </p>
+                </div>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  onClick={() => setShowProfile(false)}
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="px-6 py-6">
+              {isLoadingProfile ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                  <span className="ml-2 text-gray-600">Loading profile...</span>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Profile Information */}
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input
+                          type="text"
+                          value={profileData.name}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input
+                          type="email"
+                          value={profileData.email}
+                          disabled
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                          placeholder="Email address"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input
+                          type="tel"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter your phone number"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Subscription Status</label>
+                        <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                          profileData.subscription_status === 'active' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {profileData.subscription_status === 'active' ? 'Premium' : 'Free'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Account Statistics */}
+                  <div className="bg-blue-50 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">{profileData.analysis_count || 0}</div>
+                        <div className="text-sm text-gray-600">Analyses Done</div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {profileData.created_at ? new Date(profileData.created_at).toLocaleDateString() : 'N/A'}
+                        </div>
+                        <div className="text-sm text-gray-600">Member Since</div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {profileData.last_login ? new Date(profileData.last_login).toLocaleDateString() : 'N/A'}
+                        </div>
+                        <div className="text-sm text-gray-600">Last Login</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => updateUserProfile({
+                        name: profileData.name,
+                        phone: profileData.phone
+                      })}
+                      disabled={isUpdatingProfile}
+                      className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isUpdatingProfile ? (
+                        <div className="flex items-center justify-center">
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Updating...
+                        </div>
+                      ) : (
+                        'Update Profile'
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Delete Account</h3>
+            </div>
+            
+            <div className="px-6 py-4">
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to delete your account? This action cannot be undone and will permanently remove:
+              </p>
+              <ul className="text-sm text-gray-600 mb-6 space-y-1">
+                <li>• Your profile information</li>
+                <li>• All analysis history</li>
+                <li>• Account settings and preferences</li>
+              </ul>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteUserAccount}
+                  className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Subscription Modal */}
       {subscriptionRequired && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1022,6 +1322,15 @@ function App() {
                     className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     History
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfile(true);
+                      loadUserProfile(user.id);
+                    }}
+                    className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                  >
+                    Profile
                   </button>
                   <button
                     onClick={() => setUser(null)}
