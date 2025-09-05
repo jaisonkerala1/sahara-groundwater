@@ -32,6 +32,9 @@ function App() {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: '', password: '', name: '' });
+  const [showHistory, setShowHistory] = useState(false);
+  const [analysisHistory, setAnalysisHistory] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const fileInputRef = useRef(null);
 
   // Ripple effect utility
@@ -99,6 +102,58 @@ function App() {
     } catch (error) {
       console.error('Error checking user access:', error);
       return null;
+    }
+  };
+
+  // Load analysis history
+  const loadAnalysisHistory = async (userId) => {
+    if (!userId) return;
+    
+    setIsLoadingHistory(true);
+    try {
+      const response = await fetch(`/api/get-history?user_id=${userId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setAnalysisHistory(data.history || []);
+      } else {
+        setError('Failed to load analysis history');
+      }
+    } catch (error) {
+      console.error('Error loading analysis history:', error);
+      setError('Failed to load analysis history');
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  // Delete analysis from history
+  const deleteAnalysis = async (analysisId) => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch('/api/delete-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          analysis_id: analysisId
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Remove from local state
+        setAnalysisHistory(prev => prev.filter(item => item.id !== analysisId));
+      } else {
+        setError('Failed to delete analysis');
+      }
+    } catch (error) {
+      console.error('Error deleting analysis:', error);
+      setError('Failed to delete analysis');
     }
   };
 
@@ -782,6 +837,89 @@ function App() {
         </div>
       )}
 
+      {/* Analysis History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Analysis History</h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Your saved analysis reports ({analysisHistory.length} total)
+                  </p>
+                </div>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  onClick={() => setShowHistory(false)}
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="px-6 py-6">
+              {isLoadingHistory ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                  <span className="ml-2 text-gray-600">Loading history...</span>
+                </div>
+              ) : analysisHistory.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No analysis history yet</h3>
+                  <p className="text-gray-600">Your analysis reports will appear here once you start analyzing files.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {analysisHistory.map((analysis) => (
+                    <div key={analysis.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{analysis.file_name}</h3>
+                          <p className="text-sm text-gray-500">
+                            {new Date(analysis.created_at).toLocaleDateString()} at {new Date(analysis.created_at).toLocaleTimeString()}
+                          </p>
+                          <p className="text-xs text-gray-400 capitalize">{analysis.file_type}</p>
+                        </div>
+                        <button
+                          onClick={() => deleteAnalysis(analysis.id)}
+                          className="text-red-500 hover:text-red-700 p-1"
+                          title="Delete analysis"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                      
+                      {/* Analysis Summary */}
+                      <div className="bg-gray-50 rounded-lg p-3 text-sm">
+                        {analysis.analysis_data?.customer_details?.name && (
+                          <p><strong>Customer:</strong> {analysis.analysis_data.customer_details.name}</p>
+                        )}
+                        {analysis.analysis_data?.customer_details?.booking_id && (
+                          <p><strong>Booking ID:</strong> {analysis.analysis_data.customer_details.booking_id}</p>
+                        )}
+                        {analysis.analysis_data?.percentageChance && (
+                          <p><strong>Water Potential:</strong> {analysis.analysis_data.percentageChance}</p>
+                        )}
+                        {analysis.analysis_data?.chanceLevel && (
+                          <p><strong>Confidence:</strong> {analysis.analysis_data.chanceLevel}</p>
+                        )}
+                        {analysis.analysis_data?.geologicalAnalysis && (
+                          <p className="mt-2"><strong>Analysis:</strong> {analysis.analysis_data.geologicalAnalysis.substring(0, 200)}...</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Subscription Modal */}
       {subscriptionRequired && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -847,7 +985,7 @@ function App() {
               </a>
               {/* User Status */}
               {user ? (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <div className="text-sm">
                     <div className="font-medium text-gray-900">
                       {user.subscription_status === 'active' ? 'Premium User' : 'Free User'}
@@ -859,6 +997,15 @@ function App() {
                       }
                     </div>
                   </div>
+                  <button
+                    onClick={() => {
+                      setShowHistory(true);
+                      loadAnalysisHistory(user.id);
+                    }}
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    History
+                  </button>
                   <button
                     onClick={() => setUser(null)}
                     className="text-sm text-gray-500 hover:text-gray-700"
