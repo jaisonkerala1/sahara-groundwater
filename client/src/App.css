@@ -1027,13 +1027,154 @@ body {
   transform: scale(0.95) !important;
 }
 
-/* Chat window animations */
+/* Enhanced Chat window animations */
 #chat-window {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: bottom right;
+}
+
+/* Smooth opening animation */
+#chat-window.opening {
+  animation: chatWindowOpen 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Smooth closing animation */
+#chat-window.closing {
+  animation: chatWindowClose 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+/* Minimize animation */
+#chat-window.minimizing {
+  animation: chatWindowMinimize 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+/* Maximize animation */
+#chat-window.maximizing {
+  animation: chatWindowMaximize 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Keyframe animations */
+@keyframes chatWindowOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes chatWindowClose {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+}
+
+@keyframes chatWindowMinimize {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    transform: scale(0.1) translateY(calc(100vh - 100px));
+  }
+}
+
+@keyframes chatWindowMaximize {
+  0% {
+    transform: scale(0.1) translateY(calc(100vh - 100px));
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* Minimize/Close button hover effects */
 #chat-window button:hover {
   background: rgba(255, 255, 255, 0.1) !important;
   border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+/* Enhanced mobile view with increased height */
+@media (max-width: 768px) {
+  #chat-window {
+    width: calc(100vw - 20px);
+    max-width: 400px;
+    height: calc(100vh - 40px);
+    max-height: calc(100vh - 40px);
+    bottom: 20px;
+    right: 10px;
+    left: 10px;
+    margin: 0 auto;
+  }
+  
+  /* Better mobile keyboard handling */
+  @media (max-height: 700px) {
+    #chat-window {
+      height: calc(100vh - 20px);
+      max-height: calc(100vh - 20px);
+      bottom: 10px;
+    }
+  }
+  
+  @media (max-height: 500px) {
+    #chat-window {
+      height: calc(100vh - 10px);
+      max-height: calc(100vh - 10px);
+      bottom: 5px;
+    }
+  }
+}
+
+/* Improved drag behavior - entire right side draggable */
+#chat-window .chat-header {
+  cursor: move;
+  user-select: none;
+  position: relative;
+}
+
+/* Make the entire right 2/3 of the chat window draggable */
+#chat-window::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 66.67%;
+  height: 100%;
+  z-index: 1;
+  cursor: move;
+  pointer-events: auto;
+}
+
+/* Ensure input and buttons are still clickable */
+#chat-window input,
+#chat-window button,
+#chat-window .chat-messages {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* Drag indicator */
+#chat-window.dragging::before {
+  background: rgba(128, 88, 248, 0.1);
+  border: 2px dashed rgba(128, 88, 248, 0.3);
+}
+
+/* Smooth drag transitions */
+#chat-window {
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+
+#chat-window.dragging {
+  transition: none;
+  cursor: grabbing;
+  transform: scale(1.02);
+  box-shadow: 0 15px 50px rgba(62, 31, 100, 0.25);
 }

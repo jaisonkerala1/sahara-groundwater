@@ -67,12 +67,12 @@ function App() {
   // Check for stored user info and fetch updated data
   useEffect(() => {
     // Check localStorage for existing user session
-    const storedUser = localStorage.getItem('sahara_user');
-    
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
+      const storedUser = localStorage.getItem('sahara_user');
+      
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
         
         // Fetch updated user access data from server
         if (userData.id) {
@@ -86,11 +86,11 @@ function App() {
             console.error('Error fetching updated user data:', error);
           });
         }
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
-        localStorage.removeItem('sahara_user');
+        } catch (error) {
+          console.error('Error parsing stored user data:', error);
+          localStorage.removeItem('sahara_user');
+        }
       }
-    }
   }, []);
 
   // Check user access
@@ -495,28 +495,40 @@ function App() {
     const sendButton = document.getElementById("send-button");
 
     if (toggle && windowBox && inputContainer && userInput && sendButton) {
-      // Toggle chat window (Simple and Perfect)
+      // Enhanced toggle chat window with smooth animations
       toggle.onclick = () => {
         const isHidden = windowBox.style.display === "none";
         if (isHidden) {
-          // Show chat window
+          // Show chat window with opening animation
           windowBox.style.display = "flex";
+          windowBox.classList.add('opening');
           userInput.focus();
           const notificationDot = toggle.querySelector('div');
           if (notificationDot) notificationDot.style.display = 'none';
           isChatMinimized = false;
           
-          // Update button appearance
+          // Update button appearance with smooth transition
           toggle.style.transform = 'scale(1)';
           toggle.style.boxShadow = '0 4px 20px rgba(128, 88, 248, 0.4)';
+          
+          // Remove animation class after animation completes
+          setTimeout(() => {
+            windowBox.classList.remove('opening');
+          }, 400);
         } else {
-          // Hide chat window (minimize to button)
-          windowBox.style.display = "none";
+          // Hide chat window with closing animation
+          windowBox.classList.add('closing');
           isChatMinimized = true;
           
           // Update button appearance when minimized
           toggle.style.transform = 'scale(0.95)';
           toggle.style.boxShadow = '0 2px 10px rgba(128, 88, 248, 0.6)';
+          
+          // Hide after animation completes
+          setTimeout(() => {
+            windowBox.style.display = "none";
+            windowBox.classList.remove('closing');
+          }, 300);
         }
       };
 
@@ -549,9 +561,17 @@ function App() {
       let startX, startY, initialX = 0, initialY = 0;
 
       const dragStart = (e) => {
-        // Only allow dragging from the header
-        const header = windowBox.querySelector('.chat-header');
-        if (!header || !header.contains(e.target)) return;
+        // Allow dragging from the entire right 2/3 of the chat window
+        const rect = windowBox.getBoundingClientRect();
+        const clickX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+        const relativeX = clickX - rect.left;
+        const windowWidth = rect.width;
+        
+        // Only allow dragging from the right 2/3 of the window
+        if (relativeX < windowWidth * 0.33) return;
+        
+        // Don't drag if clicking on input or buttons
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
 
         isDragging = true;
         windowBox.classList.add('dragging');
@@ -610,12 +630,9 @@ function App() {
         startY = currentY;
       };
 
-      // Add drag listeners to header only
-      const header = windowBox.querySelector('.chat-header');
-      if (header) {
-        header.addEventListener("mousedown", dragStart, { passive: false });
-        header.addEventListener("touchstart", dragStart, { passive: false });
-      }
+      // Add drag listeners to entire chat window
+      windowBox.addEventListener("mousedown", dragStart, { passive: false });
+      windowBox.addEventListener("touchstart", dragStart, { passive: false });
       
       document.addEventListener("mouseup", dragEnd);
       document.addEventListener("touchend", dragEnd);
@@ -724,18 +741,18 @@ function App() {
                     {isRegistering ? 'Join Sahara Groundwater for AI-powered analysis' : 'Sign in to continue'}
                   </p>
                 </div>
-                <button 
+              <button 
                   className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-                  onClick={() => {
-                    setShowLoginForm(false);
-                    setIsRegistering(false);
-                    setLoginForm({ email: '', password: '', name: '' });
+                onClick={() => {
+                  setShowLoginForm(false);
+                  setIsRegistering(false);
+                  setLoginForm({ email: '', password: '', name: '' });
                     setError(null);
-                  }}
-                >
+                }}
+              >
                   <X size={24} />
-                </button>
-              </div>
+              </button>
+            </div>
             </div>
 
             {/* Form */}
@@ -751,65 +768,65 @@ function App() {
               )}
 
               <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-5">
-                {isRegistering && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-                    <input
-                      type="text"
-                      value={loginForm.name}
-                      onChange={(e) => setLoginForm({...loginForm, name: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                )}
-                
+              {isRegistering && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
                   <input
-                    type="email"
-                    value={loginForm.email}
-                    onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Enter your email"
-                    required
+                    type="text"
+                    value={loginForm.name}
+                    onChange={(e) => setLoginForm({...loginForm, name: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your full name"
+                      required
                   />
                 </div>
+              )}
                 
-                <div>
+              <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                <input
+                  type="email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your email"
+                  required
+                />
+              </div>
+                
+              <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-                  <input
-                    type="password"
-                    value={loginForm.password}
-                    onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="Enter your password"
-                    required
+                  required
                     minLength={6}
-                  />
+                />
                   {isRegistering && (
                     <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters</p>
                   )}
-                </div>
+              </div>
 
-                <button 
-                  type="submit" 
+              <button 
+                type="submit" 
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-semibold shadow-lg"
-                >
+              >
                   {isRegistering ? 'Create Account' : 'Sign In'}
-                </button>
+              </button>
               </form>
 
               {/* Toggle between login/register */}
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
-                  {isRegistering ? (
+                {isRegistering ? (
                     <>Already have an account? <button type="button" onClick={() => {setIsRegistering(false); setError(null);}} className="text-blue-600 hover:text-blue-700 font-semibold">Sign in here</button></>
-                  ) : (
+                ) : (
                     <>Don't have an account? <button type="button" onClick={() => {setIsRegistering(true); setError(null);}} className="text-blue-600 hover:text-blue-700 font-semibold">Create one here</button></>
-                  )}
-                </p>
+                )}
+              </p>
               </div>
 
               {/* Benefits for new users */}
@@ -1104,15 +1121,15 @@ function App() {
                 )}
               </div>
               
-              <button
+            <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors w-full"
-              >
+            >
                 <span>{isDarkMode ? '☀️' : '🌙'}</span>
                 <span>Toggle Dark Mode</span>
-              </button>
-            </div>
+            </button>
           </div>
+              </div>
         )}
       </nav>
 
@@ -1132,7 +1149,7 @@ function App() {
             </p>
             </div>
               
-
+              
           {/* Trust Indicators */}
           <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
             <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-4 py-2 rounded-full">
@@ -1898,9 +1915,18 @@ function App() {
                 const windowBox = document.getElementById('chat-window');
                 const toggle = document.getElementById('chat-toggle');
                 if (windowBox && toggle) {
-                  windowBox.style.display = 'none';
+                  // Add minimizing animation
+                  windowBox.classList.add('minimizing');
+                  
+                  // Update button appearance
                   toggle.style.transform = 'scale(0.95)';
                   toggle.style.boxShadow = '0 2px 10px rgba(128, 88, 248, 0.6)';
+                  
+                  // Hide after animation completes
+                  setTimeout(() => {
+                    windowBox.style.display = 'none';
+                    windowBox.classList.remove('minimizing');
+                  }, 300);
                 }
               }} style={{
                 background: 'none',
@@ -1922,9 +1948,18 @@ function App() {
                 const windowBox = document.getElementById('chat-window');
                 const toggle = document.getElementById('chat-toggle');
                 if (windowBox && toggle) {
-                  windowBox.style.display = 'none';
+                  // Add closing animation
+                  windowBox.classList.add('closing');
+                  
+                  // Update button appearance
                   toggle.style.transform = 'scale(1)';
                   toggle.style.boxShadow = '0 4px 20px rgba(128, 88, 248, 0.4)';
+                  
+                  // Hide after animation completes
+                  setTimeout(() => {
+                    windowBox.style.display = 'none';
+                    windowBox.classList.remove('closing');
+                  }, 300);
                 }
               }} style={{
                 background: 'none',
@@ -1978,7 +2013,7 @@ function App() {
           </div>
         </div>
       </div>
-
+      
       {/* Footer */}
       <footer id="contact" className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
