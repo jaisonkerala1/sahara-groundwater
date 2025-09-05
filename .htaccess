@@ -1,3 +1,23 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Serve existing files/directories directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Force index.php to handle app routes and /api
+RewriteRule ^ index.php [L]
+</IfModule>
+
+# CORS for API
+<IfModule mod_headers.c>
+<FilesMatch "^index\.php$">
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type"
+</FilesMatch>
+</IfModule>
 RewriteEngine On
 
 # Handle API requests
