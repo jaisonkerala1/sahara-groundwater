@@ -50,10 +50,10 @@ function Footer() {
             <h4 className="text-gray-900 font-bold text-xl mb-4 tracking-wide">Email Us</h4>
             <div className="text-gray-600 space-y-2">
               <p className="text-primary-purple hover:text-primary-purpleDark transition-colors duration-300 cursor-pointer">
-                help@saharagroundwater.com
+                example@saharagroundwater.com
               </p>
               <p className="text-primary-purple hover:text-primary-purpleDark transition-colors duration-300 cursor-pointer">
-                help@saharagroundwater.com
+                example@saharagroundwater.com
               </p>
             </div>
           </div>

@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "build": "cd client && npm install && npm run build",
+    "build-only": "cd client && npm run build",
+    "deploy": "npm run build-only && echo 'Build complete! Upload client/build/ files to Hostinger'",
     "start": "npm run build && node server.js",
     "dev": "nodemon server.js"
   },

@@ -1,13 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Test Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Sahara Groundwater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .contact-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .contact-item {
+            margin: 15px 0;
+            font-size: 1.2rem;
+        }
+        .contact-item strong {
+            color: #ffd700;
+        }
+        .status {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid #00ff00;
+        }
+        .test-links {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .test-links a {
+            color: #ffd700;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .test-links a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
 </head>
 <body>
-    <h1>Server is working!</h1>
-    <p>If you can see this, the server is serving files correctly.</p>
+    <div class="container">
+        <h1>🧪 Test Page - Sahara Groundwater</h1>
+        
+        <div class="status">
+            <h2>✅ Static Files Working!</h2>
+            <p>If you can see this page, static file hosting is working correctly.</p>
+        </div>
+
+        <div class="contact-info">
+            <h3>📞 Updated Contact Information</h3>
+            <div class="contact-item">
+                <strong>Phone:</strong> +91 80503 81803
+            </div>
+            <div class="contact-item">
+                <strong>Email:</strong> support@saharagroundwater.com
+            </div>
+            <div class="contact-item">
+                <strong>Location:</strong> Kerala, India
+            </div>
+        </div>
+
+        <div class="test-links">
+            <h3>🔗 Test Links</h3>
+            <a href="/">Main App</a>
+            <a href="/index.html">Index HTML</a>
+            <a href="?v=123456">Cache Bust</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; opacity: 0.8;">
+            <p>This is a test file to verify static hosting works on your PHP hosting.</p>
+            <p><strong>Current Time:</strong> <span id="current-time"></span></p>
+        </div>
+    </div>
+
     <script>
-        console.log('JavaScript is working!');
+        // Show current time
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+        
+        // Test JavaScript functionality
+        console.log('✅ JavaScript is working!');
+        console.log('✅ Static files are loading correctly!');
+        
+        // Test if we can access the main app files
+        fetch('/static/js/main.4bd6387f.js')
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Main React app files are accessible');
+                } else {
+                    console.log('❌ Main React app files not found');
+                }
+            })
+            .catch(error => {
+                console.log('❌ Error accessing main app files:', error);
+            });
     </script>
 </body>
 </html>
