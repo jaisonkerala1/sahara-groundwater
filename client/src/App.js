@@ -61,7 +61,7 @@ function App() {
     };
   }, []);
 
-  // Check for stored user info
+  // Check for stored user info and fetch updated data
   useEffect(() => {
     // Check localStorage for existing user session
     const storedUser = localStorage.getItem('sahara_user');
@@ -70,6 +70,19 @@ function App() {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
+        
+        // Fetch updated user access data from server
+        if (userData.id) {
+          checkUserAccess(userData.id).then(updatedAccess => {
+            if (updatedAccess) {
+              setUser({ ...userData, ...updatedAccess });
+              // Update localStorage with fresh data
+              localStorage.setItem('sahara_user', JSON.stringify({ ...userData, ...updatedAccess }));
+            }
+          }).catch(error => {
+            console.error('Error fetching updated user data:', error);
+          });
+        }
       } catch (error) {
         console.error('Error parsing stored user data:', error);
         localStorage.removeItem('sahara_user');
