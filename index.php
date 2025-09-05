@@ -31,13 +31,27 @@ if (file_exists($envFile)) {
     }
 }
 
-// Simple in-memory user storage (replace with database in production)
+// File-based user storage (simple solution for production)
+$usersFile = __DIR__ . '/users.json';
+$accessFile = __DIR__ . '/user_access.json';
+
+// Load users from file
 $users = [];
+if (file_exists($usersFile)) {
+    $usersData = file_get_contents($usersFile);
+    $users = json_decode($usersData, true) ?: [];
+}
+
+// Load user access from file
 $userAccess = [];
+if (file_exists($accessFile)) {
+    $accessData = file_get_contents($accessFile);
+    $userAccess = json_decode($accessData, true) ?: [];
+}
 
 // User registration function
 function register_user($email, $password, $name) {
-    global $users, $userAccess;
+    global $users, $userAccess, $usersFile, $accessFile;
     
     // Check if user already exists
     foreach ($users as $user) {
@@ -51,7 +65,7 @@ function register_user($email, $password, $name) {
         'id' => count($users) + 1,
         'email' => $email,
         'name' => $name ?: explode('@', $email)[0],
-        'password' => $password, // In production, hash this password
+        'password' => password_hash($password, PASSWORD_DEFAULT), // Hash the password
         'createdAt' => date('c')
     ];
     
@@ -61,6 +75,10 @@ function register_user($email, $password, $name) {
         'analysis_count' => 0,
         'daily_limit' => 1
     ];
+    
+    // Save to files
+    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
+    file_put_contents($accessFile, json_encode($userAccess, JSON_PRETTY_PRINT));
     
     return [
         'success' => true,
@@ -75,11 +93,22 @@ function register_user($email, $password, $name) {
 
 // User login function
 function login_user($email, $password) {
-    global $users, $userAccess;
+    global $users, $userAccess, $usersFile, $accessFile;
+    
+    // Reload users from file in case of updates
+    if (file_exists($usersFile)) {
+        $usersData = file_get_contents($usersFile);
+        $users = json_decode($usersData, true) ?: [];
+    }
+    
+    if (file_exists($accessFile)) {
+        $accessData = file_get_contents($accessFile);
+        $userAccess = json_decode($accessData, true) ?: [];
+    }
     
     // Find user
     foreach ($users as $user) {
-        if ($user['email'] === $email && $user['password'] === $password) {
+        if ($user['email'] === $email && password_verify($password, $user['password'])) {
             $access = $userAccess[$user['id']] ?? [
                 'subscription_status' => '',
                 'analysis_count' => 0,
