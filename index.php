@@ -45,16 +45,25 @@ set_error_handler(function ($severity, $message, $file, $line) use ($path) {
 register_shutdown_function(function () use ($path) {
     $err = error_get_last();
     if ($err && strpos($path, '/api/') === 0) {
+        $file = basename($err['file'] ?? '');
+        $line = $err['line'] ?? null;
+        $msg  = $err['message'] ?? 'unknown';
+        $type = $err['type'] ?? null;
+
+        // Log full fatal for server logs
+        error_log('[API FATAL] ' . $msg . ' in ' . $file . ':' . $line . ' (type ' . $type . ')');
+
         if (!headers_sent()) {
             header('Content-Type: application/json');
             http_response_code(500);
         }
+        // Include details in the error string so the frontend shows it directly
         echo json_encode([
-            'error' => 'Server fatal error',
-            'type' => $err['type'] ?? null,
-            'message' => $err['message'] ?? null,
-            'file' => basename($err['file'] ?? ''),
-            'line' => $err['line'] ?? null,
+            'error' => 'Server fatal error: ' . $msg . ' in ' . $file . ':' . $line,
+            'type' => $type,
+            'message' => $msg,
+            'file' => $file,
+            'line' => $line,
         ]);
     }
 });
