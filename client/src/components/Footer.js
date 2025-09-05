@@ -35,7 +35,7 @@ function Footer() {
             <h4 className="text-gray-900 font-bold text-xl mb-4 tracking-wide">Call Us</h4>
             <div className="text-gray-600">
               <p className="text-lg font-semibold text-primary-purple hover:text-primary-purpleDark transition-colors duration-300 cursor-pointer">
-                +917012051937
+                +918050381803
               </p>
             </div>
           </div>
@@ -53,7 +53,7 @@ function Footer() {
                 support@saharagroundwater.com
               </p>
               <p className="text-primary-purple hover:text-primary-purpleDark transition-colors duration-300 cursor-pointer">
-                contact@saharagroundwater.com
+                support@saharagroundwater.com
               </p>
             </div>
           </div>
