@@ -1161,10 +1161,10 @@ body {
   pointer-events: auto;
 }
 
-/* Drag indicator */
+/* Drag indicator - removed to prevent blue line */
 #chat-window.dragging::before {
-  background: rgba(128, 88, 248, 0.1);
-  border: 2px dashed rgba(128, 88, 248, 0.3);
+  background: transparent;
+  border: none;
 }
 
 /* Smooth drag transitions */
@@ -1177,4 +1177,15 @@ body {
   cursor: grabbing;
   transform: scale(1.02);
   box-shadow: 0 15px 50px rgba(62, 31, 100, 0.25);
+  outline: none !important;
+  border: none !important;
+}
+
+/* Prevent blue selection outline during drag */
+#chat-window.dragging * {
+  outline: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
 }
