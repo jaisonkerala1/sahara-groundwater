@@ -399,68 +399,117 @@ function App() {
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
       {/* Login Modal */}
       {showLoginForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">{isRegistering ? 'Create Account' : 'Login Required'}</h2>
-              <button 
-                className="text-gray-500 hover:text-gray-700"
-                onClick={() => {
-                  setShowLoginForm(false);
-                  setIsRegistering(false);
-                  setLoginForm({ email: '', password: '', name: '' });
-                }}
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-4">
-              {isRegistering && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+              <div className="flex justify-between items-center">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {isRegistering ? 'Create Account' : 'Welcome Back'}
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {isRegistering ? 'Join Sahara Groundwater for AI-powered analysis' : 'Sign in to continue'}
+                  </p>
+                </div>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  onClick={() => {
+                    setShowLoginForm(false);
+                    setIsRegistering(false);
+                    setLoginForm({ email: '', password: '', name: '' });
+                  }}
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="px-6 py-6">
+              <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-5">
+                {isRegistering && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      value={loginForm.name}
+                      onChange={(e) => setLoginForm({...loginForm, name: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                   <input
-                    type="text"
-                    value={loginForm.name}
-                    onChange={(e) => setLoginForm({...loginForm, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter your full name"
+                    type="email"
+                    value={loginForm.email}
+                    onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your email"
+                    required
                   />
                 </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                  <input
+                    type="password"
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your password"
+                    required
+                    minLength={6}
+                  />
+                  {isRegistering && (
+                    <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters</p>
+                  )}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-semibold shadow-lg"
+                >
+                  {isRegistering ? 'Create Account' : 'Sign In'}
+                </button>
+              </form>
+
+              {/* Toggle between login/register */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600">
+                  {isRegistering ? (
+                    <>Already have an account? <button type="button" onClick={() => setIsRegistering(false)} className="text-blue-600 hover:text-blue-700 font-semibold">Sign in here</button></>
+                  ) : (
+                    <>Don't have an account? <button type="button" onClick={() => setIsRegistering(true)} className="text-blue-600 hover:text-blue-700 font-semibold">Create one here</button></>
+                  )}
+                </p>
+              </div>
+
+              {/* Benefits for new users */}
+              {isRegistering && (
+                <div className="mt-6 bg-blue-50 rounded-lg p-4">
+                  <h3 className="text-sm font-semibold text-blue-900 mb-2">What you get:</h3>
+                  <ul className="text-xs text-blue-800 space-y-1">
+                    <li className="flex items-center">
+                      <span className="text-blue-600 mr-2">✓</span>
+                      Save your analysis history
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-blue-600 mr-2">✓</span>
+                      Access to premium features
+                    </li>
+                    <li className="flex items-center">
+                      <span className="text-blue-600 mr-2">✓</span>
+                      Priority support
+                    </li>
+                  </ul>
+                </div>
               )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
-                  type="password"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <button 
-                type="submit" 
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {isRegistering ? 'Create Account' : 'Login'}
-              </button>
-              <p className="text-sm text-gray-600 text-center">
-                {isRegistering ? (
-                  <>Already have an account? <button type="button" onClick={() => setIsRegistering(false)} className="text-blue-600 hover:underline">Login here</button></>
-                ) : (
-                  <>Don't have an account? <button type="button" onClick={() => setIsRegistering(true)} className="text-blue-600 hover:underline">Register here</button></>
-                )}
-              </p>
-            </form>
+            </div>
           </div>
         </div>
       )}
@@ -584,15 +633,71 @@ function App() {
               <a href="https://saharagroundwater.com/" className="block text-gray-700 hover:text-blue-600 transition-colors">Home</a>
               <a href="https://saharagroundwater.com/booking/" className="block text-gray-700 hover:text-blue-600 transition-colors">Book Now</a>
               <a href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/" className="block text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
-            <button
+              
+              {/* Mobile User Section */}
+              <div className="border-t border-gray-200 pt-4">
+                {user ? (
+                  <div className="space-y-3">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 font-semibold text-sm">
+                            {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900 text-sm">
+                            {user.name || user.email.split('@')[0]}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {user.subscription_status === 'active' ? 'Premium User' : 'Free User'}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-gray-600">
+                        {user.subscription_status === 'active' 
+                          ? 'Unlimited analysis' 
+                          : `${user.analysis_count || 0}/${user.daily_limit || 1} analysis today`
+                        }
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setUser(null);
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => {
+                        setShowLoginForm(true);
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      Login / Sign Up
+                    </button>
+                    <div className="text-xs text-gray-500 text-center">
+                      Create an account to save your analysis history
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
-            >
+                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors w-full"
+              >
                 <span>{isDarkMode ? '☀️' : '🌙'}</span>
                 <span>Toggle Dark Mode</span>
-            </button>
+              </button>
+            </div>
           </div>
-              </div>
         )}
       </nav>
 
@@ -612,6 +717,31 @@ function App() {
             </p>
             </div>
               
+          {/* Mobile Login Prompt */}
+          {!user && (
+            <div className="md:hidden mb-8">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">🔐</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Get Started with Your Account
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    Create an account to save your analysis history and access premium features
+                  </p>
+                  <button
+                    onClick={() => setShowLoginForm(true)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all font-semibold shadow-lg"
+                  >
+                    Login / Sign Up
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Trust Indicators */}
           <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
             <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-4 py-2 rounded-full">
