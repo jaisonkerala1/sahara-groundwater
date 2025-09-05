@@ -215,11 +215,18 @@ function check_user_access($userId) {
     $user_file = "users/{$userId}.json";
     $current_analysis_count = 0;
     
+    error_log("🔍 Checking access for user {$userId}, file: {$user_file}");
+    
     if (file_exists($user_file)) {
         $user_data = json_decode(file_get_contents($user_file), true);
         if ($user_data && isset($user_data['analysis_count'])) {
             $current_analysis_count = intval($user_data['analysis_count']);
+            error_log("📊 User {$userId} current analysis count: {$current_analysis_count}");
+        } else {
+            error_log("⚠️ User file exists but no analysis_count found for user {$userId}");
         }
+    } else {
+        error_log("⚠️ User file not found for access check: {$user_file}");
     }
     
     $access = $userAccess[$userId] ?? [
@@ -283,14 +290,38 @@ function track_analysis_usage($user_id) {
     $today = date('Y-m-d');
     $user_file = "users/{$user_id}.json";
     
+    error_log("🔍 Attempting to track analysis for user {$user_id}, file: {$user_file}");
+    
     if (!file_exists($user_file)) {
-        error_log("User file not found: {$user_file}");
-        return false;
+        error_log("❌ User file not found: {$user_file}");
+        // Try to create the user file if it doesn't exist
+        if (!is_dir('users')) {
+            mkdir('users', 0755, true);
+        }
+        
+        // Create a basic user file
+        $user_data = [
+            'id' => intval($user_id),
+            'analysis_count' => 1,
+            'daily_limit' => 1,
+            'subscription_status' => '',
+            'last_analysis_date' => $today,
+            'created_at' => date('c')
+        ];
+        
+        $result = file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT));
+        if ($result === false) {
+            error_log("❌ Failed to create user file for tracking: {$user_id}");
+            return false;
+        }
+        
+        error_log("✅ Created new user file and tracked first analysis for user {$user_id}");
+        return true;
     }
     
     $user_data = json_decode(file_get_contents($user_file), true);
     if (!$user_data) {
-        error_log("Failed to read user data for tracking: {$user_id}");
+        error_log("❌ Failed to read user data for tracking: {$user_id}");
         return false;
     }
     
@@ -303,7 +334,7 @@ function track_analysis_usage($user_id) {
     $result = file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT));
     
     if ($result === false) {
-        error_log("Failed to update analysis count for user: {$user_id}");
+        error_log("❌ Failed to update analysis count for user: {$user_id}");
         return false;
     }
     
