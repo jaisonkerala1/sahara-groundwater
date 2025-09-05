@@ -421,7 +421,13 @@ function App() {
 
     if (toggle && windowBox && inputContainer && userInput && sendButton) {
       // Toggle chat window (Facebook Messenger style)
-      toggle.onclick = () => {
+      toggle.onclick = (e) => {
+        // Don't toggle if it was a drag
+        if (hasDragged) {
+          e.preventDefault();
+          return;
+        }
+        
         const isHidden = windowBox.style.display === "none";
         if (isHidden) {
           // Show chat window
@@ -558,8 +564,12 @@ function App() {
       document.addEventListener("touchmove", drag, { passive: false });
       
       // Button drag functionality
+      let dragThreshold = 5; // Minimum distance to consider it a drag
+      let hasDragged = false;
+      
       const buttonDragStart = (e) => {
-        isButtonDragging = true;
+        isButtonDragging = false; // Start as false
+        hasDragged = false;
         const rect = toggle.getBoundingClientRect();
         buttonInitialX = rect.left;
         buttonInitialY = rect.top;
@@ -572,12 +582,10 @@ function App() {
           buttonStartY = e.touches[0].clientY;
         }
         
-        e.preventDefault();
+        // Don't prevent default immediately - let click work
       };
       
       const buttonDragMove = (e) => {
-        if (!isButtonDragging) return;
-        
         let currentX, currentY;
         if (e.type === 'mousemove') {
           currentX = e.clientX;
@@ -589,6 +597,15 @@ function App() {
         
         const deltaX = currentX - buttonStartX;
         const deltaY = currentY - buttonStartY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Only start dragging if moved more than threshold
+        if (distance > dragThreshold) {
+          isButtonDragging = true;
+          hasDragged = true;
+        }
+        
+        if (!isButtonDragging) return;
         
         let newX = buttonInitialX + deltaX;
         let newY = buttonInitialY + deltaY;
@@ -609,6 +626,10 @@ function App() {
       
       const buttonDragEnd = () => {
         isButtonDragging = false;
+        // Reset drag state after a short delay
+        setTimeout(() => {
+          hasDragged = false;
+        }, 100);
       };
       
       // Add button drag event listeners
