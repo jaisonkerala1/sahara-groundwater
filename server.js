@@ -41,7 +41,19 @@ app.post('/api/analyze-survey', upload.single('surveyFile'), async (req, res) =>
     }
 
     if (!process.env.OPENROUTER_API_KEY) {
-      return res.status(500).json({ error: 'OpenRouter API key not configured' });
+      console.error('❌ OpenRouter API key not configured');
+      console.error('Environment variables:', {
+        OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? 'SET' : 'NOT SET',
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT
+      });
+      return res.status(500).json({ 
+        error: 'OpenRouter API key not configured',
+        debug: {
+          env_loaded: process.env.OPENROUTER_API_KEY ? 'YES' : 'NO',
+          node_env: process.env.NODE_ENV
+        }
+      });
     }
 
     console.log('📁 File Upload Details:', {
@@ -226,7 +238,16 @@ Focus on realistic Kerala groundwater conditions, seasonal variations, and profe
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: {
+      node_env: process.env.NODE_ENV,
+      port: process.env.PORT,
+      openrouter_configured: process.env.OPENROUTER_API_KEY ? 'YES' : 'NO'
+    }
+  });
 });
 
 // Simple in-memory user storage (replace with database in production)
