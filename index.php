@@ -31,6 +31,12 @@ if (file_exists($envFile)) {
     }
 }
 
+// Ensure uploads directory exists proactively (needed for PDF analysis on shared hosting)
+$uploadsDirPath = __DIR__ . '/uploads';
+if (!is_dir($uploadsDirPath)) {
+    @mkdir($uploadsDirPath, 0755, true);
+}
+
 // File-based user storage (simple solution for production)
 $usersFile = __DIR__ . '/users.json';
 $accessFile = __DIR__ . '/user_access.json';
