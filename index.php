@@ -206,6 +206,45 @@ function check_user_access($userId) {
     ];
 }
 
+// Compatibility wrapper for shared hosting (no WP runtime here)
+// Build the same shape expected by the analyzer using our local file-based access
+function check_wordpress_user_access($userId) {
+    $res = check_user_access($userId);
+    if (!$res || !($res['success'] ?? false)) {
+        return [
+            'has_access' => false,
+            'reason' => 'User not found',
+            'monthly_price' => 100
+        ];
+    }
+
+    $status = $res['subscription_status'] ?? '';
+    $dailyLimit = intval($res['daily_limit'] ?? 1);
+    $count = intval($res['analysis_count'] ?? 0);
+
+    if ($status === 'active') {
+        return [
+            'has_access' => true,
+            'reason' => 'Active subscription',
+            'monthly_price' => 100
+        ];
+    }
+
+    if ($count < $dailyLimit) {
+        return [
+            'has_access' => true,
+            'reason' => 'Free daily limit available',
+            'monthly_price' => 100
+        ];
+    }
+
+    return [
+        'has_access' => false,
+        'reason' => 'Daily limit reached',
+        'monthly_price' => 100
+    ];
+}
+
 function track_analysis_usage($user_id) {
     $wp_api_url = 'https://saharagroundwater.com/wp-json/sahara/v1/track-analysis';
     
