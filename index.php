@@ -356,6 +356,71 @@ function track_analysis_usage($user_id) {
     return true;
 }
 
+function save_analysis_to_history($userId, $analysisData, $fileName, $fileType) {
+    // Extract only the text data from analysis (no images)
+    $textData = extract_analysis_text($analysisData);
+    
+    // Create analysis history entry
+    $historyEntry = [
+        'id' => uniqid('analysis_', true),
+        'user_id' => intval($userId),
+        'file_name' => $fileName,
+        'file_type' => $fileType,
+        'analysis_data' => $textData, // Only text data, no images
+        'created_at' => date('c'),
+        'timestamp' => time()
+    ];
+    
+    // Save to user's history file
+    $historyDir = "analysis_history";
+    if (!is_dir($historyDir)) {
+        mkdir($historyDir, 0755, true);
+    }
+    
+    $userHistoryFile = "{$historyDir}/user_{$userId}.json";
+    $history = [];
+    
+    if (file_exists($userHistoryFile)) {
+        $history = json_decode(file_get_contents($userHistoryFile), true) ?: [];
+    }
+    
+    // Add new entry to beginning of array (most recent first)
+    array_unshift($history, $historyEntry);
+    
+    // Keep only last 50 analyses per user (to prevent file from growing too large)
+    $history = array_slice($history, 0, 50);
+    
+    $result = file_put_contents($userHistoryFile, json_encode($history, JSON_PRETTY_PRINT));
+    
+    if ($result === false) {
+        error_log("❌ Failed to save analysis history for user {$userId}");
+        return false;
+    }
+    
+    error_log("✅ Analysis saved to history for user {$userId}: {$fileName}");
+    return true;
+}
+
+function extract_analysis_text($analysisData) {
+    // Extract only text content from analysis data, removing any image references
+    $textData = [];
+    
+    if (is_array($analysisData)) {
+        foreach ($analysisData as $key => $value) {
+            if (is_array($value)) {
+                // Recursively extract text from nested arrays
+                $textData[$key] = extract_analysis_text($value);
+            } elseif (is_string($value)) {
+                // Only include string values (text content)
+                $textData[$key] = $value;
+            }
+            // Skip any other data types (like image data)
+        }
+    }
+    
+    return $textData;
+}
+
 // API endpoint for survey analysis
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === '/api/analyze-survey') {
     try {
@@ -772,6 +837,9 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
         // Track analysis usage
         track_analysis_usage($user_id);
         
+        // Save analysis to history
+        save_analysis_to_history($user_id, $parsedAnalysis, $file['name'] ?? 'Unknown', $file['type'] ?? 'unknown');
+        
         echo json_encode([
             'success' => true,
             'surveyAnalysis' => $parsedAnalysis,
@@ -879,6 +947,142 @@ if (pathinfo($path, PATHINFO_EXTENSION)) {
         readfile($filePath);
         exit();
     }
+}
+
+// Save analysis history endpoint
+if ($path === '/api/save-analysis' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $userId = $input['user_id'] ?? 0;
+    $analysisData = $input['analysis_data'] ?? null;
+    $fileName = $input['file_name'] ?? 'Unknown';
+    $fileType = $input['file_type'] ?? 'unknown';
+    
+    if (!$userId || !$analysisData) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID and analysis data are required']);
+        exit();
+    }
+    
+    // Extract only text data (no images)
+    $textData = extract_analysis_text($analysisData);
+    
+    // Create analysis history entry
+    $historyEntry = [
+        'id' => uniqid('analysis_', true),
+        'user_id' => intval($userId),
+        'file_name' => $fileName,
+        'file_type' => $fileType,
+        'analysis_data' => $textData, // Only text data
+        'created_at' => date('c'),
+        'timestamp' => time()
+    ];
+    
+    // Save to user's history file
+    $historyDir = "analysis_history";
+    if (!is_dir($historyDir)) {
+        mkdir($historyDir, 0755, true);
+    }
+    
+    $userHistoryFile = "{$historyDir}/user_{$userId}.json";
+    $history = [];
+    
+    if (file_exists($userHistoryFile)) {
+        $history = json_decode(file_get_contents($userHistoryFile), true) ?: [];
+    }
+    
+    // Add new entry to beginning of array (most recent first)
+    array_unshift($history, $historyEntry);
+    
+    // Keep only last 50 analyses per user (to prevent file from growing too large)
+    $history = array_slice($history, 0, 50);
+    
+    $result = file_put_contents($userHistoryFile, json_encode($history, JSON_PRETTY_PRINT));
+    
+    if ($result === false) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Failed to save analysis history']);
+        exit();
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Analysis saved to history',
+        'analysis_id' => $historyEntry['id']
+    ]);
+    exit();
+}
+
+// Get analysis history endpoint
+if ($path === '/api/get-history' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $userId = $_GET['user_id'] ?? 0;
+    
+    if (!$userId) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID is required']);
+        exit();
+    }
+    
+    $historyDir = "analysis_history";
+    $userHistoryFile = "{$historyDir}/user_{$userId}.json";
+    
+    if (!file_exists($userHistoryFile)) {
+        echo json_encode(['success' => true, 'history' => []]);
+        exit();
+    }
+    
+    $history = json_decode(file_get_contents($userHistoryFile), true) ?: [];
+    
+    echo json_encode([
+        'success' => true,
+        'history' => $history
+    ]);
+    exit();
+}
+
+// Delete analysis from history endpoint
+if ($path === '/api/delete-analysis' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $userId = $input['user_id'] ?? 0;
+    $analysisId = $input['analysis_id'] ?? '';
+    
+    if (!$userId || !$analysisId) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID and analysis ID are required']);
+        exit();
+    }
+    
+    $historyDir = "analysis_history";
+    $userHistoryFile = "{$historyDir}/user_{$userId}.json";
+    
+    if (!file_exists($userHistoryFile)) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'No history found']);
+        exit();
+    }
+    
+    $history = json_decode(file_get_contents($userHistoryFile), true) ?: [];
+    
+    // Remove the analysis with matching ID
+    $history = array_filter($history, function($entry) use ($analysisId) {
+        return $entry['id'] !== $analysisId;
+    });
+    
+    // Re-index array
+    $history = array_values($history);
+    
+    $result = file_put_contents($userHistoryFile, json_encode($history, JSON_PRETTY_PRINT));
+    
+    if ($result === false) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Failed to delete analysis']);
+        exit();
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Analysis deleted from history'
+    ]);
+    exit();
 }
 
 // For all other requests, serve index.html
