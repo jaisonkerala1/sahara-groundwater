@@ -51,38 +51,40 @@ function App() {
   const [hapticInterval, setHapticInterval] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Haptic feedback utility
-  const triggerHaptic = useCallback((pattern = 50) => {
+  // Haptic feedback utility - much gentler vibrations
+  const triggerHaptic = useCallback((pattern = 20) => {
     if ('vibrate' in navigator) {
       navigator.vibrate(pattern);
     }
   }, []);
 
   const startHapticFeedback = useCallback(() => {
-    // Clear any existing interval
-    if (hapticInterval) {
-      clearInterval(hapticInterval);
-    }
-    
-    // Initial gentle vibration when analysis starts
-    triggerHaptic(50);
-    
-    // Subtle pulse every 2 seconds during analysis
-    const interval = setInterval(() => {
-      triggerHaptic(30);
-    }, 2000);
-    
-    setHapticInterval(interval);
-  }, [hapticInterval, triggerHaptic]);
-
-  const stopHapticFeedback = useCallback(() => {
+    // Clear any existing interval immediately
     if (hapticInterval) {
       clearInterval(hapticInterval);
       setHapticInterval(null);
     }
     
-    // Success vibration when analysis completes
-    triggerHaptic([100, 50, 100]);
+    // Very gentle initial vibration when analysis starts
+    triggerHaptic(15);
+    
+    // Very subtle pulse every 3 seconds during analysis (less frequent)
+    const interval = setInterval(() => {
+      triggerHaptic(10);
+    }, 3000);
+    
+    setHapticInterval(interval);
+  }, [hapticInterval, triggerHaptic]);
+
+  const stopHapticFeedback = useCallback(() => {
+    // Clear interval immediately
+    if (hapticInterval) {
+      clearInterval(hapticInterval);
+      setHapticInterval(null);
+    }
+    
+    // Gentle success vibration when analysis completes
+    triggerHaptic([30, 20, 30]);
   }, [hapticInterval, triggerHaptic]);
 
   // Ripple effect utility
@@ -570,38 +572,38 @@ function App() {
       }
 
       if (response.ok && data && data.success) {
+        // Stop haptic feedback immediately when analysis completes
+        stopHapticFeedback();
         setAnalysisResult(data.surveyAnalysis);
         // Update user access data after successful analysis
         const updatedAccess = await checkUserAccess(user.id);
         if (updatedAccess) {
           setUser({ ...user, ...updatedAccess });
         }
-        // Stop haptic feedback with success vibration
-        stopHapticFeedback();
       } else {
         if (data.subscription_required) {
+          // Stop haptic feedback immediately when quota limit reached
+          stopHapticFeedback();
           setSubscriptionRequired(true);
           setSubscriptionData({
             price: data.price,
             currency: data.currency,
             reason: data.reason
           });
-          // Stop haptic feedback when quota limit reached
-          stopHapticFeedback();
         } else {
-          setError((data && data.error) || `Analysis failed (status ${response.status}). Please try again.`);
-          // Stop haptic feedback on analysis failure
+          // Stop haptic feedback immediately on analysis failure
           stopHapticFeedback();
+          setError((data && data.error) || `Analysis failed (status ${response.status}). Please try again.`);
         }
       }
     } catch (err) {
+      // Stop haptic feedback immediately on any error
+      stopHapticFeedback();
       if (err.name === 'AbortError') {
         setError('The analysis is taking longer than expected. Please try again or retry with a smaller/clearer file.');
       } else {
         setError(err.message || 'Network error. Please check your connection and try again.');
       }
-      // Stop haptic feedback on any error
-      stopHapticFeedback();
     } finally {
       clearTimeout(timeoutId);
       setIsUploading(false);
