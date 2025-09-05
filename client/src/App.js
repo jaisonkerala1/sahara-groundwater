@@ -48,7 +48,42 @@ function App() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [hapticInterval, setHapticInterval] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Haptic feedback utility
+  const triggerHaptic = useCallback((pattern = 50) => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(pattern);
+    }
+  }, []);
+
+  const startHapticFeedback = useCallback(() => {
+    // Clear any existing interval
+    if (hapticInterval) {
+      clearInterval(hapticInterval);
+    }
+    
+    // Initial gentle vibration when analysis starts
+    triggerHaptic(50);
+    
+    // Subtle pulse every 2 seconds during analysis
+    const interval = setInterval(() => {
+      triggerHaptic(30);
+    }, 2000);
+    
+    setHapticInterval(interval);
+  }, [hapticInterval, triggerHaptic]);
+
+  const stopHapticFeedback = useCallback(() => {
+    if (hapticInterval) {
+      clearInterval(hapticInterval);
+      setHapticInterval(null);
+    }
+    
+    // Success vibration when analysis completes
+    triggerHaptic([100, 50, 100]);
+  }, [hapticInterval, triggerHaptic]);
 
   // Ripple effect utility
   const createRipple = useCallback((event) => {
@@ -76,6 +111,15 @@ function App() {
       document.body.removeChild(script);
     };
   }, []);
+
+  // Cleanup haptic feedback on unmount
+  useEffect(() => {
+    return () => {
+      if (hapticInterval) {
+        clearInterval(hapticInterval);
+      }
+    };
+  }, [hapticInterval]);
 
   // Check for stored user info and fetch updated data
   useEffect(() => {
@@ -483,6 +527,9 @@ function App() {
     setIsUploading(true);
     setError(null);
     
+    // Start haptic feedback
+    startHapticFeedback();
+    
     const formData = new FormData();
     formData.append('surveyFile', selectedFile);
     formData.append('user_id', user.id);
@@ -529,6 +576,8 @@ function App() {
         if (updatedAccess) {
           setUser({ ...user, ...updatedAccess });
         }
+        // Stop haptic feedback with success vibration
+        stopHapticFeedback();
       } else {
         if (data.subscription_required) {
           setSubscriptionRequired(true);
@@ -550,6 +599,8 @@ function App() {
     } finally {
       clearTimeout(timeoutId);
       setIsUploading(false);
+      // Stop haptic feedback on any completion (success or error)
+      stopHapticFeedback();
     }
   };
 
@@ -890,7 +941,7 @@ function App() {
               )}
               
               {isRegistering && (
-                <div>
+              <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number (Optional)</label>
                   <input
                     type="tel"
