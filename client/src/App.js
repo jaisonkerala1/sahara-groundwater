@@ -451,6 +451,80 @@ function App() {
         inputContainer.style.borderColor = "#E5E7EB";
         inputContainer.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.05)";
       };
+
+      // Drag functionality for chat window
+      let isDragging = false;
+      let currentX;
+      let currentY;
+      let initialX;
+      let initialY;
+      let xOffset = 0;
+      let yOffset = 0;
+
+      const dragStart = (e) => {
+        // Only allow dragging from the header
+        const header = windowBox.querySelector('.chat-header');
+        if (!header || !header.contains(e.target)) return;
+
+        if (e.type === "touchstart") {
+          initialX = e.touches[0].clientX - xOffset;
+          initialY = e.touches[0].clientY - yOffset;
+        } else {
+          initialX = e.clientX - xOffset;
+          initialY = e.clientY - yOffset;
+        }
+
+        isDragging = true;
+        windowBox.classList.add('dragging');
+        e.preventDefault();
+      };
+
+      const dragEnd = (e) => {
+        if (isDragging) {
+          initialX = currentX;
+          initialY = currentY;
+          isDragging = false;
+          windowBox.classList.remove('dragging');
+        }
+      };
+
+      const drag = (e) => {
+        if (isDragging) {
+          e.preventDefault();
+          
+          if (e.type === "touchmove") {
+            currentX = e.touches[0].clientX - initialX;
+            currentY = e.touches[0].clientY - initialY;
+          } else {
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+          }
+
+          xOffset = currentX;
+          yOffset = currentY;
+
+          // Constrain to viewport
+          const maxX = window.innerWidth - windowBox.offsetWidth;
+          const maxY = window.innerHeight - windowBox.offsetHeight;
+          
+          xOffset = Math.min(Math.max(0, xOffset), maxX);
+          yOffset = Math.min(Math.max(0, yOffset), maxY);
+
+          windowBox.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+        }
+      };
+
+      // Add drag listeners to header only
+      const header = windowBox.querySelector('.chat-header');
+      if (header) {
+        header.addEventListener("mousedown", dragStart);
+        header.addEventListener("touchstart", dragStart);
+      }
+      
+      document.addEventListener("mouseup", dragEnd);
+      document.addEventListener("touchend", dragEnd);
+      document.addEventListener("mousemove", drag);
+      document.addEventListener("touchmove", drag);
     }
   }, []);
 
@@ -1571,17 +1645,25 @@ function App() {
           marginBottom: '15px',
           overflow: 'hidden',
           flexDirection: 'column',
-          animation: 'slideUp 0.3s ease'
+          animation: 'slideUp 0.3s ease',
+          position: 'fixed',
+          bottom: '80px',
+          right: '20px',
+          zIndex: 2147483646,
+          transition: 'transform 0.1s ease-out',
+          userSelect: 'none'
         }}>
           {/* Header */}
-          <div style={{
+          <div className="chat-header" style={{
             background: 'linear-gradient(135deg, #8058F8 0%, #3E1F64 100%)',
             color: 'white',
             padding: '20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            boxShadow: '0 2px 10px rgba(128, 88, 248, 0.2)'
+            boxShadow: '0 2px 10px rgba(128, 88, 248, 0.2)',
+            cursor: 'move',
+            userSelect: 'none'
           }}>
             <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
               <div style={{width: '40px', height: '40px', background: 'white', borderRadius: '50%', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
