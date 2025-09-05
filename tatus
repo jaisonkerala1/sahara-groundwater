@@ -1,0 +1,10 @@
+[33m328416b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Update server port configuration to match .env (PORT=3000)
+[33m56390fe[m Add build script to package.json for auto-deployment
+[33m76387de[m Add Profile button to mobile menu for logged-in users
+[33m8d846a9[m Revert test changes - restore correct contact info
+[33m0b76cb9[m TEST: Add obvious changes to verify deployment is working
+[33m9e4d600[m Clean build with updated phone number and email - remove old static files
+[33mb339f63[m Fix phone number in Footer.js and remove aggressive cache busting
+[33m2a707bf[m Add aggressive cache busting and update service worker to v4
+[33m310e58d[m Update phone number to 8050381803 for testing
+[33m1120512[m Fix email in root index.html structured data
