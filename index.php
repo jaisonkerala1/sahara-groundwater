@@ -31,25 +31,107 @@ if (file_exists($envFile)) {
     }
 }
 
-// WordPress integration functions
-function check_wordpress_user_access($user_id) {
-    $wp_api_url = 'https://saharagroundwater.com/wp-json/sahara/v1/check-access/' . $user_id;
+// Simple in-memory user storage (replace with database in production)
+$users = [];
+$userAccess = [];
+
+// User registration function
+function register_user($email, $password, $name) {
+    global $users, $userAccess;
     
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $wp_api_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    if ($http_code !== 200) {
-        return false;
+    // Check if user already exists
+    foreach ($users as $user) {
+        if ($user['email'] === $email) {
+            return ['success' => false, 'message' => 'User already exists with this email'];
+        }
     }
     
-    $data = json_decode($response, true);
-    return $data;
+    // Create new user
+    $newUser = [
+        'id' => count($users) + 1,
+        'email' => $email,
+        'name' => $name ?: explode('@', $email)[0],
+        'password' => $password, // In production, hash this password
+        'createdAt' => date('c')
+    ];
+    
+    $users[] = $newUser;
+    $userAccess[$newUser['id']] = [
+        'subscription_status' => '',
+        'analysis_count' => 0,
+        'daily_limit' => 1
+    ];
+    
+    return [
+        'success' => true,
+        'user_id' => $newUser['id'],
+        'email' => $newUser['email'],
+        'name' => $newUser['name'],
+        'subscription_status' => '',
+        'analysis_count' => 0,
+        'daily_limit' => 1
+    ];
+}
+
+// User login function
+function login_user($email, $password) {
+    global $users, $userAccess;
+    
+    // Find user
+    foreach ($users as $user) {
+        if ($user['email'] === $email && $user['password'] === $password) {
+            $access = $userAccess[$user['id']] ?? [
+                'subscription_status' => '',
+                'analysis_count' => 0,
+                'daily_limit' => 1
+            ];
+            
+            return [
+                'success' => true,
+                'user_id' => $user['id'],
+                'email' => $user['email'],
+                'name' => $user['name'],
+                'subscription_status' => $access['subscription_status'],
+                'analysis_count' => $access['analysis_count'],
+                'daily_limit' => $access['daily_limit']
+            ];
+        }
+    }
+    
+    return ['success' => false, 'message' => 'Invalid email or password'];
+}
+
+// Check user access function
+function check_user_access($userId) {
+    global $users, $userAccess;
+    
+    $userId = intval($userId);
+    
+    // Check if user exists
+    $userExists = false;
+    foreach ($users as $user) {
+        if ($user['id'] === $userId) {
+            $userExists = true;
+            break;
+        }
+    }
+    
+    if (!$userExists) {
+        return ['success' => false, 'message' => 'User not found'];
+    }
+    
+    $access = $userAccess[$userId] ?? [
+        'subscription_status' => '',
+        'analysis_count' => 0,
+        'daily_limit' => 1
+    ];
+    
+    return [
+        'success' => true,
+        'subscription_status' => $access['subscription_status'],
+        'analysis_count' => $access['analysis_count'],
+        'daily_limit' => $access['daily_limit']
+    ];
 }
 
 function track_analysis_usage($user_id) {
@@ -501,6 +583,72 @@ IMPORTANT: Only extract REAL data visible in the image. If any field is not visi
             'message' => $e->getMessage()
         ]);
     }
+    exit();
+}
+
+// User registration endpoint
+if ($path === '/api/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $email = $input['email'] ?? '';
+    $password = $input['password'] ?? '';
+    $name = $input['name'] ?? '';
+    
+    if (empty($email) || empty($password)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Email and password are required']);
+        exit();
+    }
+    
+    $result = register_user($email, $password, $name);
+    echo json_encode($result);
+    exit();
+}
+
+// User login endpoint
+if ($path === '/api/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $email = $input['email'] ?? '';
+    $password = $input['password'] ?? '';
+    
+    if (empty($email) || empty($password)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Email and password are required']);
+        exit();
+    }
+    
+    $result = login_user($email, $password);
+    echo json_encode($result);
+    exit();
+}
+
+// Check user access endpoint
+if (preg_match('/^\/api\/check-access\/(\d+)$/', $path, $matches) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $userId = $matches[1];
+    $result = check_user_access($userId);
+    echo json_encode($result);
+    exit();
+}
+
+// Payment verification endpoint
+if ($path === '/api/verify-payment' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $userId = $input['user_id'] ?? 0;
+    $paymentId = $input['payment_id'] ?? '';
+    
+    if (empty($userId) || empty($paymentId)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'User ID and payment ID are required']);
+        exit();
+    }
+    
+    // In production, verify the Razorpay signature here
+    // For now, we'll just simulate successful payment
+    global $userAccess;
+    if (isset($userAccess[$userId])) {
+        $userAccess[$userId]['subscription_status'] = 'active';
+    }
+    
+    echo json_encode(['success' => true, 'message' => 'Payment verified successfully']);
     exit();
 }
 
