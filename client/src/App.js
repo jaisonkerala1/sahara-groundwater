@@ -454,77 +454,84 @@ function App() {
 
       // Drag functionality for chat window
       let isDragging = false;
-      let currentX;
-      let currentY;
-      let initialX;
-      let initialY;
-      let xOffset = 0;
-      let yOffset = 0;
+      let startX;
+      let startY;
+      let initialX = 0;
+      let initialY = 0;
 
       const dragStart = (e) => {
         // Only allow dragging from the header
         const header = windowBox.querySelector('.chat-header');
         if (!header || !header.contains(e.target)) return;
 
-        if (e.type === "touchstart") {
-          initialX = e.touches[0].clientX - xOffset;
-          initialY = e.touches[0].clientY - yOffset;
-        } else {
-          initialX = e.clientX - xOffset;
-          initialY = e.clientY - yOffset;
-        }
-
         isDragging = true;
         windowBox.classList.add('dragging');
+
+        if (e.type === "touchstart") {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+        } else {
+          startX = e.clientX;
+          startY = e.clientY;
+        }
+
         e.preventDefault();
+        e.stopPropagation();
       };
 
       const dragEnd = (e) => {
         if (isDragging) {
-          initialX = currentX;
-          initialY = currentY;
           isDragging = false;
           windowBox.classList.remove('dragging');
         }
       };
 
       const drag = (e) => {
-        if (isDragging) {
-          e.preventDefault();
-          
-          if (e.type === "touchmove") {
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
-          } else {
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-          }
+        if (!isDragging) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
 
-          xOffset = currentX;
-          yOffset = currentY;
-
-          // Constrain to viewport
-          const maxX = window.innerWidth - windowBox.offsetWidth;
-          const maxY = window.innerHeight - windowBox.offsetHeight;
-          
-          xOffset = Math.min(Math.max(0, xOffset), maxX);
-          yOffset = Math.min(Math.max(0, yOffset), maxY);
-
-          windowBox.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+        let currentX, currentY;
+        
+        if (e.type === "touchmove") {
+          currentX = e.touches[0].clientX;
+          currentY = e.touches[0].clientY;
+        } else {
+          currentX = e.clientX;
+          currentY = e.clientY;
         }
+
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+
+        initialX += deltaX;
+        initialY += deltaY;
+
+        // Constrain to viewport
+        const maxX = window.innerWidth - windowBox.offsetWidth;
+        const maxY = window.innerHeight - windowBox.offsetHeight;
+        
+        initialX = Math.min(Math.max(0, initialX), maxX);
+        initialY = Math.min(Math.max(0, initialY), maxY);
+
+        windowBox.style.transform = `translate(${initialX}px, ${initialY}px)`;
+
+        startX = currentX;
+        startY = currentY;
       };
 
       // Add drag listeners to header only
       const header = windowBox.querySelector('.chat-header');
       if (header) {
-        header.addEventListener("mousedown", dragStart);
-        header.addEventListener("touchstart", dragStart);
+        header.addEventListener("mousedown", dragStart, { passive: false });
+        header.addEventListener("touchstart", dragStart, { passive: false });
       }
       
       document.addEventListener("mouseup", dragEnd);
       document.addEventListener("touchend", dragEnd);
-      document.addEventListener("mousemove", drag);
-      document.addEventListener("touchmove", drag);
+      document.addEventListener("mousemove", drag, { passive: false });
+      document.addEventListener("touchmove", drag, { passive: false });
     }
   }, []);
 
@@ -1663,8 +1670,20 @@ function App() {
             justifyContent: 'space-between',
             boxShadow: '0 2px 10px rgba(128, 88, 248, 0.2)',
             cursor: 'move',
-            userSelect: 'none'
+            userSelect: 'none',
+            position: 'relative'
           }}>
+            {/* Drag indicator */}
+            <div style={{
+              position: 'absolute',
+              top: '8px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '30px',
+              height: '4px',
+              background: 'rgba(255, 255, 255, 0.3)',
+              borderRadius: '2px'
+            }}></div>
             <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
               <div style={{width: '40px', height: '40px', background: 'white', borderRadius: '50%', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <img src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" style={{width: '100%', height: '100%', objectFit: 'contain'}} alt="Sahara Groundwater logo" />
