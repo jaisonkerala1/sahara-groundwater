@@ -120,9 +120,9 @@
 </script>
 
 <script defer="defer" src="/static/js/main.4bd6387f.js"></script><link href="/static/css/main.f3184266.css" rel="stylesheet"></head><body><noscript><div style="text-align:center;padding:2rem;font-family:Arial,sans-serif"><h1>JavaScript Required</h1><p>This application requires JavaScript to function properly. Please enable JavaScript in your browser settings.</p></div></noscript><div id="loading-screen" class="loading-screen"><div class="loading-content"><div class="loading-spinner"></div><h2 style="margin-bottom:8px;font-size:1.5rem;font-weight:600">Sahara Groundwater</h2><p style="opacity:.9">Loading AI Analysis Platform...</p></div></div><div id="root"></div><script>window.addEventListener("load",function(){const e=document.getElementById("loading-screen");e&&setTimeout(()=>{e.classList.add("fade-out"),setTimeout(()=>{e.remove()},500)},1e3)}),"serviceWorker"in navigator&&window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").then(function(e){console.log("SW registered: ",e)}).catch(function(e){console.log("SW registration failed: ",e)})}),"performance"in window&&window.addEventListener("load",function(){setTimeout(function(){const e=performance.getEntriesByType("navigation")[0];console.log("Page Load Time:",e.loadEventEnd-e.loadEventStart,"ms")},0)}),window.addEventListener("error",function(e){console.error("Global error:",e.error)}),window.addEventListener("unhandledrejection",function(e){console.error("Unhandled promise rejection:",e.reason)})</script><script>
-// Cache busting script - Force reload of new files
+// Aggressive cache busting script - Force reload of new files
 (function() {
-  // Clear all caches
+  // Clear all caches immediately
   if ('caches' in window) {
     caches.keys().then(function(cacheNames) {
       return Promise.all(
@@ -132,7 +132,7 @@
         })
       );
     }).then(function() {
-      console.log('All caches cleared');
+      console.log('All caches cleared - v4');
     });
   }
   
@@ -141,5 +141,17 @@
     console.log('Page loaded from cache, forcing reload');
     window.location.reload(true);
   }
+  
+  // Additional cache busting - add timestamp to prevent caching
+  const timestamp = new Date().getTime();
+  console.log('Cache bust timestamp:', timestamp);
+  
+  // Force reload after 2 seconds if still showing old content
+  setTimeout(function() {
+    if (document.querySelector('a[href*="7012051937"]')) {
+      console.log('Old phone number detected, forcing reload');
+      window.location.reload(true);
+    }
+  }, 2000);
 })();
 </script></body></html>
