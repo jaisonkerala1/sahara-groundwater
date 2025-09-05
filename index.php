@@ -177,6 +177,20 @@ function login_user($email, $password) {
                 'daily_limit' => 1
             ];
             
+            // Read current analysis count from user's individual file
+            $user_file = "users/{$user['id']}.json";
+            $current_analysis_count = 0;
+            
+            if (file_exists($user_file)) {
+                $user_data = json_decode(file_get_contents($user_file), true);
+                if ($user_data && isset($user_data['analysis_count'])) {
+                    $current_analysis_count = intval($user_data['analysis_count']);
+                }
+            }
+            
+            // Use the current analysis count from the user file
+            $access['analysis_count'] = $current_analysis_count;
+            
             return [
                 'success' => true,
                 'user_id' => $user['id'],
