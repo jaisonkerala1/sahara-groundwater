@@ -685,7 +685,12 @@ if ($path === '/api/verify-payment' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($path === '/api/health') {
     echo json_encode([
         'status' => 'OK',
-        'timestamp' => date('c')
+        'timestamp' => date('c'),
+        'environment' => [
+            'php_version' => PHP_VERSION,
+            'openrouter_configured' => empty($_ENV['OPENROUTER_API_KEY']) ? 'NO' : 'YES',
+            'uploads_dir_exists' => is_dir(__DIR__ . '/uploads') ? 'YES' : 'NO',
+        ]
     ]);
     exit();
 }
