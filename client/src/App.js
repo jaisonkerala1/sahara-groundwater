@@ -1140,6 +1140,43 @@ function App() {
                     </div>
                   </div>
 
+                  {/* User Status & Quick Actions */}
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                          profileData.subscription_status === 'active' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {profileData.subscription_status === 'active' ? 'Premium User' : 'Free User'}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {profileData.subscription_status === 'active' 
+                            ? 'Unlimited analysis' 
+                            : `${profileData.analysis_count || 0}/${user?.daily_limit || 1} today`
+                          }
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => {
+                            setShowProfile(false);
+                            setShowHistory(true);
+                            loadAnalysisHistory(user.id);
+                          }}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
+                        >
+                          <FileText className="w-4 h-4" />
+                          <span>View History</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Account Statistics */}
                   <div className="bg-blue-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h3>
@@ -1300,29 +1337,9 @@ function App() {
               <a href="https://saharagroundwater.com/kerala-groundwater-survey-assistant/" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Contact
               </a>
-              {/* User Status */}
+              {/* User Status - Simplified */}
               {user ? (
                 <div className="flex items-center space-x-3">
-                  <div className="text-sm">
-                    <div className="font-medium text-gray-900">
-                      {user.subscription_status === 'active' ? 'Premium User' : 'Free User'}
-                    </div>
-                    <div className="text-gray-500">
-                      {user.subscription_status === 'active' 
-                        ? 'Unlimited analysis' 
-                        : `${user.analysis_count || 0}/${user.daily_limit || 1} today`
-                      }
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowHistory(true);
-                      loadAnalysisHistory(user.id);
-                    }}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    History
-                  </button>
                   <button
                     onClick={() => {
                       setShowProfile(true);
@@ -1652,10 +1669,19 @@ function App() {
                     className="btn w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2 touchable"
                   >
                     {isUploading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Analyzing...</span>
-                      </>
+                      <div className="flex items-center justify-center space-x-3">
+                        <div className="analysis-breathing analysis-pulse">
+                          <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                            <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full analysis-wave"></div>
+                          </div>
+                        </div>
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-white rounded-full analysis-wave"></div>
+                          <div className="w-2 h-2 bg-white rounded-full analysis-wave"></div>
+                          <div className="w-2 h-2 bg-white rounded-full analysis-wave"></div>
+                        </div>
+                        <span className="text-white font-medium">Analyzing...</span>
+                      </div>
                     ) : (
                       <>
                       <Zap className="w-5 h-5" />
