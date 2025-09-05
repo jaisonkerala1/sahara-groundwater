@@ -31,6 +31,34 @@ if (file_exists($envFile)) {
     }
 }
 
+// Robust API error handling for shared hosting
+// Convert PHP warnings/notices to exceptions so we can return JSON consistently
+set_error_handler(function ($severity, $message, $file, $line) use ($path) {
+    // Only intervene for API routes
+    if (strpos($path, '/api/') === 0) {
+        throw new ErrorException($message, 0, $severity, $file, $line);
+    }
+    return false; // fall back to default for non-API
+});
+
+// Catch fatal errors and emit JSON
+register_shutdown_function(function () use ($path) {
+    $err = error_get_last();
+    if ($err && strpos($path, '/api/') === 0) {
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+        }
+        echo json_encode([
+            'error' => 'Server fatal error',
+            'type' => $err['type'] ?? null,
+            'message' => $err['message'] ?? null,
+            'file' => basename($err['file'] ?? ''),
+            'line' => $err['line'] ?? null,
+        ]);
+    }
+});
+
 // Ensure uploads directory exists proactively (needed for PDF analysis on shared hosting)
 $uploadsDirPath = __DIR__ . '/uploads';
 if (!is_dir($uploadsDirPath)) {
