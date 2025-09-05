@@ -420,14 +420,28 @@ function App() {
     const sendButton = document.getElementById("send-button");
 
     if (toggle && windowBox && inputContainer && userInput && sendButton) {
-      // Toggle chat window
+      // Toggle chat window (Facebook Messenger style)
       toggle.onclick = () => {
         const isHidden = windowBox.style.display === "none";
-        windowBox.style.display = isHidden ? "flex" : "none";
         if (isHidden) {
+          // Show chat window
+          windowBox.style.display = "flex";
           userInput.focus();
           const notificationDot = toggle.querySelector('div');
           if (notificationDot) notificationDot.style.display = 'none';
+          isChatMinimized = false;
+          
+          // Update button appearance
+          toggle.style.transform = 'scale(1)';
+          toggle.style.boxShadow = '0 4px 20px rgba(128, 88, 248, 0.4)';
+        } else {
+          // Hide chat window (minimize to button)
+          windowBox.style.display = "none";
+          isChatMinimized = true;
+          
+          // Update button appearance when minimized
+          toggle.style.transform = 'scale(0.95)';
+          toggle.style.boxShadow = '0 2px 10px rgba(128, 88, 248, 0.6)';
         }
       };
 
@@ -452,6 +466,9 @@ function App() {
         inputContainer.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.05)";
       };
 
+      // Chat state management
+      let isChatMinimized = false;
+      
       // Drag functionality for chat window
       let isDragging = false;
       let startX;
@@ -1696,19 +1713,48 @@ function App() {
                 </div>
               </div>
             </div>
-            <button aria-label="Close chat" onClick={() => document.getElementById('chat-window').style.display = 'none'} style={{
-              background: 'none',
-              border: 'none',
-              color: 'white',
-              cursor: 'pointer',
-              padding: '4px',
-              transition: 'opacity 0.2s'
-            }} onMouseOver={(e) => e.target.style.opacity = '0.7'} onMouseOut={(e) => e.target.style.opacity = '1'}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+            <div style={{display: 'flex', gap: '8px'}}>
+              {/* Minimize button */}
+              <button aria-label="Minimize chat" onClick={() => {
+                const windowBox = document.getElementById('chat-window');
+                const toggle = document.getElementById('chat-toggle');
+                windowBox.style.display = 'none';
+                toggle.style.transform = 'scale(0.95)';
+                toggle.style.boxShadow = '0 2px 10px rgba(128, 88, 248, 0.6)';
+              }} style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                padding: '4px',
+                transition: 'opacity 0.2s'
+              }} onMouseOver={(e) => e.target.style.opacity = '0.7'} onMouseOut={(e) => e.target.style.opacity = '1'}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              
+              {/* Close button */}
+              <button aria-label="Close chat" onClick={() => {
+                const windowBox = document.getElementById('chat-window');
+                const toggle = document.getElementById('chat-toggle');
+                windowBox.style.display = 'none';
+                toggle.style.transform = 'scale(1)';
+                toggle.style.boxShadow = '0 4px 20px rgba(128, 88, 248, 0.4)';
+              }} style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                padding: '4px',
+                transition: 'opacity 0.2s'
+              }} onMouseOver={(e) => e.target.style.opacity = '0.7'} onMouseOut={(e) => e.target.style.opacity = '1'}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Welcome Message */}

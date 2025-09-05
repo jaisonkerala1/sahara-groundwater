@@ -1003,3 +1003,28 @@ body {
     margin: 0 auto;
   }
 }
+
+/* Facebook Messenger style button behavior */
+#chat-toggle {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#chat-toggle:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 6px 25px rgba(128, 88, 248, 0.5) !important;
+}
+
+#chat-toggle:active {
+  transform: scale(0.95) !important;
+}
+
+/* Chat window animations */
+#chat-window {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Minimize/Close button hover effects */
+#chat-window button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px;
+}
