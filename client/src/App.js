@@ -475,6 +475,13 @@ function App() {
       let startY;
       let initialX = 0;
       let initialY = 0;
+      
+      // Drag functionality for floating button
+      let isButtonDragging = false;
+      let buttonStartX;
+      let buttonStartY;
+      let buttonInitialX = 0;
+      let buttonInitialY = 0;
 
       const dragStart = (e) => {
         // Only allow dragging from the header
@@ -549,6 +556,70 @@ function App() {
       document.addEventListener("touchend", dragEnd);
       document.addEventListener("mousemove", drag, { passive: false });
       document.addEventListener("touchmove", drag, { passive: false });
+      
+      // Button drag functionality
+      const buttonDragStart = (e) => {
+        isButtonDragging = true;
+        const rect = toggle.getBoundingClientRect();
+        buttonInitialX = rect.left;
+        buttonInitialY = rect.top;
+        
+        if (e.type === 'mousedown') {
+          buttonStartX = e.clientX;
+          buttonStartY = e.clientY;
+        } else {
+          buttonStartX = e.touches[0].clientX;
+          buttonStartY = e.touches[0].clientY;
+        }
+        
+        e.preventDefault();
+      };
+      
+      const buttonDragMove = (e) => {
+        if (!isButtonDragging) return;
+        
+        let currentX, currentY;
+        if (e.type === 'mousemove') {
+          currentX = e.clientX;
+          currentY = e.clientY;
+        } else {
+          currentX = e.touches[0].clientX;
+          currentY = e.touches[0].clientY;
+        }
+        
+        const deltaX = currentX - buttonStartX;
+        const deltaY = currentY - buttonStartY;
+        
+        let newX = buttonInitialX + deltaX;
+        let newY = buttonInitialY + deltaY;
+        
+        // Keep button within viewport
+        const maxX = window.innerWidth - 60;
+        const maxY = window.innerHeight - 60;
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+        
+        toggle.style.left = newX + 'px';
+        toggle.style.top = newY + 'px';
+        toggle.style.right = 'auto';
+        toggle.style.bottom = 'auto';
+        
+        e.preventDefault();
+      };
+      
+      const buttonDragEnd = () => {
+        isButtonDragging = false;
+      };
+      
+      // Add button drag event listeners
+      toggle.addEventListener('mousedown', buttonDragStart);
+      document.addEventListener('mousemove', buttonDragMove);
+      document.addEventListener('mouseup', buttonDragEnd);
+      
+      // Touch events for button
+      toggle.addEventListener('touchstart', buttonDragStart, { passive: false });
+      document.addEventListener('touchmove', buttonDragMove, { passive: false });
+      document.addEventListener('touchend', buttonDragEnd);
     }
   }, []);
 
@@ -1715,12 +1786,16 @@ function App() {
             </div>
             <div style={{display: 'flex', gap: '8px'}}>
               {/* Minimize button */}
-              <button aria-label="Minimize chat" onClick={() => {
+              <button aria-label="Minimize chat" onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const windowBox = document.getElementById('chat-window');
                 const toggle = document.getElementById('chat-toggle');
-                windowBox.style.display = 'none';
-                toggle.style.transform = 'scale(0.95)';
-                toggle.style.boxShadow = '0 2px 10px rgba(128, 88, 248, 0.6)';
+                if (windowBox && toggle) {
+                  windowBox.style.display = 'none';
+                  toggle.style.transform = 'scale(0.95)';
+                  toggle.style.boxShadow = '0 2px 10px rgba(128, 88, 248, 0.6)';
+                }
               }} style={{
                 background: 'none',
                 border: 'none',
@@ -1735,12 +1810,16 @@ function App() {
               </button>
               
               {/* Close button */}
-              <button aria-label="Close chat" onClick={() => {
+              <button aria-label="Close chat" onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const windowBox = document.getElementById('chat-window');
                 const toggle = document.getElementById('chat-toggle');
-                windowBox.style.display = 'none';
-                toggle.style.transform = 'scale(1)';
-                toggle.style.boxShadow = '0 4px 20px rgba(128, 88, 248, 0.4)';
+                if (windowBox && toggle) {
+                  windowBox.style.display = 'none';
+                  toggle.style.transform = 'scale(1)';
+                  toggle.style.boxShadow = '0 4px 20px rgba(128, 88, 248, 0.4)';
+                }
               }} style={{
                 background: 'none',
                 border: 'none',

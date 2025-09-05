@@ -995,12 +995,21 @@ body {
   #chat-window {
     width: calc(100vw - 40px);
     max-width: 380px;
-    height: calc(100vh - 100px);
-    max-height: 600px;
-    bottom: 80px;
+    height: calc(100vh - 120px);
+    max-height: 500px;
+    bottom: 20px;
     right: 20px;
     left: 20px;
     margin: 0 auto;
+  }
+  
+  /* Adjust for mobile keyboard */
+  @media (max-height: 600px) {
+    #chat-window {
+      height: calc(100vh - 80px);
+      max-height: 400px;
+      bottom: 10px;
+    }
   }
 }
 
