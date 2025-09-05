@@ -49,6 +49,7 @@ function App() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [hapticInterval, setHapticInterval] = useState(null);
+  const hapticIntervalRef = useRef(null);
   const fileInputRef = useRef(null);
 
   // Haptic feedback utility - much gentler vibrations
@@ -59,10 +60,10 @@ function App() {
   }, []);
 
   const startHapticFeedback = useCallback(() => {
-    // Clear any existing interval immediately
-    if (hapticInterval) {
-      clearInterval(hapticInterval);
-      setHapticInterval(null);
+    // Clear any existing interval immediately using ref
+    if (hapticIntervalRef.current) {
+      clearInterval(hapticIntervalRef.current);
+      hapticIntervalRef.current = null;
     }
     
     // Very gentle initial vibration when analysis starts
@@ -73,19 +74,49 @@ function App() {
       triggerHaptic(10);
     }, 3000);
     
+    hapticIntervalRef.current = interval;
     setHapticInterval(interval);
-  }, [hapticInterval, triggerHaptic]);
+  }, [triggerHaptic]);
 
   const stopHapticFeedback = useCallback(() => {
-    // Clear interval immediately
+    // Clear interval immediately using ref (more reliable)
+    if (hapticIntervalRef.current) {
+      clearInterval(hapticIntervalRef.current);
+      hapticIntervalRef.current = null;
+    }
+    
+    // Also clear from state
     if (hapticInterval) {
       clearInterval(hapticInterval);
       setHapticInterval(null);
     }
     
+    // Stop any ongoing vibration immediately
+    if ('vibrate' in navigator) {
+      navigator.vibrate(0); // Stop any ongoing vibration
+    }
+    
     // Gentle success vibration when analysis completes
     triggerHaptic([30, 20, 30]);
   }, [hapticInterval, triggerHaptic]);
+
+  // Global haptic stop function for emergency cleanup
+  const forceStopHaptic = useCallback(() => {
+    // Clear all possible intervals
+    if (hapticIntervalRef.current) {
+      clearInterval(hapticIntervalRef.current);
+      hapticIntervalRef.current = null;
+    }
+    if (hapticInterval) {
+      clearInterval(hapticInterval);
+      setHapticInterval(null);
+    }
+    
+    // Force stop any vibration
+    if ('vibrate' in navigator) {
+      navigator.vibrate(0);
+    }
+  }, [hapticInterval]);
 
   // Ripple effect utility
   const createRipple = useCallback((event) => {
@@ -117,8 +148,16 @@ function App() {
   // Cleanup haptic feedback on unmount
   useEffect(() => {
     return () => {
+      if (hapticIntervalRef.current) {
+        clearInterval(hapticIntervalRef.current);
+        hapticIntervalRef.current = null;
+      }
       if (hapticInterval) {
         clearInterval(hapticInterval);
+      }
+      // Stop any ongoing vibration
+      if ('vibrate' in navigator) {
+        navigator.vibrate(0);
       }
     };
   }, [hapticInterval]);
@@ -549,6 +588,11 @@ function App() {
     // Add a hard timeout so the UI doesn't hang forever
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s
+    
+    // Add haptic timeout to force stop after 30 seconds
+    const hapticTimeoutId = setTimeout(() => {
+      forceStopHaptic();
+    }, 30000); // 30s
 
     try {
       const response = await fetch('/api/analyze-survey', {
@@ -597,8 +641,8 @@ function App() {
         }
       }
     } catch (err) {
-      // Stop haptic feedback immediately on any error
-      stopHapticFeedback();
+      // Force stop haptic feedback immediately on any error
+      forceStopHaptic();
       if (err.name === 'AbortError') {
         setError('The analysis is taking longer than expected. Please try again or retry with a smaller/clearer file.');
       } else {
@@ -606,6 +650,7 @@ function App() {
       }
     } finally {
       clearTimeout(timeoutId);
+      clearTimeout(hapticTimeoutId);
       setIsUploading(false);
     }
   };
