@@ -1,5 +1,5 @@
 // Service Worker for Sahara Groundwater App
-const CACHE_NAME = 'sahara-groundwater-TEST-CLEAR';
+const CACHE_NAME = 'sahara-groundwater-v6';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',

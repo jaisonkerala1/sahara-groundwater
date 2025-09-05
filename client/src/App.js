@@ -2525,11 +2525,11 @@ function App() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-blue-600" />
-                  <a href="tel:+918050381803" className="text-gray-600 dark:text-gray-300 hover:text-blue-600">TEST-PHONE-CHANGED</a>
+                  <a href="tel:+918050381803" className="text-gray-600 dark:text-gray-300 hover:text-blue-600">+91 80503 81803</a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-blue-600" />
-                  <span className="text-gray-600 dark:text-gray-300">TEST-EMAIL-CHANGED@saharagroundwater.com</span>
+                  <span className="text-gray-600 dark:text-gray-300">support@saharagroundwater.com</span>
                 </div>
               </div>
             </div>
