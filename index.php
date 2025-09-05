@@ -123,6 +123,25 @@ function register_user($email, $password, $name) {
     file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
     file_put_contents($accessFile, json_encode($userAccess, JSON_PRETTY_PRINT));
     
+    // Create individual user file for tracking
+    $user_file = "users/{$newUser['id']}.json";
+    if (!is_dir('users')) {
+        mkdir('users', 0755, true);
+    }
+    
+    $individual_user_data = [
+        'id' => $newUser['id'],
+        'email' => $newUser['email'],
+        'name' => $newUser['name'],
+        'subscription_status' => '',
+        'analysis_count' => 0,
+        'daily_limit' => 1,
+        'created_at' => $newUser['createdAt'],
+        'last_analysis_date' => null
+    ];
+    
+    file_put_contents($user_file, json_encode($individual_user_data, JSON_PRETTY_PRINT));
+    
     return [
         'success' => true,
         'user_id' => $newUser['id'],
@@ -192,11 +211,25 @@ function check_user_access($userId) {
         return ['success' => false, 'message' => 'User not found'];
     }
     
+    // Read current analysis count from user's individual file
+    $user_file = "users/{$userId}.json";
+    $current_analysis_count = 0;
+    
+    if (file_exists($user_file)) {
+        $user_data = json_decode(file_get_contents($user_file), true);
+        if ($user_data && isset($user_data['analysis_count'])) {
+            $current_analysis_count = intval($user_data['analysis_count']);
+        }
+    }
+    
     $access = $userAccess[$userId] ?? [
         'subscription_status' => '',
         'analysis_count' => 0,
         'daily_limit' => 1
     ];
+    
+    // Use the current analysis count from the user file
+    $access['analysis_count'] = $current_analysis_count;
     
     return [
         'success' => true,
@@ -246,22 +279,36 @@ function check_wordpress_user_access($userId) {
 }
 
 function track_analysis_usage($user_id) {
-    $wp_api_url = 'https://saharagroundwater.com/wp-json/sahara/v1/track-analysis';
+    // Use local file-based tracking instead of WordPress API
+    $today = date('Y-m-d');
+    $user_file = "users/{$user_id}.json";
     
-    $post_data = http_build_query(['user_id' => $user_id]);
+    if (!file_exists($user_file)) {
+        error_log("User file not found: {$user_file}");
+        return false;
+    }
     
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $wp_api_url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    $user_data = json_decode(file_get_contents($user_file), true);
+    if (!$user_data) {
+        error_log("Failed to read user data for tracking: {$user_id}");
+        return false;
+    }
     
-    return $http_code === 200;
+    // Update analysis count for today
+    $current_count = intval($user_data['analysis_count'] ?? 0);
+    $user_data['analysis_count'] = $current_count + 1;
+    $user_data['last_analysis_date'] = $today;
+    
+    // Save updated user data
+    $result = file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT));
+    
+    if ($result === false) {
+        error_log("Failed to update analysis count for user: {$user_id}");
+        return false;
+    }
+    
+    error_log("✅ Analysis count updated for user {$user_id}: {$current_count} -> " . ($current_count + 1));
+    return true;
 }
 
 // API endpoint for survey analysis
