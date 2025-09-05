@@ -61,88 +61,26 @@ function App() {
     };
   }, []);
 
-  // Check for SSO handoff or stored user info
+  // Check for stored user info
   useEffect(() => {
-    console.log('=== DEBUGGING USER DATA ===');
-    console.log('All localStorage keys:', Object.keys(localStorage));
-    console.log('sahara_user value:', localStorage.getItem('sahara_user'));
+    // Check localStorage for existing user session
+    const storedUser = localStorage.getItem('sahara_user');
     
-    // Check for SSO handoff in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const ssoCode = urlParams.get('sso_code');
-    const saharaUserParam = urlParams.get('sahara_user');
-    
-    if (ssoCode) {
-      console.log('SSO code found, exchanging for user data...');
-      exchangeSSOCode(ssoCode);
-      // Clean URL
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-    } else if (saharaUserParam) {
-      console.log('User data found in URL param, parsing...');
+    if (storedUser) {
       try {
-        const userData = JSON.parse(atob(saharaUserParam));
-        console.log('Parsed user data from URL:', userData);
+        const userData = JSON.parse(storedUser);
         setUser(userData);
-        localStorage.setItem('sahara_user', JSON.stringify(userData));
-        // Clean URL
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
       } catch (error) {
-        console.error('Error parsing user data from URL:', error);
-      }
-    } else {
-      // Check localStorage
-      const storedUser = localStorage.getItem('sahara_user');
-      console.log('Raw stored user data:', storedUser);
-      
-      if (storedUser) {
-        try {
-          const userData = JSON.parse(storedUser);
-          console.log('Parsed user data:', userData);
-          console.log('User ID found:', userData.user_id);
-          setUser(userData);
-        } catch (error) {
-          console.error('Error parsing stored user data:', error);
-          localStorage.removeItem('sahara_user');
-        }
-      } else {
-        console.log('No stored user found in localStorage');
+        console.error('Error parsing stored user data:', error);
+        localStorage.removeItem('sahara_user');
       }
     }
-    console.log('=== END DEBUGGING ===');
   }, []);
-
-  // Exchange SSO code for user data
-  const exchangeSSOCode = async (ssoCode) => {
-    try {
-      const response = await fetch(`https://saharagroundwater.com/wp-json/sahara/v1/sso-exchange?sso_code=${ssoCode}`);
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        console.log('SSO exchange successful:', data);
-        const userData = {
-          user_id: data.user_id,
-          email: data.email,
-          name: data.name,
-          subscription_status: data.subscription_status || '',
-          analysis_count: data.analysis_count || 0,
-          daily_limit: data.daily_limit || 1
-        };
-        setUser(userData);
-        localStorage.setItem('sahara_user', JSON.stringify(userData));
-      } else {
-        console.error('SSO exchange failed:', data);
-      }
-    } catch (error) {
-      console.error('Error exchanging SSO code:', error);
-    }
-  };
 
   // Check user access
   const checkUserAccess = async (userId) => {
     try {
-      const response = await fetch(`https://saharagroundwater.com/wp-json/sahara/v1/check-access/${userId}`);
+      const response = await fetch(`/api/check-access/${userId}`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -155,7 +93,7 @@ function App() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,12 +107,16 @@ function App() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setUser({
+        const userData = {
           id: data.user_id,
           email: data.email,
           name: data.name,
-          ...data.access
-        });
+          subscription_status: data.subscription_status || '',
+          analysis_count: data.analysis_count || 0,
+          daily_limit: data.daily_limit || 1
+        };
+        setUser(userData);
+        localStorage.setItem('sahara_user', JSON.stringify(userData));
         setShowLoginForm(false);
         setError(null);
       } else {
@@ -189,7 +131,7 @@ function App() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/register', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -204,12 +146,16 @@ function App() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setUser({
+        const userData = {
           id: data.user_id,
           email: data.email,
           name: data.name,
-          ...data.access
-        });
+          subscription_status: data.subscription_status || '',
+          analysis_count: data.analysis_count || 0,
+          daily_limit: data.daily_limit || 1
+        };
+        setUser(userData);
+        localStorage.setItem('sahara_user', JSON.stringify(userData));
         setShowLoginForm(false);
         setError(null);
       } else {
@@ -250,8 +196,8 @@ function App() {
   // Verify payment
   const verifyPayment = async (paymentResponse) => {
     try {
-      // Send payment verification to WordPress
-      const response = await fetch('https://saharagroundwater.com/wp-json/sahara/v1/verify-payment', {
+      // Send payment verification to local API
+      const response = await fetch('/api/verify-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -229,6 +229,180 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Simple in-memory user storage (replace with database in production)
+let users = [];
+let userAccess = {};
+
+// User registration endpoint
+app.post('/api/register', (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email and password are required' 
+      });
+    }
+    
+    // Check if user already exists
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User already exists with this email' 
+      });
+    }
+    
+    // Create new user
+    const newUser = {
+      id: users.length + 1,
+      email,
+      name: name || email.split('@')[0],
+      password, // In production, hash this password
+      createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    userAccess[newUser.id] = {
+      subscription_status: '',
+      analysis_count: 0,
+      daily_limit: 1
+    };
+    
+    res.json({
+      success: true,
+      user_id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      subscription_status: '',
+      analysis_count: 0,
+      daily_limit: 1
+    });
+    
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Registration failed' 
+    });
+  }
+});
+
+// User login endpoint
+app.post('/api/login', (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email and password are required' 
+      });
+    }
+    
+    // Find user
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Invalid email or password' 
+      });
+    }
+    
+    const access = userAccess[user.id] || {
+      subscription_status: '',
+      analysis_count: 0,
+      daily_limit: 1
+    };
+    
+    res.json({
+      success: true,
+      user_id: user.id,
+      email: user.email,
+      name: user.name,
+      subscription_status: access.subscription_status,
+      analysis_count: access.analysis_count,
+      daily_limit: access.daily_limit
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Login failed' 
+    });
+  }
+});
+
+// Check user access endpoint
+app.get('/api/check-access/:userId', (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (!userId || !users.find(u => u.id === userId)) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    const access = userAccess[userId] || {
+      subscription_status: '',
+      analysis_count: 0,
+      daily_limit: 1
+    };
+    
+    res.json({
+      success: true,
+      subscription_status: access.subscription_status,
+      analysis_count: access.analysis_count,
+      daily_limit: access.daily_limit
+    });
+    
+  } catch (error) {
+    console.error('Check access error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to check user access' 
+    });
+  }
+});
+
+// Payment verification endpoint
+app.post('/api/verify-payment', (req, res) => {
+  try {
+    const { user_id, payment_id, order_id, signature } = req.body;
+    
+    if (!user_id || !payment_id) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User ID and payment ID are required' 
+      });
+    }
+    
+    // In production, verify the Razorpay signature here
+    // For now, we'll just simulate successful payment
+    
+    // Update user subscription status
+    if (userAccess[user_id]) {
+      userAccess[user_id].subscription_status = 'active';
+    }
+    
+    res.json({
+      success: true,
+      message: 'Payment verified successfully'
+    });
+    
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Payment verification failed' 
+    });
+  }
+});
+
 // Serve React app for all other routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
