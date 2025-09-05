@@ -717,30 +717,6 @@ function App() {
             </p>
             </div>
               
-          {/* Mobile Login Prompt */}
-          {!user && (
-            <div className="md:hidden mb-8">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl">🔐</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    Get Started with Your Account
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    Create an account to save your analysis history and access premium features
-                  </p>
-                  <button
-                    onClick={() => setShowLoginForm(true)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all font-semibold shadow-lg"
-                  >
-                    Login / Sign Up
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Trust Indicators */}
           <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
