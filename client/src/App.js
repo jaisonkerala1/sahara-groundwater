@@ -586,8 +586,12 @@ function App() {
             currency: data.currency,
             reason: data.reason
           });
+          // Stop haptic feedback when quota limit reached
+          stopHapticFeedback();
         } else {
           setError((data && data.error) || `Analysis failed (status ${response.status}). Please try again.`);
+          // Stop haptic feedback on analysis failure
+          stopHapticFeedback();
         }
       }
     } catch (err) {
@@ -596,11 +600,11 @@ function App() {
       } else {
         setError(err.message || 'Network error. Please check your connection and try again.');
       }
+      // Stop haptic feedback on any error
+      stopHapticFeedback();
     } finally {
       clearTimeout(timeoutId);
       setIsUploading(false);
-      // Stop haptic feedback on any completion (success or error)
-      stopHapticFeedback();
     }
   };
 
