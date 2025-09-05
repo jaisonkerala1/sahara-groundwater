@@ -52,38 +52,33 @@ function App() {
   const hapticIntervalRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Haptic feedback utility - more noticeable vibrations
-  const triggerHaptic = useCallback((pattern = 50) => {
+  // Haptic feedback utility - much gentler vibrations
+  const triggerHaptic = useCallback((pattern = 20) => {
     if ('vibrate' in navigator) {
-      console.log('Triggering haptic:', pattern); // Debug log
       navigator.vibrate(pattern);
-    } else {
-      console.log('Vibration not supported'); // Debug log
     }
   }, []);
 
   const startHapticFeedback = useCallback(() => {
-    console.log('Starting haptic feedback'); // Debug log
     // Clear any existing interval immediately using ref
     if (hapticIntervalRef.current) {
       clearInterval(hapticIntervalRef.current);
       hapticIntervalRef.current = null;
     }
     
-    // More noticeable initial vibration when analysis starts
-    triggerHaptic(100);
+    // Very gentle initial vibration when analysis starts
+    triggerHaptic(15);
     
-    // More noticeable pulse every 2 seconds during analysis
+    // Very subtle pulse every 3 seconds during analysis (less frequent)
     const interval = setInterval(() => {
-      triggerHaptic(50);
-    }, 2000);
+      triggerHaptic(10);
+    }, 3000);
     
     hapticIntervalRef.current = interval;
     setHapticInterval(interval);
   }, [triggerHaptic]);
 
   const stopHapticFeedback = useCallback(() => {
-    console.log('Stopping haptic feedback'); // Debug log
     // Clear interval immediately using ref (more reliable)
     if (hapticIntervalRef.current) {
       clearInterval(hapticIntervalRef.current);
@@ -101,13 +96,12 @@ function App() {
       navigator.vibrate(0); // Stop any ongoing vibration
     }
     
-    // More noticeable success vibration when analysis completes
-    triggerHaptic([100, 50, 100]);
+    // Gentle success vibration when analysis completes
+    triggerHaptic([30, 20, 30]);
   }, [hapticInterval, triggerHaptic]);
 
   // Global haptic stop function for emergency cleanup
   const forceStopHaptic = useCallback(() => {
-    console.log('Force stopping haptic feedback'); // Debug log
     // Clear all possible intervals
     if (hapticIntervalRef.current) {
       clearInterval(hapticIntervalRef.current);
@@ -123,17 +117,6 @@ function App() {
       navigator.vibrate(0);
     }
   }, [hapticInterval]);
-
-  // Test haptic feedback function
-  const testHaptic = useCallback(() => {
-    console.log('Testing haptic feedback...');
-    if ('vibrate' in navigator) {
-      navigator.vibrate([200, 100, 200]);
-      console.log('Haptic test triggered');
-    } else {
-      console.log('Vibration not supported on this device');
-    }
-  }, []);
 
   // Ripple effect utility
   const createRipple = useCallback((event) => {
@@ -1807,14 +1790,6 @@ function App() {
                         <span>Analyze Survey Report</span>
                       </>
                     )}
-                  </button>
-                  
-                  {/* Test Haptic Button - Remove this after testing */}
-                  <button
-                    onClick={testHaptic}
-                    className="mt-2 w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    Test Vibration
                   </button>
                 </div>
                           </div>
