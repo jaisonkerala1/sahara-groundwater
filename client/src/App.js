@@ -420,14 +420,8 @@ function App() {
     const sendButton = document.getElementById("send-button");
 
     if (toggle && windowBox && inputContainer && userInput && sendButton) {
-      // Toggle chat window (Facebook Messenger style)
-      toggle.onclick = (e) => {
-        // Don't toggle if it was a drag
-        if (hasDragged) {
-          e.preventDefault();
-          return;
-        }
-        
+      // Toggle chat window (Simple and Perfect)
+      toggle.onclick = () => {
         const isHidden = windowBox.style.display === "none";
         if (isHidden) {
           // Show chat window
@@ -475,19 +469,9 @@ function App() {
       // Chat state management
       let isChatMinimized = false;
       
-      // Drag functionality for chat window
+      // Simple drag variables for chat window only
       let isDragging = false;
-      let startX;
-      let startY;
-      let initialX = 0;
-      let initialY = 0;
-      
-      // Drag functionality for floating button
-      let isButtonDragging = false;
-      let buttonStartX;
-      let buttonStartY;
-      let buttonInitialX = 0;
-      let buttonInitialY = 0;
+      let startX, startY, initialX = 0, initialY = 0;
 
       const dragStart = (e) => {
         // Only allow dragging from the header
@@ -563,84 +547,7 @@ function App() {
       document.addEventListener("mousemove", drag, { passive: false });
       document.addEventListener("touchmove", drag, { passive: false });
       
-      // Button drag functionality
-      let dragThreshold = 5; // Minimum distance to consider it a drag
-      let hasDragged = false;
-      
-      const buttonDragStart = (e) => {
-        isButtonDragging = false; // Start as false
-        hasDragged = false;
-        const rect = toggle.getBoundingClientRect();
-        buttonInitialX = rect.left;
-        buttonInitialY = rect.top;
-        
-        if (e.type === 'mousedown') {
-          buttonStartX = e.clientX;
-          buttonStartY = e.clientY;
-        } else {
-          buttonStartX = e.touches[0].clientX;
-          buttonStartY = e.touches[0].clientY;
-        }
-        
-        // Don't prevent default immediately - let click work
-      };
-      
-      const buttonDragMove = (e) => {
-        let currentX, currentY;
-        if (e.type === 'mousemove') {
-          currentX = e.clientX;
-          currentY = e.clientY;
-        } else {
-          currentX = e.touches[0].clientX;
-          currentY = e.touches[0].clientY;
-        }
-        
-        const deltaX = currentX - buttonStartX;
-        const deltaY = currentY - buttonStartY;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        // Only start dragging if moved more than threshold
-        if (distance > dragThreshold) {
-          isButtonDragging = true;
-          hasDragged = true;
-        }
-        
-        if (!isButtonDragging) return;
-        
-        let newX = buttonInitialX + deltaX;
-        let newY = buttonInitialY + deltaY;
-        
-        // Keep button within viewport
-        const maxX = window.innerWidth - 60;
-        const maxY = window.innerHeight - 60;
-        newX = Math.max(0, Math.min(newX, maxX));
-        newY = Math.max(0, Math.min(newY, maxY));
-        
-        toggle.style.left = newX + 'px';
-        toggle.style.top = newY + 'px';
-        toggle.style.right = 'auto';
-        toggle.style.bottom = 'auto';
-        
-        e.preventDefault();
-      };
-      
-      const buttonDragEnd = () => {
-        isButtonDragging = false;
-        // Reset drag state after a short delay
-        setTimeout(() => {
-          hasDragged = false;
-        }, 100);
-      };
-      
-      // Add button drag event listeners
-      toggle.addEventListener('mousedown', buttonDragStart);
-      document.addEventListener('mousemove', buttonDragMove);
-      document.addEventListener('mouseup', buttonDragEnd);
-      
-      // Touch events for button
-      toggle.addEventListener('touchstart', buttonDragStart, { passive: false });
-      document.addEventListener('touchmove', buttonDragMove, { passive: false });
-      document.addEventListener('touchend', buttonDragEnd);
+      // No button drag - just simple click functionality
     }
   }, []);
 
