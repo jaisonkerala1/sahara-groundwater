@@ -915,7 +915,7 @@ function App() {
       appendMessage("Sahara Groundwater", reply, false);
     } catch (e) {
       removeTypingIndicator();
-      appendMessage("Sahara Groundwater", "Sorry, I'm having connection issues. Please try again, or email contact@saharagroundwater.com.", false);
+      appendMessage("Sahara Groundwater", "Sorry, I'm having connection issues. Please try again, or email support@saharagroundwater.com.", false);
     }
   };
 
