@@ -2264,7 +2264,7 @@ function App() {
                   Need expert consultation about your results?
                 </p>
                 <a 
-                  href="tel:+917012051937"
+                  href="tel:+918050381803"
                   onMouseDown={createRipple}
                   className="btn inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 touchable"
                 >
@@ -2525,7 +2525,7 @@ function App() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-blue-600" />
-                  <a href="tel:+917012051937" className="text-gray-600 dark:text-gray-300 hover:text-blue-600">+91 70120 51937</a>
+                  <a href="tel:+918050381803" className="text-gray-600 dark:text-gray-300 hover:text-blue-600">+91 80503 81803</a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-blue-600" />
