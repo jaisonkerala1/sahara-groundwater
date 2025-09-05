@@ -333,11 +333,18 @@ function App() {
         signal: controller.signal,
       });
 
+      // Parse JSON if possible; otherwise surface raw text to help diagnose
       let data;
+      let rawText;
       try {
-        data = await response.json();
+        rawText = await response.text();
+        try {
+          data = JSON.parse(rawText);
+        } catch (jsonErr) {
+          throw new Error(rawText?.slice(0, 500) || 'Invalid server response');
+        }
       } catch (e) {
-        throw new Error('Invalid server response');
+        throw new Error(e?.message || 'Invalid server response');
       }
 
       if (response.ok && data && data.success) {
