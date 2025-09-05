@@ -675,6 +675,7 @@ function App() {
                     setShowLoginForm(false);
                     setIsRegistering(false);
                     setLoginForm({ email: '', password: '', name: '' });
+                    setError(null);
                   }}
                 >
                   <X size={24} />
@@ -684,6 +685,16 @@ function App() {
 
             {/* Form */}
             <div className="px-6 py-6">
+              {/* Error Message */}
+              {error && (
+                <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
+                </div>
+              )}
+
               <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-5">
                 {isRegistering && (
                   <div>
@@ -739,9 +750,9 @@ function App() {
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
                   {isRegistering ? (
-                    <>Already have an account? <button type="button" onClick={() => setIsRegistering(false)} className="text-blue-600 hover:text-blue-700 font-semibold">Sign in here</button></>
+                    <>Already have an account? <button type="button" onClick={() => {setIsRegistering(false); setError(null);}} className="text-blue-600 hover:text-blue-700 font-semibold">Sign in here</button></>
                   ) : (
-                    <>Don't have an account? <button type="button" onClick={() => setIsRegistering(true)} className="text-blue-600 hover:text-blue-700 font-semibold">Create one here</button></>
+                    <>Don't have an account? <button type="button" onClick={() => {setIsRegistering(true); setError(null);}} className="text-blue-600 hover:text-blue-700 font-semibold">Create one here</button></>
                   )}
                 </p>
               </div>
