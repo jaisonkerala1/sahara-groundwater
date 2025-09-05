@@ -395,6 +395,146 @@ function App() {
     return <Image className="w-8 h-8 text-blue-500" />;
   };
 
+  // Chatbot functionality
+  useEffect(() => {
+    // Session bootstrap (unique per browser)
+    const KEY = "sahara_sid";
+    function genId() {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c/4).toString(16)
+      );
+    }
+    let sid = localStorage.getItem(KEY);
+    if (!sid) { 
+      sid = genId(); 
+      localStorage.setItem(KEY, sid); 
+    }
+    window.__SAHARA_SID__ = sid;
+
+    // Chatbot initialization
+    const webhookUrl = "https://console.opendream.in/webhook/5354ef92-537c-41be-b207-d810d2920c8c";
+    const toggle = document.getElementById("chat-toggle");
+    const windowBox = document.getElementById("chat-window");
+    const inputContainer = document.getElementById("input-container");
+    const userInput = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+
+    if (toggle && windowBox && inputContainer && userInput && sendButton) {
+      // Toggle chat window
+      toggle.onclick = () => {
+        const isHidden = windowBox.style.display === "none";
+        windowBox.style.display = isHidden ? "flex" : "none";
+        if (isHidden) {
+          userInput.focus();
+          const notificationDot = toggle.querySelector('div');
+          if (notificationDot) notificationDot.style.display = 'none';
+        }
+      };
+
+      // Enable/disable send button based on input
+      userInput.addEventListener('input', function() {
+        if (this.value.trim()) {
+          sendButton.style.opacity = '1';
+          sendButton.style.pointerEvents = 'auto';
+        } else {
+          sendButton.style.opacity = '0.3';
+          sendButton.style.pointerEvents = 'none';
+        }
+      });
+
+      // Focus styles
+      userInput.onfocus = () => {
+        inputContainer.style.borderColor = "#8058F8";
+        inputContainer.style.boxShadow = "0 0 0 3px rgba(128, 88, 248, 0.1)";
+      };
+      userInput.onblur = () => {
+        inputContainer.style.borderColor = "#E5E7EB";
+        inputContainer.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.05)";
+      };
+    }
+  }, []);
+
+  // Append message function
+  const appendMessage = (sender, message, isUser = false) => {
+    const chat = document.getElementById("chat-messages");
+    const welcomeMsg = document.getElementById("welcome-message");
+    if (welcomeMsg) welcomeMsg.style.display = "none";
+
+    const msg = document.createElement("div");
+    msg.className = isUser ? "user-message" : "bot-message";
+    msg.innerHTML = message;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  };
+
+  // Typing indicator
+  const showTypingIndicator = () => {
+    const chat = document.getElementById("chat-messages");
+    const typing = document.createElement("div");
+    typing.className = "typing-indicator";
+    typing.id = "typing-indicator";
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    chat.appendChild(typing);
+    chat.scrollTop = chat.scrollHeight;
+  };
+
+  const removeTypingIndicator = () => {
+    const typing = document.getElementById("typing-indicator");
+    if (typing) typing.remove();
+  };
+
+  // Send message function
+  const sendMessage = async () => {
+    const input = document.getElementById("user-input");
+    const userMsg = input.value.trim();
+    if (!userMsg) return;
+
+    appendMessage("You", userMsg, true);
+    input.value = "";
+    const sendButton = document.getElementById("send-button");
+    sendButton.style.opacity = '0.3';
+    sendButton.style.pointerEvents = 'none';
+    showTypingIndicator();
+
+    try {
+      const webhookUrl = "https://console.opendream.in/webhook/5354ef92-537c-41be-b207-d810d2920c8c";
+      const sid = window.__SAHARA_SID__;
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-session-id": sid },
+        body: JSON.stringify({ message: userMsg, sessionId: sid })
+      });
+
+      const newSid = res.headers.get("x-session-id");
+      if (newSid && newSid !== sid) { 
+        localStorage.setItem("sahara_sid", newSid); 
+        window.__SAHARA_SID__ = newSid; 
+      }
+
+      const data = await res.json().catch(() => ({}));
+      const reply = data.response || "I'm here to help with bookings, pricing, timelines, and report downloads. How can I assist?";
+      removeTypingIndicator();
+      appendMessage("Sahara Groundwater", reply, false);
+    } catch (e) {
+      removeTypingIndicator();
+      appendMessage("Sahara Groundwater", "Sorry, I'm having connection issues. Please try again, or email contact@saharagroundwater.com.", false);
+    }
+  };
+
+  // Quick message helper
+  const quickMessage = (message) => {
+    const userInput = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    userInput.value = message;
+    sendButton.style.opacity = '1';
+    sendButton.style.pointerEvents = 'auto';
+    sendMessage();
+  };
+
+  // Make functions globally available
+  window.sendMessage = sendMessage;
+  window.quickMessage = quickMessage;
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
       {/* Login Modal */}
@@ -1382,6 +1522,131 @@ function App() {
           )}
       </main>
       
+      {/* Sahara Groundwater AI Chatbot */}
+      <div id="sahara-chatbot" style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 2147483647,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        {/* Accessible SEO text (screen-reader only, keeps UI clean) */}
+        <div className="sr-only" aria-hidden="false">
+          <h2>Sahara Groundwater – Groundwater Survey & Borewell Detection in Kerala</h2>
+          <p>Chatbot to help with booking groundwater survey, borewell site selection, openwell assessment, pricing, refund policy, and report downloads. Booking link: https://saharagroundwater.com/booking</p>
+        </div>
+
+        {/* Chat Toggle Button with Pulse Animation */}
+        <div id="chat-toggle" aria-label="Open Sahara Groundwater chat" title="Chat with Sahara Groundwater" style={{
+          background: 'linear-gradient(135deg, #8058F8 0%, #3E1F64 100%)',
+          color: 'white',
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 20px rgba(128, 88, 248, 0.4)',
+          transition: 'all 0.3s ease',
+          position: 'relative',
+          animation: 'pulse 2s infinite',
+          padding: '12px'
+        }} onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'} onMouseOut={(e) => e.target.style.transform = 'scale(1)'}>
+          <img src="https://saharagroundwater.com/wp-content/uploads/2025/08/illpxmckwd.png" 
+               alt="Chat with Sahara Groundwater" 
+               style={{width: '100%', height: '100%', objectFit: 'contain', filter: 'brightness(0) invert(1)'}}
+               aria-hidden="true" />
+          <div style={{position: 'absolute', top: '5px', right: '5px', width: '12px', height: '12px', background: '#FF4757', borderRadius: '50%', border: '2px solid white'}}></div>
+        </div>
+
+        {/* Chat Window */}
+        <div id="chat-window" role="dialog" aria-label="Sahara Groundwater chat window" style={{
+          display: 'none',
+          width: '380px',
+          height: '600px',
+          background: '#FAFBFD',
+          borderRadius: '20px',
+          boxShadow: '0 10px 40px rgba(62, 31, 100, 0.15)',
+          marginBottom: '15px',
+          overflow: 'hidden',
+          flexDirection: 'column',
+          animation: 'slideUp 0.3s ease'
+        }}>
+          {/* Header */}
+          <div style={{
+            background: 'linear-gradient(135deg, #8058F8 0%, #3E1F64 100%)',
+            color: 'white',
+            padding: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 2px 10px rgba(128, 88, 248, 0.2)'
+          }}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+              <div style={{width: '40px', height: '40px', background: 'white', borderRadius: '50%', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <img src="https://saharagroundwater.com/wp-content/uploads/2022/02/cropped-logo.png" style={{width: '100%', height: '100%', objectFit: 'contain'}} alt="Sahara Groundwater logo" />
+              </div>
+              <div>
+                <div style={{fontWeight: '600', fontSize: '16px'}}>Sahara Ai Assistant</div>
+                <div style={{fontSize: '12px', opacity: '0.9', display: 'flex', alignItems: 'center', gap: '4px'}}>
+                  <span style={{width: '8px', height: '8px', background: '#4ADE80', borderRadius: '50%', display: 'inline-block'}} aria-hidden="true"></span>
+                  Online now
+                </div>
+              </div>
+            </div>
+            <button aria-label="Close chat" onClick={() => document.getElementById('chat-window').style.display = 'none'} style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer',
+              padding: '4px',
+              transition: 'opacity 0.2s'
+            }} onMouseOver={(e) => e.target.style.opacity = '0.7'} onMouseOut={(e) => e.target.style.opacity = '1'}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          {/* Welcome Message */}
+          <div id="welcome-message" style={{
+            background: 'linear-gradient(135deg, rgba(128, 88, 248, 0.1) 0%, rgba(62, 31, 100, 0.05) 100%)',
+            padding: '15px',
+            margin: '10px',
+            borderRadius: '12px',
+            borderLeft: '3px solid #8058F8'
+          }}>
+            <div style={{fontWeight: '600', color: '#332357', marginBottom: '5px'}}>Welcome to Sahara Groundwater! 💧</div>
+            <div style={{color: '#666', fontSize: '14px'}}>
+              Kerala's trusted <strong>groundwater survey</strong> team for <strong>borewell</strong> & <strong>openwell</strong> detection.
+              Ask about pricing, booking steps, timelines, or download your report.
+            </div>
+          </div>
+
+          {/* Chat Messages */}
+          <div id="chat-messages" style={{flex: 1, padding: '15px', overflowY: 'auto', scrollBehavior: 'smooth'}}></div>
+
+          {/* Quick Actions */}
+          <div style={{padding: '10px 15px', display: 'flex', gap: '8px', overflowX: 'auto', borderTop: '1px solid rgba(128, 88, 248, 0.1)'}}>
+            <button onClick={() => quickMessage('I want to book a groundwater survey')} style={{background: 'white', border: '1px solid #8058F8', color: '#8058F8', padding: '8px 12px', borderRadius: '20px', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s'}} onMouseOver={(e) => {e.target.style.background = '#8058F8'; e.target.style.color = 'white'}} onMouseOut={(e) => {e.target.style.background = 'white'; e.target.style.color = '#8058F8'}}>🗓️ Booking</button>
+            <button onClick={() => quickMessage('What is the price of your survey?')} style={{background: 'white', border: '1px solid #8058F8', color: '#8058F8', padding: '8px 12px', borderRadius: '20px', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s'}} onMouseOver={(e) => {e.target.style.background = '#8058F8'; e.target.style.color = 'white'}} onMouseOut={(e) => {e.target.style.background = 'white'; e.target.style.color = '#8058F8'}}>💰 Pricing</button>
+            <button onClick={() => quickMessage('Download my report')} style={{background: 'white', border: '1px solid #8058F8', color: '#8058F8', padding: '8px 12px', borderRadius: '20px', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s'}} onMouseOver={(e) => {e.target.style.background = '#8058F8'; e.target.style.color = 'white'}} onMouseOut={(e) => {e.target.style.background = 'white'; e.target.style.color = '#8058F8'}}>⬇️ Download Report</button>
+          </div>
+
+          {/* Input */}
+          <div style={{padding: '12px 15px 15px 15px', background: 'white', borderTop: '1px solid #E5E7EB'}}>
+            <div id="input-container" style={{display: 'flex', alignItems: 'center', background: '#FFFFFF', border: '1.5px solid #E5E7EB', borderRadius: '24px', padding: '2px', transition: 'all 0.2s ease', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'}}>
+              <input id="user-input" type="text" placeholder="Message Sahara Groundwater..." aria-label="Message input" style={{flex: 1, padding: '11px 12px', border: 'none', background: 'transparent', outline: 'none', fontSize: '15px', color: '#1F2937', fontWeight: '400', letterSpacing: '0.01em'}} onKeyPress={(e) => {if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }}} />
+              <button id="send-button" aria-label="Send message" onClick={sendMessage} style={{background: '#8058F8', border: 'none', color: 'white', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '3px', transition: 'all 0.2s ease', opacity: '0.3', pointerEvents: 'none'}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
       <footer id="contact" className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
